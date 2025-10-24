@@ -20,9 +20,10 @@ export default function SkillsForm() {
 
   // Search states
   const [softSkillsSearchResults, setSoftSkillsSearchResults] = useState<SoftSkill[]>([]);
-  const [technicalSkillsSearchResults, setTechnicalSkillsSearchResults] = useState<TechnicalSkill[]>([]);
   const [activeSoftSearch, setActiveSoftSearch] = useState(false);
-  const [activeTechnicalSearch, setActiveTechnicalSearch] = useState(false);
+  // Remove the global technical search states
+  // const [technicalSkillsSearchResults, setTechnicalSkillsSearchResults] = useState<TechnicalSkill[]>([]);
+  // const [activeTechnicalSearch, setActiveTechnicalSearch] = useState(false);
 
   const questions = [
     { key: "soft", title: "💬 What are your soft skills?", type: "soft" },
@@ -130,10 +131,16 @@ export default function SkillsForm() {
     []
   );
 
+  // Create individual search functions for each technical skill
   const searchTechnicalSkills = useCallback(
-    debounce(async (query: string) => {
+    debounce(async (query: string, skillId: string) => {
       if (!query || query.length < 2) {
-        setTechnicalSkillsSearchResults([]);
+        // Clear search results for this specific skill
+        setTechnicalSkills(prev => prev.map(skill => 
+          skill.id === skillId 
+            ? { ...skill, searchResults: [], activeSearch: false }
+            : skill
+        ));
         return;
       }
 
@@ -151,11 +158,20 @@ export default function SkillsForm() {
           category: d.category,
           logo_url: d.logo_url,
         })) as TechnicalSkill[];
-        setTechnicalSkillsSearchResults(results);
-        setActiveTechnicalSearch(true);
+
+        // Update only the specific skill with search results
+        setTechnicalSkills(prev => prev.map(skill => 
+          skill.id === skillId 
+            ? { ...skill, searchResults: results, activeSearch: true }
+            : skill
+        ));
       } catch (error) {
         console.error("Error searching technical skills:", error);
-        setTechnicalSkillsSearchResults([]);
+        setTechnicalSkills(prev => prev.map(skill => 
+          skill.id === skillId 
+            ? { ...skill, searchResults: [], activeSearch: false }
+            : skill
+        ));
       }
     }, 500),
     []
@@ -167,12 +183,25 @@ export default function SkillsForm() {
     name: seed?.name ?? "",
     category: seed?.category ?? "",
     logo_url: seed?.logo_url ?? "",
+    searchResults: [] as TechnicalSkill[], // Add individual search results
+    activeSearch: false, // Add individual active search state
   });
 
   const addTechnicalSkill = (seed?: any) => setTechnicalSkills((s) => [...s, makeTechnicalSkill(seed)]);
+  
   const updateTechnicalSkill = (id: string, patch: any) =>
     setTechnicalSkills((s) => s.map((skill) => (skill.id === id ? { ...skill, ...patch } : skill)));
+  
   const removeTechnicalSkill = (id: string) => setTechnicalSkills((s) => s.filter((skill) => skill.id !== id));
+
+  // Helper to clear search for a specific technical skill
+  const clearTechnicalSkillSearch = (skillId: string) => {
+    setTechnicalSkills(prev => prev.map(skill => 
+      skill.id === skillId 
+        ? { ...skill, searchResults: [], activeSearch: false }
+        : skill
+    ));
+  };
 
   const addSoftSkill = (skill: string) => {
     if (!skill || softSkills.includes(skill)) return;
@@ -198,59 +227,61 @@ export default function SkillsForm() {
 
   const handleBack = () => setStep((s) => Math.max(s - 1, 0));
 
-const handleSubmit = async () => {
-  try {
-    setSaving(true);
+  const handleSubmit = async () => {
+    try {
+      setSaving(true);
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("Not logged in");
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not logged in");
 
-    const payload = {
-      auth_user_id: user.id,
-      soft: softSkills.length ? softSkills : null,
-      technical: technicalSkills.length ? technicalSkills : null,
-    };
+      // Remove search-related fields before saving
+      const technicalSkillsForSave = technicalSkills.map(({ searchResults, activeSearch, ...skill }) => skill);
 
-    // 🔍 Check if a row already exists for this user
-    const { data: existing, error: fetchError } = await supabase
-      .from("skills")
-      .select("auth_user_id")
-      .eq("auth_user_id", user.id)
-      .maybeSingle();
+      const payload = {
+        auth_user_id: user.id,
+        soft: softSkills.length ? softSkills : null,
+        technical: technicalSkillsForSave.length ? technicalSkillsForSave : null,
+      };
 
-    if (fetchError && fetchError.code !== "PGRST116") throw fetchError;
-
-    let error;
-    if (existing) {
-      // ✅ Update existing record
-      const { error: updateError } = await supabase
+      // 🔍 Check if a row already exists for this user
+      const { data: existing, error: fetchError } = await supabase
         .from("skills")
-        .update({
-          soft: payload.soft,
-          technical: payload.technical,
-        })
-        .eq("auth_user_id", user.id);
+        .select("auth_user_id")
+        .eq("auth_user_id", user.id)
+        .maybeSingle();
 
-      error = updateError;
-    } else {
-      // ✅ Insert new record
-      const { error: insertError } = await supabase.from("skills").insert(payload);
-      error = insertError;
+      if (fetchError && fetchError.code !== "PGRST116") throw fetchError;
+
+      let error;
+      if (existing) {
+        // ✅ Update existing record
+        const { error: updateError } = await supabase
+          .from("skills")
+          .update({
+            soft: payload.soft,
+            technical: payload.technical,
+          })
+          .eq("auth_user_id", user.id);
+
+        error = updateError;
+      } else {
+        // ✅ Insert new record
+        const { error: insertError } = await supabase.from("skills").insert(payload);
+        error = insertError;
+      }
+
+      if (error) throw error;
+
+      // ✅ Refresh state
+      setDone(true);
+      await fetchExistingSkills();
+    } catch (err) {
+      console.error("Error saving skills:", err);
+      alert("Failed to save skills — please try again.");
+    } finally {
+      setSaving(false);
     }
-
-    if (error) throw error;
-
-    // ✅ Refresh state
-    setDone(true);
-    await fetchExistingSkills();
-  } catch (err) {
-    console.error("Error saving skills:", err);
-    alert("Failed to save skills — please try again.");
-  } finally {
-    setSaving(false);
-  }
-};
-
+  };
 
   if (loading) {
     return (
@@ -411,14 +442,18 @@ const handleSubmit = async () => {
                             value={skill.name} 
                             onChange={(ev) => {
                               updateTechnicalSkill(skill.id, { name: ev.target.value });
-                              searchTechnicalSkills(ev.target.value);
+                              searchTechnicalSkills(ev.target.value, skill.id);
+                            }}
+                            onBlur={() => {
+                              // Small delay to allow click on search results
+                              setTimeout(() => clearTechnicalSkillSearch(skill.id), 200);
                             }}
                             placeholder="Skill name (e.g. React, Python)"
                             className="w-full px-2 py-2 rounded-md bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none" 
                           />
-                          {activeTechnicalSearch && technicalSkillsSearchResults.length > 0 && (
+                          {skill.activeSearch && skill.searchResults && skill.searchResults.length > 0 && (
                             <div className="absolute z-10 top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-600 rounded-md shadow-lg max-h-60 overflow-y-auto">
-                              {technicalSkillsSearchResults.map((techSkill, index) => (
+                              {skill.searchResults.map((techSkill: { name: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; category: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; logo_url: string | Blob | undefined; }, index: React.Key | null | undefined) => (
                                 <button
                                   key={index}
                                   className="w-full px-3 py-2 text-left hover:bg-gray-700 text-sm border-b border-gray-600 last:border-b-0"
@@ -428,8 +463,7 @@ const handleSubmit = async () => {
                                       category: techSkill.category,
                                       logo_url: techSkill.logo_url 
                                     });
-                                    setTechnicalSkillsSearchResults([]);
-                                    setActiveTechnicalSearch(false);
+                                    clearTechnicalSkillSearch(skill.id);
                                   }}
                                 >
                                   <div className="flex items-center gap-2">

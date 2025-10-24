@@ -338,6 +338,8 @@ export interface SoftSkill {
 }
 
 export interface TechnicalSkill {
+  searchResults: any;
+  activeSearch: any;
   id: string;          // required when used in state
   name: string;
   category: string;
