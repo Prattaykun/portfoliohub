@@ -1,5 +1,6 @@
 // app/api/generate-resume/route.ts
 import { NextRequest, NextResponse } from 'next/server'
+import puppeteer from 'puppeteer'
 import { v2 as cloudinary } from 'cloudinary'
 
 // Configure Cloudinary
@@ -160,8 +161,8 @@ export async function POST(request: NextRequest) {
     // Generate HTML content for the resume
     const htmlContent = generateResumeHTML(profile, about, skills, projects, contact, langint)
 
-    // Generate PDF from HTML using Browserless API
-    const pdfBuffer = await generatePDFWithBrowserless(htmlContent)
+    // Generate PDF from HTML
+    const pdfBuffer = await generatePDF(htmlContent)
 
     // Upload PDF to Cloudinary
     const resumeUrl = await uploadToCloudinary(pdfBuffer)
@@ -170,10 +171,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Resume generation error:', error)
     return NextResponse.json(
-      { 
-        error: 'Failed to generate resume',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      },
+      { error: 'Failed to generate resume' },
       { status: 500 }
     )
   }
@@ -682,61 +680,36 @@ function formatDate(dateString: string): string {
   }
 }
 
-async function generatePDFWithBrowserless(htmlContent: string): Promise<Buffer> {
-  const BROWSERLESS_API_KEY = process.env.NEXT_PUBLIC_BROWSERLESS_API_KEY
-  
-  if (!BROWSERLESS_API_KEY) {
-    throw new Error('Browserless API key is not configured. Please check your environment variables.')
-  }
-
-  const url = `https://production-sfo.browserless.io/pdf?token=${BROWSERLESS_API_KEY}`;
-  const headers = {
-    "Cache-Control": "no-cache",
-    "Content-Type": "application/json"
-  };
-
-  const data = {
-    html: htmlContent,
-    options: {
-      displayHeaderFooter: false,
+async function generatePDF(htmlContent: string): Promise<Buffer> {
+  let browser
+  try {
+    browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    })
+    
+    const page = await browser.newPage()
+    
+    // Set the HTML content
+    await page.setContent(htmlContent, { waitUntil: 'networkidle0' })
+    
+    // Generate PDF
+    const pdfBuffer = await page.pdf({
+      format: 'A4',
       printBackground: true,
-      format: "A4",
       margin: {
         top: '15mm',
         right: '15mm',
         bottom: '15mm',
         left: '15mm'
       }
-    }
-  };
-
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify(data)
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Browserless API returned ${response.status}: ${errorText}`);
-    }
-
-    const pdfBuffer = await response.arrayBuffer();
+    })
     
-    // Verify it's a PDF by checking the file signature
-    const firstBytes = new Uint8Array(pdfBuffer.slice(0, 4));
-    const signature = String.fromCharCode(...firstBytes);
-    
-    if (signature !== '%PDF') {
-      throw new Error('Browserless did not return a valid PDF file');
+    return Buffer.from(pdfBuffer)
+  } finally {
+    if (browser) {
+      await browser.close()
     }
-
-    console.log("PDF received! Size:", pdfBuffer.byteLength);
-    return Buffer.from(pdfBuffer);
-  } catch (error) {
-    console.error('Browserless PDF generation failed:', error);
-    throw new Error(`PDF generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
@@ -750,15 +723,11 @@ async function uploadToCloudinary(pdfBuffer: Buffer): Promise<string> {
         public_id: `resume_${Date.now()}`,
       },
       (error, result) => {
-        if (error) {
-          console.error('Cloudinary upload error:', error);
-          reject(error);
-        } else {
-          resolve(result?.secure_url || '');
-        }
+        if (error) reject(error)
+        else resolve(result?.secure_url || '')
       }
-    );
+    )
     
-    uploadStream.end(pdfBuffer);
-  });
+    uploadStream.end(pdfBuffer)
+  })
 }

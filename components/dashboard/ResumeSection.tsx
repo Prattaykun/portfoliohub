@@ -151,7 +151,7 @@ const checkProfileCompleteness = async (): Promise<{ isComplete: boolean; missin
       // ✅ Include langint
       const payload = { profile, about, skills, projects, contact, langint }
 
-      const response = await fetch("/api/generate-resume", {
+      const response = await fetch(`/api/${process.env.NEXT_PUBLIC_GENERATE_RESUME_ENDPOINT}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
