@@ -29,7 +29,8 @@ The application provides a user-friendly dashboard for managing portfolio conten
 -   **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 -   **Animations**: [Framer Motion](https://www.framer.com/motion/)
 -   **File & Image Uploads**: [Cloudinary](https://cloudinary.com/)
--   **PDF Generation**: [Puppeteer](https://pptr.dev/)
+-   **PDF Generation**: [Puppeteer](https://pptr.dev/) & [Browserless](https://www.browserless.io/) (for deployment)
+
 -   **UI Components**: Lucide React, React Slick, React Datepicker
 
 ## Getting Started
@@ -79,6 +80,9 @@ NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=YOUR_CLOUDINARY_UPLOAD_PRESET
 # App URL (for OAuth callbacks and resume generation)
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
+NEXT_PUBLIC_BROWSERLESS_API_KEY= 
+#no need if you use next env variable as 'generate-resume1' as it will use #puppeteer, not browserless
+NEXT_PUBLIC_GENERATE_RESUME_ENDPOINT=generate-resume #generate-resume1 on local server
 ```
 
 ### 4. Set Up Supabase Backend
