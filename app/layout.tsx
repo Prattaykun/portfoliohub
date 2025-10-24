@@ -13,7 +13,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
+// Default metadata for non-user pages
+const defaultMetadata = {
   title: {
     default: "PortfolioHub",
     template: "%s | PortfolioHub",
@@ -24,29 +25,38 @@ export const metadata: Metadata = {
     shortcut: "/favicon.png",
     apple: "/favicon.png",
   },
-  openGraph: {
-    title: "PortfolioHub",
-    description: "Showcase your projects and skills with PortfolioHub, a modern portfolio platform.",
-    url: "https://your-domain.com/",
-    siteName: "PortfolioHub",
-    images: [
-      {
-        url: "/favicon.png",
-        width: 512,
-        height: 512,
-        alt: "PortfolioHub Logo",
-      },
-    ],
-    locale: "en_US",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "PortfolioHub",
-    description: "Showcase your projects and skills with PortfolioHub, a modern portfolio platform.",
-    images: ["/favicon.png"],
-  },
 };
+
+// Default Open Graph image (for non-user pages)
+const defaultOpenGraphImage = "https://res.cloudinary.com/dckndb9ux/image/upload/v1761344574/Screenshot_2025-10-24_212856_lt4hdq.png";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    ...defaultMetadata,
+    openGraph: {
+      title: "PortfolioHub",
+      description: defaultMetadata.description,
+      url: "https://your-domain.com/",
+      siteName: "PortfolioHub",
+      images: [
+        {
+          url: defaultOpenGraphImage,
+          width: 1200,
+          height: 630,
+          alt: "PortfolioHub - Showcase your projects and skills",
+        },
+      ],
+      locale: "en_US",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "PortfolioHub",
+      description: defaultMetadata.description,
+      images: [defaultOpenGraphImage],
+    },
+  };
+}
 
 export default function RootLayout({
   children,
