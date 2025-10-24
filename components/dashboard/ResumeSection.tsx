@@ -12,6 +12,7 @@ export default function ResumeSection({ user }: { user: any }) {
   const [uploading, setUploading] = useState(false)
   const [generating, setGenerating] = useState(false)
   const [message, setMessage] = useState("")
+  const [missingSections, setMissingSections] = useState<string[]>([])
 
   const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME!
   const UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!
@@ -34,6 +35,107 @@ export default function ResumeSection({ user }: { user: any }) {
     }
 
     if (data?.resume_url) setResumeUrl(data.resume_url)
+  }
+
+  const checkProfileCompleteness = async (): Promise<{ isComplete: boolean; missingSections: string[] }> => {
+    const missing: string[] = []
+
+    // Check user_profiles
+    const { data: profile, error: profileError } = await supabase
+      .from("user_profiles")
+      .select("*")
+      .eq("uid", user.id)
+      .single()
+
+    if (profileError || !profile) {
+      missing.push("Profile")
+    } else {
+      // Check essential profile fields
+      if (!profile.full_name || !profile.profession || !profile.email) {
+        missing.push("Profile (complete your name, profession, and email)")
+      }
+    }
+
+    // Check about
+    const { data: about, error: aboutError } = await supabase
+      .from("about")
+      .select("*")
+      .eq("auth_user_id", user.id)
+      .single()
+
+    if (aboutError || !about || !about.about) {
+      missing.push("About")
+    }
+
+    // Check skills
+    const { data: skills, error: skillsError } = await supabase
+      .from("skills")
+      .select("*")
+      .eq("auth_user_id", user.id)
+      .single()
+
+    if (skillsError || !skills) {
+      missing.push("Skills")
+    } else {
+      // Check if skills array is populated
+      if (!skills.skills || skills.skills.length === 0) {
+        missing.push("Skills (add at least one skill)")
+      }
+    }
+
+    // Check projects
+    const { data: projects, error: projectsError } = await supabase
+      .from("project")
+      .select("*")
+      .eq("id", user.id)
+      .single()
+
+    if (projectsError || !projects) {
+      missing.push("Projects")
+    } else {
+      // Check essential project fields
+      if (!projects.project_name || !projects.project_description) {
+        missing.push("Projects (add project name and description)")
+      }
+    }
+
+    // Check contact
+    const { data: contact, error: contactError } = await supabase
+      .from("contact")
+      .select("*")
+      .eq("auth_user_id", user.id)
+      .single()
+
+    if (contactError || !contact) {
+      missing.push("Contact")
+    } else {
+      // Check if at least one contact method is provided
+      if (!contact.email && !contact.phone && !contact.linkedin && !contact.github) {
+        missing.push("Contact (add at least one contact method)")
+      }
+    }
+
+    // Check langint (languages & interests)
+    const { data: langint, error: langintError } = await supabase
+      .from("langint")
+      .select("*")
+      .eq("auth_user_id", user.id)
+      .single()
+
+    if (langintError || !langint) {
+      missing.push("Languages & Interests")
+    } else {
+      // Check if at least one language or interest is provided
+      if ((!langint.languages || langint.languages.length === 0) && 
+          (!langint.interests || langint.interests.length === 0)) {
+        missing.push("Languages & Interests (add at least one language or interest)")
+      }
+    }
+
+    return {
+      isComplete: missing.length === 0,
+      missingSections: missing
+    }
   }
 
   const saveResumeToDB = async (url: string) => {
@@ -80,53 +182,61 @@ export default function ResumeSection({ user }: { user: any }) {
     }
   }
 
-const generateResume = async () => {
-  setGenerating(true)
-  setMessage("")
+  const generateResume = async () => {
+    setGenerating(true)
+    setMessage("")
 
-  try {
-    // ✅ Fetch all data from Supabase directly on client side
-const [
-  { data: profile },
-  { data: about },
-  { data: skills },
-  { data: projects },
-  { data: contact },
-  { data: langint }
-] = await Promise.all([
-  supabase.from("user_profiles").select("*").eq("uid", user.id).single(),
-  supabase.from("about").select("*").eq("auth_user_id", user.id).single(),
-  supabase.from("skills").select("*").eq("auth_user_id", user.id).single(),
-  supabase.from("project").select("*").eq("id", user.id).single(),
-  supabase.from("contact").select("*").eq("auth_user_id", user.id).single(),
-  supabase.from("langint").select("*").eq("auth_user_id", user.id).single(),
-])
+    try {
+      // First check if profile is complete
+      const completenessCheck = await checkProfileCompleteness()
+      
+      if (!completenessCheck.isComplete) {
+        setMissingSections(completenessCheck.missingSections)
+        setMessage("Please complete all sections of your profile before generating a resume.")
+        return
+      }
 
-if (!profile || !about || !contact) throw new Error("Incomplete data for resume generation")
+      // ✅ Fetch all data from Supabase directly on client side
+      const [
+        { data: profile },
+        { data: about },
+        { data: skills },
+        { data: projects },
+        { data: contact },
+        { data: langint }
+      ] = await Promise.all([
+        supabase.from("user_profiles").select("*").eq("uid", user.id).single(),
+        supabase.from("about").select("*").eq("auth_user_id", user.id).single(),
+        supabase.from("skills").select("*").eq("auth_user_id", user.id).single(),
+        supabase.from("project").select("*").eq("id", user.id).single(),
+        supabase.from("contact").select("*").eq("auth_user_id", user.id).single(),
+        supabase.from("langint").select("*").eq("auth_user_id", user.id).single(),
+      ])
 
-// ✅ Include langint
-const payload = { profile, about, skills, projects, contact, langint }
+      if (!profile || !about || !contact) throw new Error("Incomplete data for resume generation")
 
+      // ✅ Include langint
+      const payload = { profile, about, skills, projects, contact, langint }
 
-    const response = await fetch("/api/generate-resume", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    })
+      const response = await fetch("/api/generate-resume", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
 
-    const data = await response.json()
-    if (!response.ok || !data.resumeUrl) throw new Error(data.error || "Generation failed")
+      const data = await response.json()
+      if (!response.ok || !data.resumeUrl) throw new Error(data.error || "Generation failed")
 
-    await saveResumeToDB(data.resumeUrl)
-    setMessage("Resume generated successfully!")
-  } catch (err) {
-    console.error(err)
-    setMessage("Error generating resume")
-  } finally {
-    setGenerating(false)
+      await saveResumeToDB(data.resumeUrl)
+      setMessage("Resume generated successfully!")
+      setMissingSections([]) // Clear missing sections on success
+    } catch (err) {
+      console.error(err)
+      setMessage("Error generating resume")
+    } finally {
+      setGenerating(false)
+    }
   }
-}
-
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
@@ -181,6 +291,24 @@ const payload = { profile, about, skills, projects, contact, langint }
         <p className="text-gray-600 mb-4">
           Generate a professional resume from your portfolio data.
         </p>
+        
+        {/* Missing Sections Warning */}
+        {missingSections.length > 0 && (
+          <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <h4 className="font-semibold text-yellow-800 mb-2">
+              Complete your profile to generate resume
+            </h4>
+            <ul className="list-disc list-inside text-yellow-700 text-sm">
+              {missingSections.map((section, index) => (
+                <li key={index}>{section}</li>
+              ))}
+            </ul>
+            <p className="text-yellow-600 text-sm mt-2">
+              Please go to your dashboard and fill out all the required sections.
+            </p>
+          </div>
+        )}
+
         <button
           onClick={generateResume}
           disabled={generating}
@@ -219,7 +347,9 @@ const payload = { profile, about, skills, projects, contact, langint }
       {message && (
         <p
           className={`mt-4 text-sm ${
-            message.includes("Error") ? "text-red-600" : "text-green-600"
+            message.includes("Error") || message.includes("complete") 
+              ? "text-red-600" 
+              : "text-green-600"
           }`}
         >
           {message}

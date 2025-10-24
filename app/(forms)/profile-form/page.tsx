@@ -67,6 +67,7 @@ export default function ProfileChatForm() {
   const [selectedDate, setSelectedDate] = useState<ProfileFormState["selectedDate"]>(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
+  const [hasInitializedInput, setHasInitializedInput] = useState(false);
 
   const current = questions[step];
   const isLast = step === questions.length - 1;
@@ -87,7 +88,7 @@ export default function ProfileChatForm() {
           .eq("uid", user.id)
           .single();
 
-        if (error && error.code !== 'PGRST116') { // PGRST116 is "not found"
+        if (error && error.code !== 'PGRST116') {
           console.error("Error fetching profile:", error);
         }
 
@@ -95,7 +96,6 @@ export default function ProfileChatForm() {
           setAnswers(data);
           setIsEditing(true);
           
-          // Pre-fill date if exists
           if (data.date_of_birth) {
             const [year, month, day] = data.date_of_birth.split('-').map(Number);
             setSelectedDate(new Date(year, month - 1, day));
@@ -111,14 +111,20 @@ export default function ProfileChatForm() {
     fetchUserProfile();
   }, [router]);
 
-  // Pre-fill input when step changes and answer exists
+  // Initialize input only once when the step changes and we have current question data
   useEffect(() => {
-    if (current && answers[current.key] && current.type !== 'date' && current.type !== 'image') {
-      setInput(answers[current.key]);
-    } else if (current && !answers[current.key]) {
-      setInput("");
+    if (current && !hasInitializedInput) {
+      if (current.type !== 'date' && current.type !== 'image' && answers[current.key]) {
+        setInput(answers[current.key]);
+      }
+      setHasInitializedInput(true);
     }
-  }, [current, answers]);
+  }, [current, answers, hasInitializedInput]);
+
+  // Reset initialization flag when step changes
+  useEffect(() => {
+    setHasInitializedInput(false);
+  }, [step]);
 
   const handleNext = async (value: string) => {
     if (!value && !answers[current.key]) return;
@@ -128,6 +134,7 @@ export default function ProfileChatForm() {
     setAnswers(updated);
     setInput("");
     setSelectedDate(null);
+    setHasInitializedInput(false);
     
     if (!isLast) {
       setStep(step + 1);
@@ -137,7 +144,10 @@ export default function ProfileChatForm() {
   };
 
   const handleBack = () => {
-    if (step > 0) setStep(step - 1);
+    if (step > 0) {
+      setStep(step - 1);
+      setHasInitializedInput(false);
+    }
   };
 
   const handleSubmit = async (finalAnswers: Record<string, string>) => {
@@ -160,11 +170,11 @@ export default function ProfileChatForm() {
     }
   };
 
-  // Skip to next if current field already has data and user wants to keep it
   const handleSkip = () => {
     if (answers[current.key]) {
       if (!isLast) {
         setStep(step + 1);
+        setHasInitializedInput(false);
       } else {
         handleSubmit(answers);
       }
@@ -358,12 +368,13 @@ export default function ProfileChatForm() {
                       placeholder={answers[current.key] || current.placeholder}
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && handleNext(input)}
+                      onKeyDown={(e) => e.key === "Enter" && input.trim() && handleNext(input)}
                     />
                     <div className="flex gap-2">
                       <button
-                        onClick={() => handleNext(input)}
-                        className="px-5 py-2 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 hover:scale-105 transition-transform font-semibold"
+                        onClick={() => input.trim() && handleNext(input)}
+                        className="px-5 py-2 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 hover:scale-105 transition-transform font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={!input.trim() && !answers[current.key]}
                       >
                         {isLast ? "Save" : "Next"}
                       </button>

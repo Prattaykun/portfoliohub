@@ -3,18 +3,57 @@
 
 import React, { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabaseClient'
+import { useRouter } from 'next/navigation'
 import AuthTabs from '@/components/AuthTabs'
 
 export default function AuthPage() {
-  // if you want to auto-redirect logged-in users, check session here
+  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(true)
+
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) {
-        // TODO: redirect to dashboard
-        // useRouter().push('/dashboard')
+    // Check for existing session and redirect if user is already logged in
+    const checkSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        
+        if (session) {
+          // User is already logged in, redirect to dashboard
+          router.push('/')
+        }
+      } catch (error) {
+        console.error('Error checking session:', error)
+      } finally {
+        setIsLoading(false)
       }
-    })
-  }, [])
+    }
+
+    checkSession()
+
+    // Listen for auth state changes (for OAuth, magic link, etc.)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === 'SIGNED_IN' && session) {
+          // User just signed in, redirect to dashboard
+          router.push('/')
+        }
+      }
+    )
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [router])
+
+  // Show loading state while checking session
+  if (isLoading) {
+    return (
+      <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#1f2b6c] via-[#2a8f8f] to-[#4e3a7b] p-6">
+        <div className="w-full max-w-3xl bg-white/6 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden border border-white/10 p-8 text-center">
+          <div className="text-white text-lg">Loading...</div>
+        </div>
+      </main>
+    )
+  }
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#1f2b6c] via-[#2a8f8f] to-[#4e3a7b] p-6">

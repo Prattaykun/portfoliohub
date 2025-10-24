@@ -72,9 +72,11 @@ export default function Navbar() {
         <Link href="/contact" className="hover:text-white transition-colors">Contact</Link> */}
         {user ? (
           <>
-            <span className="w-9 h-9 flex items-center justify-center rounded-full bg-gradient-to-r from-green-400 to-blue-500 text-black font-bold uppercase">
-              {username ? username[0] : user.email?.[0]}
-            </span>
+            <Link href="/dashboard" className="inline-block">
+              <span className="w-9 h-9 flex items-center justify-center rounded-full bg-gradient-to-r from-green-400 to-blue-500 text-black font-bold uppercase">
+                {username ? username[0] : user.email?.[0]}
+              </span>
+            </Link>
             <button
               onClick={handleLogout}
               className="ml-3 text-sm text-zinc-400 hover:text-white"
