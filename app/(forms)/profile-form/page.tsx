@@ -6,12 +6,18 @@ import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { CldUploadWidget } from "next-cloudinary";
+import type {
+  ProfileQuestion,
+  UserProfile,
+  ProfileFormState,
+  CloudinaryUploadResultInfo,
+} from "@/util/types";
+import { CldUploadWidget, type CloudinaryUploadWidgetResults } from "next-cloudinary";
 
 export default function ProfileChatForm() {
   const router = useRouter();
 
-  const questions = [
+  const questions: ProfileQuestion[] = [
     {
       key: "full_name",
       question: "Hey there 👋 What's your full name?",
@@ -58,7 +64,7 @@ export default function ProfileChatForm() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [input, setInput] = useState("");
   const [done, setDone] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedDate, setSelectedDate] = useState<ProfileFormState["selectedDate"]>(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -252,9 +258,10 @@ export default function ProfileChatForm() {
                       cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME!,
                       folder: "profile_photos",
                     }}
-                    onSuccess={(result: any) => {
-                      if (result?.info?.secure_url) {
-                        const url = result.info.secure_url;
+                    onSuccess={(result: CloudinaryUploadWidgetResults) => {
+                       const info = result?.info as CloudinaryUploadResultInfo | undefined;
+                      if (info?.secure_url) {
+                        const url = info.secure_url;
                         setAnswers((prev) => ({ ...prev, photo_url: url }));
                       }
                     }}

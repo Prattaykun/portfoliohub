@@ -2,24 +2,25 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { CldUploadWidget } from "next-cloudinary";
 import { supabase } from "@/lib/supabaseClient";
 import debounce from 'lodash/debounce';
+import { SoftSkill, TechnicalSkill, SkillsData } from "@/util/types";
 
 export default function SkillsForm() {
   const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [softSkills, setSoftSkills] = useState<string[]>([]);
-  const [technicalSkills, setTechnicalSkills] = useState<any[]>([]);
+  const [technicalSkills, setTechnicalSkills] = useState<TechnicalSkill[]>([]);
   const [input, setInput] = useState("");
   const [done, setDone] = useState(false);
   const [existingSkillsId, setExistingSkillsId] = useState<string | null>(null);
 
   // Search states
-  const [softSkillsSearchResults, setSoftSkillsSearchResults] = useState<any[]>([]);
-  const [technicalSkillsSearchResults, setTechnicalSkillsSearchResults] = useState<any[]>([]);
+  const [softSkillsSearchResults, setSoftSkillsSearchResults] = useState<SoftSkill[]>([]);
+  const [technicalSkillsSearchResults, setTechnicalSkillsSearchResults] = useState<TechnicalSkill[]>([]);
   const [activeSoftSearch, setActiveSoftSearch] = useState(false);
   const [activeTechnicalSearch, setActiveTechnicalSearch] = useState(false);
 
@@ -144,7 +145,13 @@ export default function SkillsForm() {
           .limit(10);
 
         if (error) throw error;
-        setTechnicalSkillsSearchResults(data || []);
+        const results = (data || []).map((d: any) => ({
+          id: d.id ?? Math.random().toString(36).slice(2),
+          name: d.name,
+          category: d.category,
+          logo_url: d.logo_url,
+        })) as TechnicalSkill[];
+        setTechnicalSkillsSearchResults(results);
         setActiveTechnicalSearch(true);
       } catch (error) {
         console.error("Error searching technical skills:", error);

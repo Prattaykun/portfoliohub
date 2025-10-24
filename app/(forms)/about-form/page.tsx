@@ -2,10 +2,18 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
-import { CldUploadWidget } from "next-cloudinary";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { CldUploadWidget, type CloudinaryUploadWidgetResults } from "next-cloudinary";
 import { supabase } from "@/lib/supabaseClient";
 import debounce from 'lodash/debounce';
+import { 
+  EducationEntry, 
+  ExperienceEntry, 
+  SchoolSearchResult, 
+  CompanySearchResult,
+  CloudinaryUploadResultInfo
+} from '@/util/types';
 
 export default function AboutForm() {
   const [step, setStep] = useState(0);
@@ -13,14 +21,14 @@ export default function AboutForm() {
   const [loading, setLoading] = useState(true);
   const [roles, setRoles] = useState<string[]>([]);
   const [bio, setBio] = useState("");
-  const [education, setEducation] = useState<any[]>([]);
-  const [experience, setExperience] = useState<any[]>([]);
+  const [education, setEducation] = useState<EducationEntry[]>([]);
+  const [experience, setExperience] = useState<ExperienceEntry[]>([]);
   const [input, setInput] = useState("");
   const [done, setDone] = useState(false);
 
   // Search states
-  const [schoolSearchResults, setSchoolSearchResults] = useState<any[]>([]);
-  const [companySearchResults, setCompanySearchResults] = useState<any[]>([]);
+  const [schoolSearchResults, setSchoolSearchResults] = useState<SchoolSearchResult[]>([]);
+  const [companySearchResults, setCompanySearchResults] = useState<CompanySearchResult[]>([]);
   const [activeSchoolSearchId, setActiveSchoolSearchId] = useState<string | null>(null);
   const [activeCompanySearchId, setActiveCompanySearchId] = useState<string | null>(null);
 
@@ -41,7 +49,7 @@ export default function AboutForm() {
     fetchExistingData();
   }, []);
 
-  const fetchExistingData = async () => {
+  const fetchExistingData = async (): Promise<void> => {
     try {
       setLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
@@ -77,7 +85,7 @@ export default function AboutForm() {
   };
 
   // Resume-based examples (from attached resume)
-  const eduExamples = [
+  const eduExamples: Partial<EducationEntry>[] = [
     {
       level: "Graduation",
       degree: "B.Tech (Electronics & Communication Engineering)",
@@ -108,7 +116,7 @@ export default function AboutForm() {
     },
   ];
 
-  const expExamples = [
+  const expExamples: Partial<ExperienceEntry>[] = [
     {
       title: "Frontend Engineer Intern",
       company: "TechInnovate Solutions",
@@ -142,7 +150,7 @@ export default function AboutForm() {
 
   // Debounced search functions
   const searchSchools = useCallback(
-    debounce(async (query: string, educationId: string) => {
+    debounce(async (query: string, educationId: string): Promise<void> => {
       if (!query || query.length < 2) {
         setSchoolSearchResults([]);
         return;
@@ -167,7 +175,7 @@ export default function AboutForm() {
   );
 
   const searchCompanies = useCallback(
-    debounce(async (query: string, experienceId: string) => {
+    debounce(async (query: string, experienceId: string): Promise<void> => {
       if (!query || query.length < 2) {
         setCompanySearchResults([]);
         return;
@@ -192,7 +200,7 @@ export default function AboutForm() {
   );
 
   // Update favicon when domain changes
-  const updateFaviconFromDomain = useCallback((domain: string, id: string, isEducation: boolean) => {
+  const updateFaviconFromDomain = useCallback((domain: string, id: string, isEducation: boolean): void => {
     if (!domain) return;
 
     try {
@@ -215,7 +223,7 @@ export default function AboutForm() {
   }, []);
 
   // helpers for education
-  const makeEducation = (seed?: any) => ({
+  const makeEducation = (seed?: Partial<EducationEntry>): EducationEntry => ({
     id: Math.random().toString(36).slice(2),
     level: seed?.level ?? "Graduation",
     degree: seed?.degree ?? "Degree name",
@@ -229,13 +237,13 @@ export default function AboutForm() {
     gradeScale: seed?.gradeScale ?? "100",
   });
 
-  const addEducation = (seed?: any) => setEducation((s) => [...s, makeEducation(seed)]);
-  const updateEducation = (id: string, patch: any) =>
+  const addEducation = (seed?: Partial<EducationEntry>): void => setEducation((s) => [...s, makeEducation(seed)]);
+  const updateEducation = (id: string, patch: Partial<EducationEntry>): void =>
     setEducation((s) => s.map((e) => (e.id === id ? { ...e, ...patch } : e)));
-  const removeEducation = (id: string) => setEducation((s) => s.filter((e) => e.id !== id));
+  const removeEducation = (id: string): void => setEducation((s) => s.filter((e) => e.id !== id));
 
   // helpers for experience
-  const makeExperience = (seed?: any) => ({
+  const makeExperience = (seed?: Partial<ExperienceEntry>): ExperienceEntry => ({
     id: Math.random().toString(36).slice(2),
     title: seed?.title ?? "Role title",
     company: seed?.company ?? "Company / Project",
@@ -249,12 +257,12 @@ export default function AboutForm() {
     description: seed?.description ?? "",
   });
 
-  const addExperience = (seed?: any) => setExperience((s) => [...s, makeExperience(seed)]);
-  const updateExperience = (id: string, patch: any) =>
+  const addExperience = (seed?: Partial<ExperienceEntry>): void => setExperience((s) => [...s, makeExperience(seed)]);
+  const updateExperience = (id: string, patch: Partial<ExperienceEntry>): void =>
     setExperience((s) => s.map((e) => (e.id === id ? { ...e, ...patch } : e)));
-  const removeExperience = (id: string) => setExperience((s) => s.filter((e) => e.id !== id));
+  const removeExperience = (id: string): void => setExperience((s) => s.filter((e) => e.id !== id));
 
-  const handleNext = async () => {
+  const handleNext = async (): Promise<void> => {
     if (current.type === "education" && education.length === 0) {
       // add a default row if none
       addEducation();
@@ -265,9 +273,9 @@ export default function AboutForm() {
     else setStep((s) => s + 1);
   };
 
-  const handleBack = () => setStep((s) => Math.max(s - 1, 0));
+  const handleBack = (): void => setStep((s) => Math.max(s - 1, 0));
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (): Promise<void> => {
     try {
       setSaving(true);
       const {
@@ -310,7 +318,7 @@ export default function AboutForm() {
     "Cloud Architect",
   ];
 
-  const addRole = (r: string) => {
+  const addRole = (r: string): void => {
     if (!r) return;
     setRoles((prev) => Array.from(new Set([...prev, r])));
     setInput("");
@@ -328,7 +336,7 @@ export default function AboutForm() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-tr from-green-900 via-blue-900 to-purple-900 text-white px-4 py-10">
+    <div className="min-h-screen flex flex-col pt-30 items-center justify-center bg-gradient-to-tr from-green-900 via-blue-900 to-purple-900 text-white px-4 py-10">
       <motion.div
         key={current.key}
         initial={{ opacity: 0, y: 20 }}
@@ -454,7 +462,7 @@ export default function AboutForm() {
                       <div className="flex justify-between items-start">
                         <div className="flex items-center gap-2">
                           {e.logo && (
-                            <img src={e.logo} alt="Logo" className="w-6 h-6 rounded" />
+                            <Image src={e.logo} alt="Logo" width={24} height={24} className="w-6 h-6 rounded" />
                           )}
                           <strong className="text-sm">{e.level} — {e.degree}</strong>
                         </div>
@@ -565,12 +573,12 @@ export default function AboutForm() {
                           </button>
                           <div className="flex gap-2 items-center">
                             {e.logo && (
-                              <img src={e.logo} alt="Logo" className="w-6 h-6 rounded" />
+                              <Image src={e.logo} alt="Logo" width={24} height={24} className="w-6 h-6 rounded" />
                             )}
                             <CldUploadWidget
                               uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!}
                               options={{ multiple: false, folder: "education_logos" }}
-                              onSuccess={(res: any) => {
+                              onSuccess={(res: CloudinaryUploadResultInfo) => {
                                 if (res?.info?.secure_url) updateEducation(e.id, { logo: res.info.secure_url });
                               }}
                             >
@@ -620,7 +628,7 @@ export default function AboutForm() {
                       <div className="flex justify-between items-start">
                         <div className="flex items-center gap-2">
                           {ex.logo && (
-                            <img src={ex.logo} alt="Logo" className="w-6 h-6 rounded" />
+                            <Image src={ex.logo} alt="Logo" width={24} height={24} className="w-6 h-6 rounded" />
                           )}
                           <div>
                             <strong className="text-sm">{ex.title}</strong>
@@ -653,14 +661,14 @@ export default function AboutForm() {
                                   key={index}
                                   className="w-full px-3 py-2 text-left hover:bg-gray-700 text-sm border-b border-gray-600 last:border-b-0"
                                   onClick={() => {
-                                    updateExperience(ex.id, { company: company['Company_name'] });
+                                    updateExperience(ex.id, { company: company.Company_name });
                                     setCompanySearchResults([]);
                                     setActiveCompanySearchId(null);
                                   }}
                                 >
-                                  <div className="font-medium">{company['Company_name']}</div>
-                                  {company['Description'] && (
-                                    <div className="text-xs text-gray-400 truncate">{company['Description']}</div>
+                                  <div className="font-medium">{company.Company_name}</div>
+                                  {company.Description && (
+                                    <div className="text-xs text-gray-400 truncate">{company.Description}</div>
                                   )}
                                 </button>
                               ))}
@@ -717,7 +725,7 @@ export default function AboutForm() {
 
                           <div className="flex gap-4 items-center">
                             {ex.logo && (
-                              <img src={ex.logo} alt="Logo" className="w-6 h-6 rounded" />
+                              <Image src={ex.logo} alt="Logo" width={24} height={24} className="w-6 h-6 rounded" />
                             )}
                             <div className="flex flex-col gap-2">
                               <div className="flex gap-2 items-center">
@@ -725,7 +733,7 @@ export default function AboutForm() {
                                 <CldUploadWidget
                                   uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!}
                                   options={{ multiple: false, folder: "company_logos" }}
-                                  onSuccess={(res: any) => {
+                                  onSuccess={(res: CloudinaryUploadResultInfo) => {
                                     if (res?.info?.secure_url) updateExperience(ex.id, { logo: res.info.secure_url });
                                   }}
                                 >
@@ -742,7 +750,7 @@ export default function AboutForm() {
                                 <CldUploadWidget
                                   uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!}
                                   options={{ multiple: false, folder: "offer_letters", resourceType: "auto" }}
-                                  onSuccess={(res: any) => {
+                                  onSuccess={(res: CloudinaryUploadResultInfo) => {
                                     if (res?.info?.secure_url) updateExperience(ex.id, { offerLetter: res.info.secure_url });
                                   }}
                                 >

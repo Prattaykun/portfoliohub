@@ -10,22 +10,132 @@ import Link from "next/link";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import AnimatedName from "@/components/AnimatedName";
+import TypingRoles from "@/components/TypingRoles";
+import "./portfolio.css"; // Import the CSS file
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-interface UserData {
-  profile: any;
-  about: any;
-  skills: any;
-  projects: any;
-  contact: any;
-  langint: any;
-  resume: any;
+// Type definitions
+interface Education {
+  id: string;
+  institution: string;
+  degree: string;
+  startYear: string;
+  endYear: string;
+  pursuing: boolean;
+  grade: string;
+  gradeScale: string;
+  level: string;
+  logo?: string;
 }
 
+interface Experience {
+  id: string;
+  company: string;
+  companyUrl?: string;
+  title: string;
+  start: string;
+  end: string;
+  present: boolean;
+  description: string;
+  logo?: string;
+  skills: string[];
+}
+
+interface AboutData {
+  bio?: string;
+  roles?: string[];
+  education?: Education[];
+  experience?: Experience[];
+}
+
+interface Skill {
+  id: string;
+  name: string;
+  logo_url?: string;
+}
+
+interface SkillsData {
+  technical?: Skill[];
+  soft?: string[];
+}
+
+interface ProjectMedia {
+  type: "image" | "video" | "deployment";
+  url: string;
+}
+
+interface ProjectTech {
+  name: string;
+  logo_url?: string;
+}
+
+interface Project {
+  id: string;
+  title: string;
+  role: string;
+  overview: string;
+  process?: string;
+  results?: string;
+  techStack: ProjectTech[];
+  repoLink?: string;
+  media: ProjectMedia[];
+}
+
+interface ProjectsData {
+  projects: Project[];
+}
+
+interface ContactLink {
+  id: string;
+  name: string;
+  url: string;
+  logo_url?: string;
+}
+
+interface ContactData {
+  email?: string;
+  phone?: string;
+  address?: string;
+  linkedin?: string;
+  github?: string;
+  other_links?: ContactLink[];
+}
+
+interface Language {
+  id: string;
+  name: string;
+  proficiency: "Beginner" | "Elementary" | "Intermediate" | "Advanced" | "Fluent" | "Native";
+}
+
+interface LangIntData {
+  language?: Language[];
+  interest?: string[];
+}
+
+interface ResumeData {
+  resume_url?: string;
+}
+
+interface ProfileData {
+  uid: string;
+  full_name: string;
+  photo_url?: string;
+}
+
+interface UserData {
+  profile: ProfileData;
+  about: AboutData | null;
+  skills: SkillsData | null;
+  projects: ProjectsData | null;
+  contact: ContactData | null;
+  langint: LangIntData | null;
+  resume: ResumeData | null;
+}
 export default function PortfolioPage() {
   const params = useParams();
   const username = params.username as string;
@@ -127,7 +237,6 @@ export default function PortfolioPage() {
 
   const handleDownloadResume = () => {
     if (userData?.resume?.resume_url) {
-      // Create a temporary anchor element to trigger download
       const link = document.createElement('a');
       link.href = userData.resume.resume_url;
       link.download = `Resume_${userData.profile.full_name.replace(/\s+/g, '_')}.pdf`;
@@ -158,7 +267,7 @@ export default function PortfolioPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white relative overflow-hidden">
-      {/* Particles Background - Updated to match home page usage */}
+      {/* Particles Background */}
       <Particles 
         className="absolute inset-0 z-0 opacity-60 pointer-events-none" 
         quantity={80} 
@@ -167,40 +276,39 @@ export default function PortfolioPage() {
       {/* Main Content */}
       <div className="relative pt-30 z-10">
         {/* Hero Section */}
-        <section className="min-h-screen flex items-center justify-center px-4 pt-20">
-          <div className="max-w-6xl mx-auto text-center">
-            <div className="relative inline-block mb-8 animate-fade-in">
-              {profile.photo_url && (
-                <div className="relative">
-                  <Image
-                    src={profile.photo_url}
-                    alt={profile.full_name}
-                    width={200}
-                    height={200}
-                    className="rounded-full border-4 border-purple-400 shadow-2xl shadow-purple-500/50 mx-auto hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 opacity-20 blur-lg animate-pulse"></div>
-                </div>
-              )}
-            </div>
-            
-            <h1 className="text-5xl md:text-7xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent animate-fade-in">
-              {profile.full_name}
-            </h1>
-            
-            <div className="text-xl md:text-2xl text-gray-300 mb-8 animate-slide-up">
-              {about?.roles?.map((role: string, index: number) => (
-                <span key={role} className="inline-block mr-4 last:mr-0">
-                  {role}
-                </span>
-              ))}
-            </div>
+     
+<section className="min-h-screen flex items-center justify-center  px-4 pt-20 portfolio-mobile-padding">
+  <div className="max-w-6xl mx-auto text-center">
+  <div className="flex justify-center items-center pb-12 mb-8 animate-fade-in">
+  {profile.photo_url && (
+    <div className="relative">
+      <Image
+        src={profile.photo_url}
+        alt={profile.full_name}
+        width={200}
+        height={200}
+        className="rounded-full border-4 border-purple-400 shadow-2xl shadow-purple-500/50 hover:scale-105 transition-transform duration-300 hover-lift"
+      />
+      {/* Static glow */}
+      <div className="profile-photo-glow"></div>
+    </div>
+  )}
+</div>
+    
+    {/* Animated Name Component */}
+    <AnimatedName name={profile.full_name} />
+    
+    {/* Typing Roles Component */}
+    {about?.roles && about.roles.length > 0 && (
+      <TypingRoles roles={about.roles} />
+    )}
 
-            <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-12 animate-fade-in-delay">
-              {about?.bio}
-            </p>
+    <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-12 animate-fade-in-delay portfolio-mobile-text">
+      {about?.bio}
+    </p>
 
-            {/* Resume Download Button - Added in Hero Section */}
+    
+            {/* Resume Download Button */}
             {resume?.resume_url && (
               <div className="flex justify-center mb-8 animate-slide-up-delay">
                 <button
@@ -224,7 +332,6 @@ export default function PortfolioPage() {
                     <span>Download Resume</span>
                   </div>
                   
-                  {/* Animated background effect */}
                   <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-400 to-pink-400 opacity-0 group-hover:opacity-20 blur-md transition-opacity duration-300 -z-10"></div>
                 </button>
               </div>
@@ -261,8 +368,7 @@ export default function PortfolioPage() {
                 </Link>
               )}
 
-              {/* Other Links */}
-              {contact?.other_links && contact.other_links.map((link: any) => (
+              {contact?.other_links && contact.other_links.map((link: ContactLink) => (
                 <Link key={link.id} href={link.url} target="_blank" className="group">
                   <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg hover:bg-white/20 transition-all duration-300">
                     <Image
@@ -279,6 +385,7 @@ export default function PortfolioPage() {
             </div>
           </div>
         </section>
+
 
         {/* Education Section */}
         {about?.education && about.education.length > 0 && (

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabaseClient";
+import type { OtherLink, ContactData, CountryCode, ContactPayload } from "@/util/types";
 
 // Country codes data
 const countryCodes = [
@@ -72,10 +73,10 @@ export default function ContactForm() {
   const [linkedin, setLinkedin] = useState("");
   const [github, setGithub] = useState("");
   const [phone, setPhone] = useState("");
-  const [countryCode, setCountryCode] = useState("+91");
   const [address, setAddress] = useState("");
-  const [otherLinks, setOtherLinks] = useState<any[]>([]);
   const [input, setInput] = useState("");
+  const [otherLinks, setOtherLinks] = useState<OtherLink[]>([]);
+const [countryCode, setCountryCode] = useState<CountryCode["code"]>("+91");
 
   const questions = [
     { key: "contact", title: "📞 Add your contact information", type: "contact" },
@@ -292,7 +293,7 @@ export default function ContactForm() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-tr from-green-900 via-blue-900 to-purple-900 text-white px-4 py-10">
+    <div className="min-h-screen flex pt-30 flex-col items-center justify-center bg-gradient-to-tr from-green-900 via-blue-900 to-purple-900 text-white px-4 py-10">
       <motion.div
         key={current.key}
         initial={{ opacity: 0, y: 20 }}

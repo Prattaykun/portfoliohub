@@ -2,21 +2,29 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { CldUploadWidget } from "next-cloudinary";
 import { supabase } from "@/lib/supabaseClient";
 import debounce from 'lodash/debounce';
+import type {
+  ProjectItem,
+  ProjectMedia,
+  ProjectQuestion,
+  ProjectExample,
+  TechItem,
+  CloudinaryUploadInfo,
+} from "@/util/types";
 
 export default function ProjectForm() {
   const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [projects, setProjects] = useState<any[]>([]);
+  const [projects, setProjects] = useState<ProjectItem[]>([]);
   const [input, setInput] = useState("");
   const [done, setDone] = useState(false);
 
   // Search states for tech stack
-  const [techSearchResults, setTechSearchResults] = useState<any[]>([]);
+  const [techSearchResults, setTechSearchResults] = useState<TechItem[]>([]);
   const [activeTechSearchId, setActiveTechSearchId] = useState<string | null>(null);
   const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
 
@@ -226,9 +234,15 @@ export default function ProjectForm() {
 
   // Media management
   const addMedia = (projectId: string, type: string = "image") => {
+    const newMedia: ProjectMedia = {
+      id: Math.random().toString(36).slice(2),
+      type: type as ProjectMedia["type"],
+      url: ""
+    };
+
     setProjects((s) => s.map((p) => 
       p.id === projectId 
-        ? { ...p, media: [...p.media, { id: Math.random().toString(36).slice(2), type, url: "" }] }
+        ? { ...p, media: [...p.media, newMedia] }
         : p
     ));
   };
@@ -270,6 +284,7 @@ export default function ProjectForm() {
             ).map(name => 
               [...p.techStack, newTech].find(tech => tech.name === name)
             )
+              .filter((tech): tech is TechItem => tech !== undefined)
           }
         : p
     ));
@@ -499,7 +514,7 @@ export default function ProjectForm() {
                                                 new Set([...p.techStack, skill].map(tech => tech.name))
                                               ).map(name => 
                                                 [...p.techStack, skill].find(tech => tech.name === name)
-                                              )
+                                              )   .filter((tech): tech is TechItem => tech !== undefined)
                                             }
                                           : p
                                       ));
