@@ -9,37 +9,62 @@ const supabaseAdmin = createClient(url, serviceKey)
 
 export async function POST(req: Request) {
   const { identifier } = await req.json()
-  if (!identifier) return NextResponse.json({ error: 'missing identifier' }, { status: 400 })
+  
+  if (!identifier) {
+    return NextResponse.json({ error: 'Email or username is required' }, { status: 400 })
+  }
 
   try {
     let email = identifier
+    
+    // If identifier doesn't look like an email, treat it as username
     if (!identifier.includes('@')) {
-      // resolve username -> email
+      console.log('Looking up email for username:', identifier)
+      
       const { data, error } = await supabaseAdmin
         .from('users_usernames')
         .select('email')
-        .eq('username', identifier)
+        .eq('username', identifier.toLowerCase().trim())
         .limit(1)
         .single()
 
       if (error || !data?.email) {
-        return NextResponse.json({ error: 'Email not found for provided username' }, { status: 404 })
+        console.log('Username not found:', identifier)
+        // Don't reveal whether username exists for security
+        return NextResponse.json({ 
+          message: 'If an account exists with this email or username, a password reset email has been sent.' 
+        })
       }
+      
       email = data.email
+      console.log('Found email for username:', email)
     }
 
-    // trigger password reset email
-    // Note: Supabase client method names may differ between versions; adjust if needed.
-    const { data, error } = await supabaseAdmin.auth.resetPasswordForEmail(email, {
-      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL ?? ''}/auth/reset-password`,
+    console.log('Sending password reset email to:', email)
+
+    // Trigger password reset email
+    const { error } = await supabaseAdmin.auth.resetPasswordForEmail(email, {
+      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/reset-password`,
     })
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      console.error('Error sending reset email:', error)
+      // Still return success for security (don't reveal if email exists)
+      return NextResponse.json({ 
+        message: 'If an account exists with this email or username, a password reset email has been sent.' 
+      })
     }
 
-    return NextResponse.json({ message: 'Password reset email sent (if account exists).' })
+    console.log('Password reset email sent successfully to:', email)
+    
+    return NextResponse.json({ 
+      message: 'If an account exists with this email or username, a password reset email has been sent.' 
+    })
+    
   } catch (err: any) {
-    return NextResponse.json({ error: err.message || 'error' }, { status: 500 })
+    console.error('Unexpected error in forgot password:', err)
+    return NextResponse.json({ 
+      message: 'If an account exists with this email or username, a password reset email has been sent.' 
+    })
   }
 }
