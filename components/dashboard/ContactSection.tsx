@@ -190,13 +190,13 @@ export default function ContactSection({ user }: ContactSectionProps) {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-lg shadow-lg p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/3 mb-6"></div>
+          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-6"></div>
           <div className="space-y-4">
-            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-            <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
           </div>
         </div>
       </div>
@@ -204,9 +204,9 @@ export default function ContactSection({ user }: ContactSectionProps) {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Contact Information</h2>
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Contact Information</h2>
         {!editing ? (
           <button
             onClick={() => setEditing(true)}
@@ -224,7 +224,7 @@ export default function ContactSection({ user }: ContactSectionProps) {
             </button>
             <button
               onClick={handleCancel}
-              className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors"
+              className="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors"
             >
               Cancel
             </button>
@@ -235,8 +235,8 @@ export default function ContactSection({ user }: ContactSectionProps) {
       {message && (
         <div className={`mb-6 p-3 rounded-lg ${
           message.includes('Error') 
-            ? 'bg-red-100 text-red-700 border border-red-200' 
-            : 'bg-green-100 text-green-700 border border-green-200'
+            ? 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800' 
+            : 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800'
         }`}>
           {message}
         </div>
@@ -245,7 +245,7 @@ export default function ContactSection({ user }: ContactSectionProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Basic Contact Info */}
         <div className="space-y-6">
-          <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white border-b pb-2 border-gray-200 dark:border-gray-700">
             Basic Information
           </h3>
 
@@ -253,39 +253,39 @@ export default function ContactSection({ user }: ContactSectionProps) {
             // Edit Mode
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Email Address *
                 </label>
                 <input
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Phone Number
                 </label>
                 <input
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Address
                 </label>
                 <textarea
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
             </div>
@@ -293,21 +293,21 @@ export default function ContactSection({ user }: ContactSectionProps) {
             // View Mode
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <p className="text-gray-900">{contactData?.email}</p>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                <p className="text-gray-900 dark:text-white">{contactData?.email}</p>
               </div>
 
               {contactData?.phone && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                  <p className="text-gray-900">{contactData.phone}</p>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone</label>
+                  <p className="text-gray-900 dark:text-white">{contactData.phone}</p>
                 </div>
               )}
 
               {contactData?.address && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                  <p className="text-gray-900 whitespace-pre-line">{contactData.address}</p>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Address</label>
+                  <p className="text-gray-900 dark:text-white whitespace-pre-line">{contactData.address}</p>
                 </div>
               )}
             </div>
@@ -316,7 +316,7 @@ export default function ContactSection({ user }: ContactSectionProps) {
 
         {/* Professional Links */}
         <div className="space-y-6">
-          <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white border-b pb-2 border-gray-200 dark:border-gray-700">
             Professional Links
           </h3>
 
@@ -324,38 +324,38 @@ export default function ContactSection({ user }: ContactSectionProps) {
             // Edit Mode
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   LinkedIn URL
                 </label>
                 <input
                   type="url"
                   value={formData.linkedin}
                   onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   GitHub URL
                 </label>
                 <input
                   type="url"
                   value={formData.github}
                   onChange={(e) => setFormData({ ...formData, github: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
 
               {/* Other Links */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                   Other Social Links
                 </label>
                 
                 <div className="space-y-3 mb-4">
                   {formData.other_links?.map((link: OtherLink, index: number) => (
-                    <div key={link.id} className="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
+                    <div key={link.id} className="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                       {link.logo_url && (
                         <img 
                           src={link.logo_url} 
@@ -372,7 +372,7 @@ export default function ContactSection({ user }: ContactSectionProps) {
                             updatedLinks[index].name = e.target.value
                             setFormData({ ...formData, other_links: updatedLinks })
                           }}
-                          className="px-3 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 transition-colors"
+                          className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
                           placeholder="Platform name"
                         />
                         <input
@@ -383,7 +383,7 @@ export default function ContactSection({ user }: ContactSectionProps) {
                             updatedLinks[index].url = e.target.value
                             setFormData({ ...formData, other_links: updatedLinks })
                           }}
-                          className="px-3 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 transition-colors"
+                          className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
                           placeholder="https://..."
                         />
                       </div>
@@ -399,7 +399,7 @@ export default function ContactSection({ user }: ContactSectionProps) {
                 </div>
 
                 {/* Add New Link */}
-                <div className="border-t pt-4">
+                <div className="border-t pt-4 border-gray-200 dark:border-gray-700">
                   <div className="space-y-2 mb-3">
                     <div className="relative">
                       <input
@@ -407,14 +407,14 @@ export default function ContactSection({ user }: ContactSectionProps) {
                         placeholder="Search platform (e.g., Facebook, Instagram)"
                         value={newLink.name}
                         onChange={(e) => handlePlatformSearch(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 transition-colors"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       />
                       {showSuggestions && platformSuggestions.length > 0 && (
-                        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                        <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
                           {platformSuggestions.map((platform) => (
                             <div
                               key={platform.id}
-                              className="flex items-center space-x-3 px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                              className="flex items-center space-x-3 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer"
                               onClick={() => selectPlatform(platform)}
                             >
                               <img 
@@ -422,7 +422,7 @@ export default function ContactSection({ user }: ContactSectionProps) {
                                 alt={platform.name}
                                 className="w-5 h-5 object-contain"
                               />
-                              <span className="text-sm font-medium">{platform.name}</span>
+                              <span className="text-sm font-medium text-gray-900 dark:text-white">{platform.name}</span>
                             </div>
                           ))}
                         </div>
@@ -433,10 +433,10 @@ export default function ContactSection({ user }: ContactSectionProps) {
                       placeholder="URL (e.g., https://www.example.com/username)"
                       value={newLink.url}
                       onChange={(e) => setNewLink({ ...newLink, url: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 transition-colors"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     />
                     {newLink.logo_url && (
-                      <div className="flex items-center space-x-2 text-sm text-gray-600">
+                      <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
                         <span>Selected platform:</span>
                         <img 
                           src={newLink.logo_url} 
@@ -468,12 +468,12 @@ export default function ContactSection({ user }: ContactSectionProps) {
                     className="w-6 h-6 object-contain"
                   />
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">LinkedIn</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">LinkedIn</label>
                     <a
                       href={contactData.linkedin}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-700 underline break-words"
+                      className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 underline break-words"
                     >
                       {contactData.linkedin}
                     </a>
@@ -489,12 +489,12 @@ export default function ContactSection({ user }: ContactSectionProps) {
                     className="w-6 h-6 object-contain"
                   />
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">GitHub</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">GitHub</label>
                     <a
                       href={contactData.github}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-700 underline break-words"
+                      className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 underline break-words"
                     >
                       {contactData.github}
                     </a>
@@ -504,7 +504,7 @@ export default function ContactSection({ user }: ContactSectionProps) {
 
               {contactData?.other_links && contactData.other_links.length > 0 && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Other Social Links
                   </label>
                   <div className="space-y-3">
@@ -520,7 +520,7 @@ export default function ContactSection({ user }: ContactSectionProps) {
                             href={link.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-600 hover:text-blue-700 underline break-words flex items-center space-x-1"
+                            className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 underline break-words flex items-center space-x-1"
                           >
                             <span>{link.name}</span>
                             <span>→</span>
