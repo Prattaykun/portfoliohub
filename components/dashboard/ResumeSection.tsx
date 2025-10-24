@@ -37,106 +37,39 @@ export default function ResumeSection({ user }: { user: any }) {
     if (data?.resume_url) setResumeUrl(data.resume_url)
   }
 
-  const checkProfileCompleteness = async (): Promise<{ isComplete: boolean; missingSections: string[] }> => {
-    const missing: string[] = []
+const checkProfileCompleteness = async (): Promise<{ isComplete: boolean; missingSections: string[] }> => {
+  const missing: string[] = []
 
-    // Check user_profiles
-    const { data: profile, error: profileError } = await supabase
-      .from("user_profiles")
-      .select("*")
-      .eq("uid", user.id)
-      .single()
+  // Check if user has a row in each table using the same queries as generateResume
+  const [
+    { data: profile, error: profileError },
+    { data: about, error: aboutError },
+    { data: skills, error: skillsError },
+    { data: projects, error: projectsError },
+    { data: contact, error: contactError },
+    { data: langint, error: langintError }
+  ] = await Promise.all([
+    supabase.from("user_profiles").select("*").eq("uid", user.id).single(),
+    supabase.from("about").select("*").eq("auth_user_id", user.id).single(),
+    supabase.from("skills").select("*").eq("auth_user_id", user.id).single(),
+    supabase.from("project").select("*").eq("id", user.id).single(),
+    supabase.from("contact").select("*").eq("auth_user_id", user.id).single(),
+    supabase.from("langint").select("*").eq("auth_user_id", user.id).single(),
+  ])
 
-    if (profileError || !profile) {
-      missing.push("Profile")
-    } else {
-      // Check essential profile fields
-      if (!profile.full_name || !profile.profession || !profile.email) {
-        missing.push("Profile (complete your name, profession, and email)")
-      }
-    }
+  // Simply check if each table has a row for this user
+  if (profileError || !profile) missing.push("Profile")
+  if (aboutError || !about) missing.push("About")
+  if (skillsError || !skills) missing.push("Skills")
+  if (projectsError || !projects) missing.push("Projects")
+  if (contactError || !contact) missing.push("Contact")
+  if (langintError || !langint) missing.push("Languages & Interests")
 
-    // Check about
-    const { data: about, error: aboutError } = await supabase
-      .from("about")
-      .select("*")
-      .eq("auth_user_id", user.id)
-      .single()
-
-    if (aboutError || !about || !about.about) {
-      missing.push("About")
-    }
-
-    // Check skills
-    const { data: skills, error: skillsError } = await supabase
-      .from("skills")
-      .select("*")
-      .eq("auth_user_id", user.id)
-      .single()
-
-    if (skillsError || !skills) {
-      missing.push("Skills")
-    } else {
-      // Check if skills array is populated
-      if (!skills.skills || skills.skills.length === 0) {
-        missing.push("Skills (add at least one skill)")
-      }
-    }
-
-    // Check projects
-    const { data: projects, error: projectsError } = await supabase
-      .from("project")
-      .select("*")
-      .eq("id", user.id)
-      .single()
-
-    if (projectsError || !projects) {
-      missing.push("Projects")
-    } else {
-      // Check essential project fields
-      if (!projects.project_name || !projects.project_description) {
-        missing.push("Projects (add project name and description)")
-      }
-    }
-
-    // Check contact
-    const { data: contact, error: contactError } = await supabase
-      .from("contact")
-      .select("*")
-      .eq("auth_user_id", user.id)
-      .single()
-
-    if (contactError || !contact) {
-      missing.push("Contact")
-    } else {
-      // Check if at least one contact method is provided
-      if (!contact.email && !contact.phone && !contact.linkedin && !contact.github) {
-        missing.push("Contact (add at least one contact method)")
-      }
-    }
-
-    // Check langint (languages & interests)
-    const { data: langint, error: langintError } = await supabase
-      .from("langint")
-      .select("*")
-      .eq("auth_user_id", user.id)
-      .single()
-
-    if (langintError || !langint) {
-      missing.push("Languages & Interests")
-    } else {
-      // Check if at least one language or interest is provided
-      if ((!langint.languages || langint.languages.length === 0) && 
-          (!langint.interests || langint.interests.length === 0)) {
-        missing.push("Languages & Interests (add at least one language or interest)")
-      }
-    }
-
-    return {
-      isComplete: missing.length === 0,
-      missingSections: missing
-    }
+  return {
+    isComplete: missing.length === 0,
+    missingSections: missing
   }
+}
 
   const saveResumeToDB = async (url: string) => {
     const { error } = await supabase
