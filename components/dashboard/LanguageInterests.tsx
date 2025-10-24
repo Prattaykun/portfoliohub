@@ -123,188 +123,193 @@ export default function LanguageInterest({ user }: LanguageInterestProps) {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Languages & Interests</h2>
-        {!editing ? (
-          <button
-            onClick={() => setEditing(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-          >
-            Edit
-          </button>
-        ) : (
-          <div className="flex space-x-3">
-            <button
-              onClick={handleSave}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
-            >
-              Save
-            </button>
-            <button
-              onClick={handleCancel}
-              className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition"
-            >
-              Cancel
-            </button>
-          </div>
-        )}
-      </div>
-
-      {message && (
-        <div
-          className={`mb-6 p-3 rounded-lg ${
-            message.includes("Error")
-              ? "bg-red-100 text-red-700 border border-red-200"
-              : "bg-green-100 text-green-700 border border-green-200"
-          }`}
+  <div className="bg-neutral-100 text-neutral-900 rounded-lg shadow-lg p-6 dark:bg-neutral-800 dark:text-neutral-100 transition-colors duration-300">
+    <div className="flex justify-between items-center mb-6">
+      <h2 className="text-2xl font-bold">Languages & Interests</h2>
+      {!editing ? (
+        <button
+          onClick={() => setEditing(true)}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
         >
-          {message}
+          Edit
+        </button>
+      ) : (
+        <div className="flex space-x-3">
+          <button
+            onClick={handleSave}
+            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+          >
+            Save
+          </button>
+          <button
+            onClick={handleCancel}
+            className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 transition"
+          >
+            Cancel
+          </button>
         </div>
       )}
+    </div>
 
-      {/* LANGUAGES SECTION */}
-      <div className="space-y-6">
-        <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">Languages</h3>
+    {message && (
+      <div
+        className={`mb-6 p-3 rounded-lg ${
+          message.includes("Error")
+            ? "bg-red-500/10 text-red-600 border border-red-500/30"
+            : "bg-green-500/10 text-green-600 border border-green-500/30"
+        }`}
+      >
+        {message}
+      </div>
+    )}
 
-        {editing ? (
-          <>
-            {formData.languages.map((lang, i) => (
-              <div
-                key={lang.id}
-                className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg"
-              >
-                <input
-                  type="text"
-                  value={lang.name}
-                  onChange={(e) => {
-                    const updated = [...formData.languages]
-                    updated[i].name = e.target.value
-                    setFormData({ ...formData, languages: updated })
-                  }}
-                  placeholder="Language name"
-                  className="flex-1 px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500"
-                />
-                <select
-                  value={lang.proficiency}
-                  onChange={(e) => {
-                    const updated = [...formData.languages]
-                    updated[i].proficiency = e.target.value
-                    setFormData({ ...formData, languages: updated })
-                  }}
-                  className="px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500"
-                >
-                  {proficiencyLevels.map((level) => (
-                    <option key={level}>{level}</option>
-                  ))}
-                </select>
-                <button
-                  onClick={() => removeLanguage(i)}
-                  className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                >
-                  Remove
-                </button>
-              </div>
-            ))}
+    {/* LANGUAGES SECTION */}
+    <div className="space-y-6">
+      <h3 className="text-lg font-semibold border-b border-neutral-400 pb-2">
+        Languages
+      </h3>
 
-            <div className="flex space-x-3 mt-3">
+      {editing ? (
+        <>
+          {formData.languages.map((lang, i) => (
+            <div
+              key={lang.id}
+              className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 space-y-3 sm:space-y-0 p-3 bg-neutral-200 dark:bg-neutral-700 rounded-lg"
+            >
               <input
                 type="text"
-                placeholder="Add new language"
-                value={newLang.name}
-                onChange={(e) => setNewLang({ ...newLang, name: e.target.value })}
-                className="flex-1 px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500"
+                value={lang.name}
+                onChange={(e) => {
+                  const updated = [...formData.languages]
+                  updated[i].name = e.target.value
+                  setFormData({ ...formData, languages: updated })
+                }}
+                placeholder="Language name"
+                className="flex-1 px-3 py-2 border border-neutral-400 rounded focus:ring-2 focus:ring-blue-500 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 placeholder-neutral-500"
               />
               <select
-                value={newLang.proficiency}
-                onChange={(e) => setNewLang({ ...newLang, proficiency: e.target.value })}
-                className="px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500"
+                value={lang.proficiency}
+                onChange={(e) => {
+                  const updated = [...formData.languages]
+                  updated[i].proficiency = e.target.value
+                  setFormData({ ...formData, languages: updated })
+                }}
+                className="px-3 py-2 border border-neutral-400 rounded focus:ring-2 focus:ring-blue-500 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100"
               >
                 {proficiencyLevels.map((level) => (
                   <option key={level}>{level}</option>
                 ))}
               </select>
               <button
-                onClick={addLanguage}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                onClick={() => removeLanguage(i)}
+                className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
               >
-                Add
+                Remove
               </button>
             </div>
-          </>
-        ) : (
-          <ul className="list-disc pl-6 text-gray-700 space-y-2">
-            {data?.language?.length ? (
-              data.language.map((lang: LanguageEntry) => (
-                <li key={lang.id}>
-                  <span className="font-medium">{lang.name}</span> — {lang.proficiency}
-                </li>
-              ))
-            ) : (
-              <p className="text-gray-500">No languages added yet.</p>
-            )}
-          </ul>
-        )}
-      </div>
+          ))}
 
-      {/* INTERESTS SECTION */}
-      <div className="mt-10 space-y-6">
-        <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">Hobbies & Interests</h3>
-
-        {editing ? (
-          <>
-            <div className="space-y-3">
-              {formData.interests.map((interest, i) => (
-                <div
-                  key={i}
-                  className="flex items-center space-x-3 p-2 bg-gray-50 rounded-lg"
-                >
-                  <input
-                    type="text"
-                    value={interest}
-                    onChange={(e) => {
-                      const updated = [...formData.interests]
-                      updated[i] = e.target.value
-                      setFormData({ ...formData, interests: updated })
-                    }}
-                    className="flex-1 px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500"
-                  />
-                  <button
-                    onClick={() => removeInterest(i)}
-                    className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                  >
-                    Remove
-                  </button>
-                </div>
+          <div className="flex flex-col sm:flex-row sm:space-x-3 space-y-3 sm:space-y-0 mt-3">
+            <input
+              type="text"
+              placeholder="Add new language"
+              value={newLang.name}
+              onChange={(e) => setNewLang({ ...newLang, name: e.target.value })}
+              className="flex-1 px-3 py-2 border border-neutral-400 rounded focus:ring-2 focus:ring-blue-500 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 placeholder-neutral-500"
+            />
+            <select
+              value={newLang.proficiency}
+              onChange={(e) => setNewLang({ ...newLang, proficiency: e.target.value })}
+              className="px-3 py-2 border border-neutral-400 rounded focus:ring-2 focus:ring-blue-500 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100"
+            >
+              {proficiencyLevels.map((level) => (
+                <option key={level}>{level}</option>
               ))}
-            </div>
-
-            <div className="flex space-x-3 mt-3">
-              <input
-                type="text"
-                placeholder="Add new hobby or interest"
-                value={newInterest}
-                onChange={(e) => setNewInterest(e.target.value)}
-                className="flex-1 px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500"
-              />
-              <button
-                onClick={addInterest}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              >
-                Add
-              </button>
-            </div>
-          </>
-        ) : (
-          <ul className="list-disc pl-6 text-gray-700 space-y-2">
-            {data?.interest?.length ? (
-              data.interest.map((i: string, idx: number) => <li key={idx}>{i}</li>)
-            ) : (
-              <p className="text-gray-500">No interests added yet.</p>
-            )}
-          </ul>
-        )}
-      </div>
+            </select>
+            <button
+              onClick={addLanguage}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              Add
+            </button>
+          </div>
+        </>
+      ) : (
+        <ul className="list-disc pl-6 space-y-2">
+          {data?.language?.length ? (
+            data.language.map((lang: LanguageEntry) => (
+              <li key={lang.id}>
+                <span className="font-medium">{lang.name}</span> — {lang.proficiency}
+              </li>
+            ))
+          ) : (
+            <p className="text-neutral-500">No languages added yet.</p>
+          )}
+        </ul>
+      )}
     </div>
-  )
+
+    {/* INTERESTS SECTION */}
+    <div className="mt-10 space-y-6">
+      <h3 className="text-lg font-semibold border-b border-neutral-400 pb-2">
+        Hobbies & Interests
+      </h3>
+
+      {editing ? (
+        <>
+          <div className="space-y-3">
+            {formData.interests.map((interest, i) => (
+              <div
+                key={i}
+                className="flex items-center space-x-3 p-2 bg-neutral-200 dark:bg-neutral-700 rounded-lg"
+              >
+                <input
+                  type="text"
+                  value={interest}
+                  onChange={(e) => {
+                    const updated = [...formData.interests]
+                    updated[i] = e.target.value
+                    setFormData({ ...formData, interests: updated })
+                  }}
+                  className="flex-1 px-3 py-2 border border-neutral-400 rounded focus:ring-2 focus:ring-blue-500 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 placeholder-neutral-500"
+                />
+                <button
+                  onClick={() => removeInterest(i)}
+                  className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:space-x-3 space-y-3 sm:space-y-0 mt-3">
+            <input
+              type="text"
+              placeholder="Add new hobby or interest"
+              value={newInterest}
+              onChange={(e) => setNewInterest(e.target.value)}
+              className="flex-1 px-3 py-2 border border-neutral-400 rounded focus:ring-2 focus:ring-blue-500 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 placeholder-neutral-500"
+            />
+            <button
+              onClick={addInterest}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              Add
+            </button>
+          </div>
+        </>
+      ) : (
+        <ul className="list-disc pl-6 space-y-2">
+          {data?.interest?.length ? (
+            data.interest.map((i: string, idx: number) => <li key={idx}>{i}</li>)
+          ) : (
+            <p className="text-neutral-500">No interests added yet.</p>
+          )}
+        </ul>
+      )}
+    </div>
+  </div>
+)
+
 }

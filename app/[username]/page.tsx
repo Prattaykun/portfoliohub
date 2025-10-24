@@ -277,114 +277,126 @@ export default function PortfolioPage() {
       <div className="relative pt-30 z-10">
         {/* Hero Section */}
      
-<section className="min-h-screen flex items-center justify-center  px-4 pt-20 portfolio-mobile-padding">
-  <div className="max-w-6xl mx-auto text-center">
-  <div className="flex justify-center items-center pb-12 mb-8 animate-fade-in">
-  {profile.photo_url && (
-    <div className="relative">
-      <Image
-        src={profile.photo_url}
-        alt={profile.full_name}
-        width={200}
-        height={200}
-        className="rounded-full border-4 border-purple-400 shadow-2xl shadow-purple-500/50 hover:scale-105 transition-transform duration-300 hover-lift"
-      />
-      {/* Static glow */}
-      <div className="profile-photo-glow"></div>
+{/* ✅ HERO SECTION (Responsive Fix) */}
+<section className="min-h-screen flex items-center justify-center px-4 pt-20 portfolio-mobile-padding">
+  <div className="max-w-6xl mx-auto text-center w-full">
+    
+    {/* Profile Photo */}
+    <div className="flex justify-center items-center pb-12 mb-8 animate-fade-in">
+      {profile.photo_url && (
+        <div className="relative">
+          <Image
+            src={profile.photo_url}
+            alt={profile.full_name}
+            width={180}
+            height={180}
+            className="rounded-full border-4 border-purple-400 shadow-2xl shadow-purple-500/50 hover:scale-105 transition-transform duration-300 hover-lift w-[140px] sm:w-[160px] md:w-[180px] h-auto"
+          />
+          <div className="profile-photo-glow"></div>
+        </div>
+      )}
     </div>
-  )}
-</div>
-    
-    {/* Animated Name Component */}
-    <AnimatedName name={profile.full_name} />
-    
-    {/* Typing Roles Component */}
+
+    {/* Animated Name */}
+    <div className="px-4 break-words">
+      <AnimatedName name={profile.full_name} />
+    </div>
+
+    {/* Typing Roles */}
     {about?.roles && about.roles.length > 0 && (
-      <TypingRoles roles={about.roles} />
+      <div className="px-2 mt-2">
+        <TypingRoles roles={about.roles} />
+      </div>
     )}
 
-    <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-12 animate-fade-in-delay portfolio-mobile-text">
-      {about?.bio}
-    </p>
+    {/* Bio */}
+    {about?.bio && (
+      <p className="text-base sm:text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-10 px-3 leading-relaxed animate-fade-in-delay">
+        {about.bio}
+      </p>
+    )}
 
-    
-            {/* Resume Download Button */}
-            {resume?.resume_url && (
-              <div className="flex justify-center mb-8 animate-slide-up-delay">
-                <button
-                  onClick={handleDownloadResume}
-                  className="group relative bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25 border border-purple-400/30"
-                >
-                  <div className="flex items-center space-x-3">
-                    <svg 
-                      className="w-5 h-5 group-hover:scale-110 transition-transform" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      viewBox="0 0 24 24"
-                    >
-                      <path 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round" 
-                        strokeWidth={2} 
-                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" 
-                      />
-                    </svg>
-                    <span>Download Resume</span>
-                  </div>
-                  
-                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-400 to-pink-400 opacity-0 group-hover:opacity-20 blur-md transition-opacity duration-300 -z-10"></div>
-                </button>
-              </div>
-            )}
-
-            <div className="flex justify-center space-x-6 animate-slide-up-delay">
-              {contact?.linkedin && (
-                <Link href={contact.linkedin} target="_blank" className="group">
-                  <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg hover:bg-white/20 transition-all duration-300">
-                    <Image
-                      src="https://www.google.com/s2/favicons?domain=linkedin.com&sz=128"
-                      alt="LinkedIn"
-                      width={20}
-                      height={20}
-                      className="group-hover:scale-110 transition-transform"
-                    />
-                    <span>LinkedIn</span>
-                  </div>
-                </Link>
-              )}
-              
-              {contact?.github && (
-                <Link href={contact.github} target="_blank" className="group">
-                  <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg hover:bg-white/20 transition-all duration-300">
-                    <Image
-                      src="https://www.google.com/s2/favicons?domain=github.com&sz=128"
-                      alt="GitHub"
-                      width={20}
-                      height={20}
-                      className="group-hover:scale-110 transition-transform"
-                    />
-                    <span>GitHub</span>
-                  </div>
-                </Link>
-              )}
-
-              {contact?.other_links && contact.other_links.map((link: ContactLink) => (
-                <Link key={link.id} href={link.url} target="_blank" className="group">
-                  <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg hover:bg-white/20 transition-all duration-300">
-                    <Image
-                      src={link.logo_url || `https://www.google.com/s2/favicons?domain=${new URL(link.url).hostname}&sz=128`}
-                      alt={link.name}
-                      width={20}
-                      height={20}
-                      className="group-hover:scale-110 transition-transform"
-                    />
-                    <span>{link.name}</span>
-                  </div>
-                </Link>
-              ))}
-            </div>
+    {/* Resume Download */}
+    {resume?.resume_url && (
+      <div className="flex justify-center mb-10 animate-slide-up-delay">
+        <button
+          onClick={handleDownloadResume}
+          className="group relative bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-6 sm:py-4 sm:px-8 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25 border border-purple-400/30 text-sm sm:text-base"
+        >
+          <div className="flex items-center space-x-2 sm:space-x-3 justify-center">
+            <svg
+              className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
+            </svg>
+            <span>Download Resume</span>
           </div>
-        </section>
+          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-400 to-pink-400 opacity-0 group-hover:opacity-20 blur-md transition-opacity duration-300 -z-10"></div>
+        </button>
+      </div>
+    )}
+
+    {/* Social Links */}
+    {(contact?.linkedin || contact?.github || contact?.other_links?.length) && (
+      <div className="flex flex-wrap justify-center gap-3 sm:gap-4 px-2 animate-slide-up-delay">
+        {contact?.linkedin && (
+          <Link href={contact.linkedin} target="_blank" className="group w-full xs:w-auto sm:w-auto sm:flex-1 max-w-[160px]">
+            <div className="flex items-center justify-center space-x-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg hover:bg-white/20 transition-all duration-300">
+              <Image
+                src="https://www.google.com/s2/favicons?domain=linkedin.com&sz=128"
+                alt="LinkedIn"
+                width={20}
+                height={20}
+                className="group-hover:scale-110 transition-transform"
+              />
+              <span className="truncate">LinkedIn</span>
+            </div>
+          </Link>
+        )}
+        {contact?.github && (
+          <Link href={contact.github} target="_blank" className="group w-full xs:w-auto sm:w-auto sm:flex-1 max-w-[160px]">
+            <div className="flex items-center justify-center space-x-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg hover:bg-white/20 transition-all duration-300">
+              <Image
+                src="https://www.google.com/s2/favicons?domain=github.com&sz=128"
+                alt="GitHub"
+                width={20}
+                height={20}
+                className="group-hover:scale-110 transition-transform"
+              />
+              <span className="truncate">GitHub</span>
+            </div>
+          </Link>
+        )}
+        {contact?.other_links?.map((link: ContactLink) => (
+          <Link key={link.id} href={link.url} target="_blank" className="group w-full xs:w-auto sm:w-auto sm:flex-1 max-w-[160px]">
+            <div className="flex items-center justify-center space-x-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg hover:bg-white/20 transition-all duration-300">
+              <Image
+                src={
+                  link.logo_url ||
+                  `https://www.google.com/s2/favicons?domain=${new URL(link.url).hostname}&sz=128`
+                }
+                alt={link.name}
+                width={20}
+                height={20}
+                className="group-hover:scale-110 transition-transform"
+              />
+              <span className="truncate">{link.name}</span>
+            </div>
+          </Link>
+        ))}
+      </div>
+    )}
+  </div>
+</section>
+
 
 
         {/* Education Section */}
