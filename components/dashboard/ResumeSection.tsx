@@ -1,0 +1,230 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { supabase } from "../../lib/supabaseClient"
+
+interface ResumeRow {
+  resume_url: string | null
+}
+
+export default function ResumeSection({ user }: { user: any }) {
+  const [resumeUrl, setResumeUrl] = useState<string>("")
+  const [uploading, setUploading] = useState(false)
+  const [generating, setGenerating] = useState(false)
+  const [message, setMessage] = useState("")
+
+  const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME!
+  const UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!
+
+  useEffect(() => {
+    if (user?.id) fetchResumeData()
+  }, [user])
+
+  const fetchResumeData = async () => {
+    const { data, error } = await supabase
+      .from("resumes")
+      .select("resume_url")
+      .eq("auth_user_id", user.id)
+      .maybeSingle<ResumeRow>()
+
+    if (error) {
+      console.error(error)
+      setMessage("Error fetching resume data")
+      return
+    }
+
+    if (data?.resume_url) setResumeUrl(data.resume_url)
+  }
+
+  const saveResumeToDB = async (url: string) => {
+    const { error } = await supabase
+      .from("resumes")
+      .upsert({
+        auth_user_id: user.id,
+        resume_url: url,
+        updated_at: new Date().toISOString(),
+      })
+
+    if (error) throw error
+    setResumeUrl(url)
+  }
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    setUploading(true)
+    setMessage("")
+
+    try {
+      const formData = new FormData()
+      formData.append("file", file)
+      formData.append("upload_preset", UPLOAD_PRESET)
+
+      const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`, {
+        method: "POST",
+        body: formData,
+      })
+
+      const data = (await response.json()) as { secure_url?: string; error?: any }
+
+      if (!data.secure_url) throw new Error("Cloudinary upload failed")
+
+      await saveResumeToDB(data.secure_url)
+      setMessage("Resume uploaded successfully!")
+    } catch (err) {
+      console.error(err)
+      setMessage("Error uploading resume")
+    } finally {
+      setUploading(false)
+    }
+  }
+
+const generateResume = async () => {
+  setGenerating(true)
+  setMessage("")
+
+  try {
+    // ✅ Fetch all data from Supabase directly on client side
+const [
+  { data: profile },
+  { data: about },
+  { data: skills },
+  { data: projects },
+  { data: contact },
+  { data: langint }
+] = await Promise.all([
+  supabase.from("user_profiles").select("*").eq("uid", user.id).single(),
+  supabase.from("about").select("*").eq("auth_user_id", user.id).single(),
+  supabase.from("skills").select("*").eq("auth_user_id", user.id).single(),
+  supabase.from("project").select("*").eq("id", user.id).single(),
+  supabase.from("contact").select("*").eq("auth_user_id", user.id).single(),
+  supabase.from("langint").select("*").eq("auth_user_id", user.id).single(),
+])
+
+if (!profile || !about || !contact) throw new Error("Incomplete data for resume generation")
+
+// ✅ Include langint
+const payload = { profile, about, skills, projects, contact, langint }
+
+
+    const response = await fetch("/api/generate-resume", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+
+    const data = await response.json()
+    if (!response.ok || !data.resumeUrl) throw new Error(data.error || "Generation failed")
+
+    await saveResumeToDB(data.resumeUrl)
+    setMessage("Resume generated successfully!")
+  } catch (err) {
+    console.error(err)
+    setMessage("Error generating resume")
+  } finally {
+    setGenerating(false)
+  }
+}
+
+
+  return (
+    <div className="bg-white rounded-lg shadow-lg p-6">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">Resume Management</h2>
+
+      {/* Current Resume */}
+      {resumeUrl ? (
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold text-gray-800 mb-3">Current Resume</h3>
+          <div className="border rounded-lg p-4 flex justify-between items-center">
+            <div>
+              <p className="text-gray-700 truncate max-w-xs">Resume.pdf</p>
+              <p className="text-sm text-gray-500">
+                Last updated: {new Date().toLocaleDateString()}
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <a
+                href={resumeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                View
+              </a>
+              <label
+                htmlFor="resume-replace"
+                className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 cursor-pointer"
+              >
+                Replace
+                <input
+                  type="file"
+                  id="resume-replace"
+                  accept=".pdf,.doc,.docx"
+                  className="hidden"
+                  onChange={handleFileUpload}
+                  disabled={uploading}
+                />
+              </label>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="mb-6">
+          <p className="text-gray-600 mb-3">No resume found. Upload or generate one below.</p>
+        </div>
+      )}
+
+      {/* Generate Resume */}
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold text-gray-800 mb-3">Generate Resume</h3>
+        <p className="text-gray-600 mb-4">
+          Generate a professional resume from your portfolio data.
+        </p>
+        <button
+          onClick={generateResume}
+          disabled={generating}
+          className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+        >
+          {generating ? "Generating..." : "Generate Resume PDF"}
+        </button>
+      </div>
+
+      {/* Upload Resume */}
+      {!resumeUrl && (
+        <div>
+          <h3 className="text-lg font-semibold text-gray-800 mb-3">Upload Resume</h3>
+          <p className="text-gray-600 mb-4">Or upload your own resume file (PDF recommended)</p>
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+            <input
+              type="file"
+              accept=".pdf,.doc,.docx"
+              onChange={handleFileUpload}
+              disabled={uploading}
+              className="hidden"
+              id="resume-upload"
+            />
+            <label
+              htmlFor="resume-upload"
+              className="cursor-pointer px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 inline-block"
+            >
+              {uploading ? "Uploading..." : "Choose File"}
+            </label>
+            <p className="text-sm text-gray-500 mt-2">PDF, DOC, DOCX up to 10MB</p>
+          </div>
+        </div>
+      )}
+
+      {/* Message */}
+      {message && (
+        <p
+          className={`mt-4 text-sm ${
+            message.includes("Error") ? "text-red-600" : "text-green-600"
+          }`}
+        >
+          {message}
+        </p>
+      )}
+    </div>
+  )
+}

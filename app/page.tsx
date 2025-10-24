@@ -1,102 +1,106 @@
-import Image from "next/image";
+"use client";
+
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
+import { useRouter } from "next/navigation";
+import Particles from "@/components/particles";
+// import Navbar from "@/components/navbar";
+import { motion } from "framer-motion";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [user, setUser] = useState<any>(null);
+  const router = useRouter();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+  useEffect(() => {
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (data?.user) setUser(data.user);
+    };
+    getUser();
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) setUser(session.user);
+      else setUser(null);
+    });
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, []);
+
+  return (
+    <div className="relative flex flex-col items-center justify-center w-screen h-screen overflow-hidden bg-gradient-to-tr from-green-900 via-blue-900 to-purple-900 text-white">
+      {/* <Navbar user={user} /> */}
+
+      {/* Particle background (fixed and behind everything) */}
+      <Particles className="absolute inset-0 z-0 opacity-60 pointer-events-none" quantity={90} />
+
+      {/* Animated text reveal section */}
+<main className="relative z-10 flex flex-col items-center justify-center text-center px-6">
+  <div className="relative flex flex-col items-center justify-center overflow-hidden h-[10rem] md:h-[14rem]">
+    {/* Top line (moves upward) */}
+    <motion.div
+      initial={{ y: 0, opacity: 0, width: "12rem" }}
+      animate={{ y: "-4rem", opacity: 1 }}
+      transition={{ duration: 1.2, ease: "easeInOut" }}
+      className="h-[2px] bg-gradient-to-r from-green-300 to-blue-500 rounded-full absolute"
+    ></motion.div>
+
+    {/* Bottom line (moves downward) */}
+    <motion.div
+      initial={{ y: 0, opacity: 0, width: "12rem" }}
+      animate={{ y: "4rem", opacity: 1 }}
+      transition={{ duration: 1.2, ease: "easeInOut", delay: 0.1 }}
+      className="h-[2px] bg-gradient-to-r from-purple-500 to-blue-500 rounded-full absolute"
+    ></motion.div>
+
+    {/* Text Reveal (vertical reveal) */}
+    <motion.h1
+      initial={{ opacity: 0, scaleY: 0 }}
+      animate={{ opacity: 1, scaleY: 1 }}
+      transition={{ duration: 1.4, ease: "easeOut", delay: 0.6 }}
+      className="text-5xl md:text-8xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-green-300 via-blue-400 to-purple-500 drop-shadow-lg origin-center"
+    >
+      PortfolioHUB
+    </motion.h1>
+  </div>
+
+  <motion.p
+    initial={{ opacity: 0, y: 30 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 1, delay: 1.6 }}
+    className="text-zinc-300 mt-6 max-w-xl text-sm md:text-lg"
+  >
+    Build, manage, and showcase your engineering journey — all in one place.
+  </motion.p>
+
+  <motion.div
+    initial={{ opacity: 0, scale: 0.9 }}
+    animate={{ opacity: 1, scale: 1 }}
+    transition={{ duration: 1, delay: 2 }}
+    className="mt-10"
+  >
+    {user ? (
+      <button
+        onClick={() => router.push("/dashboard")}
+        className="px-8 py-3 text-lg font-semibold rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 hover:scale-105 transition-transform shadow-lg"
+      >
+        Visit Your Dashboard
+      </button>
+    ) : (
+      <button
+        onClick={() => router.push("/auth")}
+        className="px-8 py-3 text-lg font-semibold rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 hover:scale-105 transition-transform shadow-lg"
+      >
+        Create Your Portfolio
+      </button>
+    )}
+  </motion.div>
+</main>
+
+
+      <footer className="absolute bottom-4 text-zinc-400 text-xs z-10">
+        © {new Date().getFullYear()} PortfolioHUB — All rights reserved.
       </footer>
     </div>
   );
