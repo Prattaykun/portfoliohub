@@ -73,7 +73,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <div className="fixed inset-y-0 pt-30 left-0 w-64 bg-white shadow-lg">
+      <div className="fixed inset-y-0 pt-20 left-0 w-64 bg-white shadow-lg">
         <div className="p-6">
           <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
           <p className="text-gray-600 text-sm mt-2">Manage your portfolio</p>
