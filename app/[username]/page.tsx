@@ -388,83 +388,88 @@ export default function PortfolioPage() {
 
 
         {/* Education Section */}
-        {about?.education && about.education.length > 0 && (
-          <section className="py-20 px-4">
-            <div className="max-w-6xl mx-auto">
-              <div className="flex justify-between items-center mb-16">
-                <h2 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  Education
-                </h2>
-                
-                {/* Resume Download Button - Alternative placement in Education section */}
-                {/* {resume?.resume_url && (
-                  <button
-                    onClick={handleDownloadResume}
-                    className="group flex items-center space-x-2 bg-white/10 backdrop-blur-sm hover:bg-white/20 border border-white/20 hover:border-purple-400/50 text-white font-medium py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105"
-                  >
+{about?.education && about.education.length > 0 && (
+  <section className="py-20 px-4">
+    <div className="max-w-6xl mx-auto">
+      <div className="flex justify-between items-center mb-16">
+        <h2 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+          Education
+        </h2>
+      </div>
+      
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {about.education.map((edu: any, index: number) => (
+          <div 
+            key={edu.id}
+            className="bg-white/10 backdrop-blur-sm rounded-xl p-6 hover:bg-white/20 transition-all duration-300 border border-white/10 hover:border-purple-400/30 group animate-fade-in-up"
+            style={{ animationDelay: `${index * 100}ms` }}
+          >
+            <div className="flex items-center mb-4">
+              {edu.logo && (
+                <Image
+                  src={edu.logo}
+                  alt={edu.institution}
+                  width={50}
+                  height={50}
+                  className="rounded-lg mr-4 group-hover:scale-110 transition-transform"
+                />
+              )}
+              <div>
+                <h3 className="text-xl font-semibold text-white group-hover:text-purple-300 transition-colors">
+                  {edu.degree}
+                </h3>
+                <p className="text-purple-300">{edu.institution}</p>
+              </div>
+            </div>
+            
+            <div className="space-y-2 text-gray-300 mb-4">
+              <p className="flex justify-between">
+                <span>Duration:</span>
+                <span>{edu.startYear} - {edu.pursuing ? 'Present' : edu.endYear}</span>
+              </p>
+              <p className="flex justify-between">
+                <span>Grade:</span>
+                <span className="text-green-400">{edu.grade}/{edu.gradeScale}</span>
+              </p>
+              <p className="flex justify-between">
+                <span>Level:</span>
+                <span className="text-blue-400">{edu.level}</span>
+              </p>
+            </div>
+
+            {/* Visit Website Button */}
+            {edu.domain && (
+              <div className="pt-4 border-t border-white/10">
+                <button
+                  onClick={() => {
+                    // Ensure the domain has proper protocol
+                    const domainUrl = edu.domain.startsWith('http') 
+                      ? edu.domain 
+                      : `https://${edu.domain}`;
+                    window.open(domainUrl, '_blank', 'noopener,noreferrer');
+                  }}
+                  className="w-full py-2 px-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-purple-400/50 rounded-lg text-white/80 hover:text-white transition-all duration-300 hover:scale-[1.02] group/btn"
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    Visit Website
                     <svg 
-                      className="w-4 h-4 group-hover:scale-110 transition-transform" 
+                      className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform duration-300" 
                       fill="none" 
                       stroke="currentColor" 
                       viewBox="0 0 24 24"
                     >
-                      <path 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round" 
-                        strokeWidth={2} 
-                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" 
-                      />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                     </svg>
-                    <span>Download Resume</span>
-                  </button>
-                )} */}
+                  </span>
+                </button>
               </div>
-              
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {about.education.map((edu: any, index: number) => (
-                  <div 
-                    key={edu.id}
-                    className="bg-white/10 backdrop-blur-sm rounded-xl p-6 hover:bg-white/20 transition-all duration-300 border border-white/10 hover:border-purple-400/30 group animate-fade-in-up"
-                    style={{ animationDelay: `${index * 100}ms` }}
-                  >
-                    <div className="flex items-center mb-4">
-                      {edu.logo && (
-                        <Image
-                          src={edu.logo}
-                          alt={edu.institution}
-                          width={50}
-                          height={50}
-                          className="rounded-lg mr-4 group-hover:scale-110 transition-transform"
-                        />
-                      )}
-                      <div>
-                        <h3 className="text-xl font-semibold text-white group-hover:text-purple-300 transition-colors">
-                          {edu.degree}
-                        </h3>
-                        <p className="text-purple-300">{edu.institution}</p>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2 text-gray-300">
-                      <p className="flex justify-between">
-                        <span>Duration:</span>
-                        <span>{edu.startYear} - {edu.pursuing ? 'Present' : edu.endYear}</span>
-                      </p>
-                      <p className="flex justify-between">
-                        <span>Grade:</span>
-                        <span className="text-green-400">{edu.grade}/{edu.gradeScale}</span>
-                      </p>
-                      <p className="flex justify-between">
-                        <span>Level:</span>
-                        <span className="text-blue-400">{edu.level}</span>
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
 
         {/* Experience Section - Only show if experience exists */}
         {about?.experience && about.experience.length > 0 && (
