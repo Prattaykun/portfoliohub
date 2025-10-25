@@ -136,6 +136,259 @@ interface UserData {
   langint: LangIntData | null;
   resume: ResumeData | null;
 }
+
+// Project Modal Component
+interface ProjectModalProps {
+  project: Project;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const ProjectModal: React.FC<ProjectModalProps> = ({ project, isOpen, onClose }) => {
+  if (!isOpen) return null;
+
+  const video = project.media?.find((m: any) => m.type === "video");
+  const images = project.media?.filter((m: any) => m.type === "image") || [];
+  const deployment = project.media?.find((m: any) => m.type === "deployment");
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-lg animate-fade-in">
+      <div 
+        className="relative bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl border border-purple-500/30 shadow-2xl shadow-purple-500/20 max-w-4xl w-full max-h-[90vh] overflow-y-auto modal-scroll"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 z-10 w-10 h-10 bg-red-500/20 hover:bg-red-500/30 border border-red-400/50 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 group"
+        >
+          <svg className="w-5 h-5 text-red-400 group-hover:text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        {/* Modal Content */}
+        <div className="p-6">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
+              {project.title}
+            </h2>
+            <p className="text-purple-300 text-lg">Role: {project.role}</p>
+          </div>
+
+          {/* Media Section */}
+          <div className="mb-8 space-y-6">
+            {/* Video Section */}
+            {video && (
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-4 border-b border-purple-500/30 pb-2">
+                  Video Demo
+                </h3>
+                {(() => {
+                  const isYouTube = video.url.includes("youtube.com") || video.url.includes("youtu.be");
+                  if (isYouTube) {
+                    const embedUrl = video.url
+                      .replace("watch?v=", "embed/")
+                      .replace("youtu.be/", "youtube.com/embed/");
+                    return (
+                      <div className="relative w-full h-0 pb-[56.25%] rounded-xl overflow-hidden mb-4">
+                        <iframe
+                          src={embedUrl}
+                          title={`${project.title} - Video Demo`}
+                          allowFullScreen
+                          className="absolute top-0 left-0 w-full h-full rounded-xl"
+                        ></iframe>
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <div className="relative w-full h-96 bg-black rounded-xl flex items-center justify-center mb-4">
+                        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/50 to-pink-900/50 rounded-xl"></div>
+                        <div className="relative z-10 text-center">
+                          <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mb-4 mx-auto">
+                            <span className="text-3xl">🎬</span>
+                          </div>
+                          <p className="text-white text-lg mb-4">Video Available</p>
+                          <Link
+                            href={video.url}
+                            target="_blank"
+                            className="inline-flex items-center space-x-2 bg-white/10 hover:bg-white/20 px-6 py-3 rounded-lg transition-all duration-300"
+                          >
+                            <span>Watch Video</span>
+                            <span>→</span>
+                          </Link>
+                        </div>
+                      </div>
+                    );
+                  }
+                })()}
+              </div>
+            )}
+
+            {/* Images Section - Show even if video exists */}
+            {images.length > 0 && (
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-4 border-b border-purple-500/30 pb-2">
+                  {video ? 'Project Images' : 'Media Gallery'}
+                </h3>
+                {images.length === 1 ? (
+                  <div className="relative w-full h-96 rounded-xl overflow-hidden">
+                    <Image
+                      src={images[0].url}
+                      alt={`${project.title} - Main Image`}
+                      fill
+                      className="object-cover rounded-xl hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                ) : (
+                  <div className="rounded-xl overflow-hidden">
+                    <Slider
+                      dots
+                      infinite
+                      speed={500}
+                      slidesToShow={1}
+                      slidesToScroll={1}
+                      arrows={true}
+                      autoplay
+                      autoplaySpeed={4000}
+                    >
+                      {images.map((img: any, i: number) => (
+                        <div key={i} className="relative h-96">
+                          <Image
+                            src={img.url}
+                            alt={`${project.title} - image ${i + 1}`}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      ))}
+                    </Slider>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Fallback if no media */}
+            {!video && images.length === 0 && (
+              <div className="w-full h-48 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl flex items-center justify-center">
+                <span className="text-6xl">🚀</span>
+              </div>
+            )}
+          </div>
+
+          {/* Overview */}
+          <div className="mb-8">
+            <h3 className="text-xl font-semibold text-white mb-4 border-b border-purple-500/30 pb-2">
+              Overview
+            </h3>
+            <p className="text-gray-300 leading-relaxed">{project.overview}</p>
+          </div>
+
+          {/* Process */}
+          {project.process && (
+            <div className="mb-8">
+              <h3 className="text-xl font-semibold text-white mb-4 border-b border-purple-500/30 pb-2">
+                Development Process
+              </h3>
+              <p className="text-gray-300 leading-relaxed">{project.process}</p>
+            </div>
+          )}
+
+          {/* Results */}
+          {project.results && (
+            <div className="mb-8">
+              <h3 className="text-xl font-semibold text-white mb-4 border-b border-purple-500/30 pb-2">
+                Results & Impact
+              </h3>
+              <p className="text-gray-300 leading-relaxed">{project.results}</p>
+            </div>
+          )}
+
+          {/* Tech Stack */}
+          {project.techStack && project.techStack.length > 0 && (
+            <div className="mb-8">
+              <h3 className="text-xl font-semibold text-white mb-4 border-b border-purple-500/30 pb-2">
+                Technology Stack
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                {project.techStack.map((tech: any, techIndex: number) => (
+                  <div
+                    key={techIndex}
+                    className="flex items-center space-x-3 bg-white/10 rounded-lg p-4 hover:bg-white/20 transition-all duration-300 group border border-white/10"
+                  >
+                    {tech.logo_url && (
+                      <Image
+                        src={tech.logo_url}
+                        alt={tech.name}
+                        width={24}
+                        height={24}
+                        className="group-hover:scale-125 transition-transform duration-300"
+                      />
+                    )}
+                    <span className="text-gray-300 group-hover:text-white transition-colors text-sm">
+                      {tech.name}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Links */}
+          {(project.repoLink || deployment) && (
+            <div className="border-t border-white/10 pt-6">
+              <h3 className="text-xl font-semibold text-white mb-4">Project Links</h3>
+              <div className="flex flex-wrap gap-4">
+                {project.repoLink && (
+                  <Link
+                    href={project.repoLink}
+                    target="_blank"
+                    className="flex items-center space-x-3 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/50 px-6 py-3 rounded-lg transition-all duration-300 hover:scale-105 group"
+                  >
+                    <Image
+                      src="https://www.google.com/s2/favicons?domain=github.com&sz=128"
+                      alt="GitHub"
+                      width={20}
+                      height={20}
+                    />
+                    <span className="text-purple-300 group-hover:text-purple-200">View Repository</span>
+                    <span className="transform group-hover:translate-x-1 transition-transform">→</span>
+                  </Link>
+                )}
+
+                {deployment && (
+                  <Link
+                    href={deployment.url}
+                    target="_blank"
+                    className="flex items-center space-x-3 bg-green-600/20 hover:bg-green-600/30 border border-green-500/50 px-6 py-3 rounded-lg transition-all duration-300 hover:scale-105 group"
+                  >
+                    <span className="text-lg">🚀</span>
+                    <span className="text-green-300 group-hover:text-green-200">Live Demo</span>
+                    <span className="transform group-hover:translate-x-1 transition-transform">→</span>
+                  </Link>
+                )}
+
+                {video && !video.url.includes("youtube.com") && !video.url.includes("youtu.be") && (
+                  <Link
+                    href={video.url}
+                    target="_blank"
+                    className="flex items-center space-x-3 bg-red-600/20 hover:bg-red-600/30 border border-red-500/50 px-6 py-3 rounded-lg transition-all duration-300 hover:scale-105 group"
+                  >
+                    <span className="text-lg">🎬</span>
+                    <span className="text-red-300 group-hover:text-red-200">Watch Video</span>
+                    <span className="transform group-hover:translate-x-1 transition-transform">→</span>
+                  </Link>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function PortfolioPage() {
   const params = useParams();
   const username = params.username as string;
@@ -143,6 +396,7 @@ export default function PortfolioPage() {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [expandedProject, setExpandedProject] = useState<Project | null>(null);
 
   useEffect(() => {
     async function fetchUserData() {
@@ -273,215 +527,218 @@ export default function PortfolioPage() {
         quantity={80} 
       />
 
+      {/* Project Modal */}
+      <ProjectModal 
+        project={expandedProject!}
+        isOpen={!!expandedProject}
+        onClose={() => setExpandedProject(null)}
+      />
+
       {/* Main Content */}
       <div className="relative pt-30 z-10">
         {/* Hero Section */}
-     
-{/* ✅ HERO SECTION (Responsive Fix) */}
-<section className="min-h-screen flex items-center justify-center px-4 pt-20 portfolio-mobile-padding">
-  <div className="max-w-6xl mx-auto text-center w-full">
-    
-    {/* Profile Photo */}
-    <div className="flex justify-center items-center pb-12 mb-8 animate-fade-in">
-      {profile.photo_url && (
-        <div className="relative">
-          <Image
-            src={profile.photo_url}
-            alt={profile.full_name}
-            width={180}
-            height={180}
-            className="rounded-full border-4 border-purple-400 shadow-2xl shadow-purple-500/50 hover:scale-105 transition-transform duration-300 hover-lift w-[140px] sm:w-[160px] md:w-[180px] h-auto"
-          />
-          <div className="profile-photo-glow"></div>
-        </div>
-      )}
-    </div>
-
-    {/* Animated Name */}
-    <div className="px-4 break-words">
-      <AnimatedName name={profile.full_name} />
-    </div>
-
-    {/* Typing Roles */}
-    {about?.roles && about.roles.length > 0 && (
-      <div className="px-2 mt-2">
-        <TypingRoles roles={about.roles} />
-      </div>
-    )}
-
-    {/* Bio */}
-    {about?.bio && (
-      <p className="text-base sm:text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-10 px-3 leading-relaxed animate-fade-in-delay">
-        {about.bio}
-      </p>
-    )}
-
-    {/* Resume Download */}
-    {resume?.resume_url && (
-      <div className="flex justify-center mb-10 animate-slide-up-delay">
-        <button
-          onClick={handleDownloadResume}
-          className="group relative bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-6 sm:py-4 sm:px-8 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25 border border-purple-400/30 text-sm sm:text-base"
-        >
-          <div className="flex items-center space-x-2 sm:space-x-3 justify-center">
-            <svg
-              className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-            <span>Download Resume</span>
-          </div>
-          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-400 to-pink-400 opacity-0 group-hover:opacity-20 blur-md transition-opacity duration-300 -z-10"></div>
-        </button>
-      </div>
-    )}
-
-    {/* Social Links */}
-    {(contact?.linkedin || contact?.github || contact?.other_links?.length) && (
-      <div className="flex flex-wrap justify-center gap-3 sm:gap-4 px-2 animate-slide-up-delay">
-        {contact?.linkedin && (
-          <Link href={contact.linkedin} target="_blank" className="group w-full xs:w-auto sm:w-auto sm:flex-1 max-w-[160px]">
-            <div className="flex items-center justify-center space-x-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg hover:bg-white/20 transition-all duration-300">
-              <Image
-                src="https://www.google.com/s2/favicons?domain=linkedin.com&sz=128"
-                alt="LinkedIn"
-                width={20}
-                height={20}
-                className="group-hover:scale-110 transition-transform"
-              />
-              <span className="truncate">LinkedIn</span>
-            </div>
-          </Link>
-        )}
-        {contact?.github && (
-          <Link href={contact.github} target="_blank" className="group w-full xs:w-auto sm:w-auto sm:flex-1 max-w-[160px]">
-            <div className="flex items-center justify-center space-x-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg hover:bg-white/20 transition-all duration-300">
-              <Image
-                src="https://www.google.com/s2/favicons?domain=github.com&sz=128"
-                alt="GitHub"
-                width={20}
-                height={20}
-                className="group-hover:scale-110 transition-transform"
-              />
-              <span className="truncate">GitHub</span>
-            </div>
-          </Link>
-        )}
-        {contact?.other_links?.map((link: ContactLink) => (
-          <Link key={link.id} href={link.url} target="_blank" className="group w-full xs:w-auto sm:w-auto sm:flex-1 max-w-[160px]">
-            <div className="flex items-center justify-center space-x-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg hover:bg-white/20 transition-all duration-300">
-              <Image
-                src={
-                  link.logo_url ||
-                  `https://www.google.com/s2/favicons?domain=${new URL(link.url).hostname}&sz=128`
-                }
-                alt={link.name}
-                width={20}
-                height={20}
-                className="group-hover:scale-110 transition-transform"
-              />
-              <span className="truncate">{link.name}</span>
-            </div>
-          </Link>
-        ))}
-      </div>
-    )}
-  </div>
-</section>
-
-
-
-        {/* Education Section */}
-{about?.education && about.education.length > 0 && (
-  <section className="py-20 px-4">
-    <div className="max-w-6xl mx-auto">
-      <div className="flex justify-between items-center mb-16">
-        <h2 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-          Education
-        </h2>
-      </div>
-      
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {about.education.map((edu: any, index: number) => (
-          <div 
-            key={edu.id}
-            className="bg-white/10 backdrop-blur-sm rounded-xl p-6 hover:bg-white/20 transition-all duration-300 border border-white/10 hover:border-purple-400/30 group animate-fade-in-up"
-            style={{ animationDelay: `${index * 100}ms` }}
-          >
-            <div className="flex items-center mb-4">
-              {edu.logo && (
-                <Image
-                  src={edu.logo}
-                  alt={edu.institution}
-                  width={50}
-                  height={50}
-                  className="rounded-lg mr-4 group-hover:scale-110 transition-transform"
-                />
-              )}
-              <div>
-                <h3 className="text-xl font-semibold text-white group-hover:text-purple-300 transition-colors">
-                  {edu.degree}
-                </h3>
-                <p className="text-purple-300">{edu.institution}</p>
-              </div>
-            </div>
+        <section className="min-h-screen flex items-center justify-center px-4 pt-20 portfolio-mobile-padding">
+          <div className="max-w-6xl mx-auto text-center w-full">
             
-            <div className="space-y-2 text-gray-300 mb-4">
-              <p className="flex justify-between">
-                <span>Duration:</span>
-                <span>{edu.startYear} - {edu.pursuing ? 'Present' : edu.endYear}</span>
-              </p>
-              <p className="flex justify-between">
-                <span>Grade:</span>
-                <span className="text-green-400">{edu.grade}/{edu.gradeScale}</span>
-              </p>
-              <p className="flex justify-between">
-                <span>Level:</span>
-                <span className="text-blue-400">{edu.level}</span>
-              </p>
+            {/* Profile Photo */}
+            <div className="flex justify-center items-center pb-12 mb-8 animate-fade-in">
+              {profile.photo_url && (
+                <div className="relative">
+                  <Image
+                    src={profile.photo_url}
+                    alt={profile.full_name}
+                    width={180}
+                    height={180}
+                    className="rounded-full border-4 border-purple-400 shadow-2xl shadow-purple-500/50 hover:scale-105 transition-transform duration-300 hover-lift w-[140px] sm:w-[160px] md:w-[180px] h-auto"
+                  />
+                  <div className="profile-photo-glow"></div>
+                </div>
+              )}
             </div>
 
-            {/* Visit Website Button */}
-            {edu.domain && (
-              <div className="pt-4 border-t border-white/10">
+            {/* Animated Name */}
+            <div className="px-4 break-words">
+              <AnimatedName name={profile.full_name} />
+            </div>
+
+            {/* Typing Roles */}
+            {about?.roles && about.roles.length > 0 && (
+              <div className="px-2 mt-2">
+                <TypingRoles roles={about.roles} />
+              </div>
+            )}
+
+            {/* Bio */}
+            {about?.bio && (
+              <p className="text-base sm:text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-10 px-3 leading-relaxed animate-fade-in-delay">
+                {about.bio}
+              </p>
+            )}
+
+            {/* Resume Download */}
+            {resume?.resume_url && (
+              <div className="flex justify-center mb-10 animate-slide-up-delay">
                 <button
-                  onClick={() => {
-                    // Ensure the domain has proper protocol
-                    const domainUrl = edu.domain.startsWith('http') 
-                      ? edu.domain 
-                      : `https://${edu.domain}`;
-                    window.open(domainUrl, '_blank', 'noopener,noreferrer');
-                  }}
-                  className="w-full py-2 px-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-purple-400/50 rounded-lg text-white/80 hover:text-white transition-all duration-300 hover:scale-[1.02] group/btn"
+                  onClick={handleDownloadResume}
+                  className="group relative bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-6 sm:py-4 sm:px-8 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25 border border-purple-400/30 text-sm sm:text-base"
                 >
-                  <span className="flex items-center justify-center gap-2">
-                    Visit Website
-                    <svg 
-                      className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform duration-300" 
-                      fill="none" 
-                      stroke="currentColor" 
+                  <div className="flex items-center space-x-2 sm:space-x-3 justify-center">
+                    <svg
+                      className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform"
+                      fill="none"
+                      stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
                     </svg>
-                  </span>
+                    <span>Download Resume</span>
+                  </div>
+                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-400 to-pink-400 opacity-0 group-hover:opacity-20 blur-md transition-opacity duration-300 -z-10"></div>
                 </button>
               </div>
             )}
+
+            {/* Social Links */}
+            {(contact?.linkedin || contact?.github || contact?.other_links?.length) && (
+              <div className="flex flex-wrap justify-center gap-3 sm:gap-4 px-2 animate-slide-up-delay">
+                {contact?.linkedin && (
+                  <Link href={contact.linkedin} target="_blank" className="group w-full xs:w-auto sm:w-auto sm:flex-1 max-w-[160px]">
+                    <div className="flex items-center justify-center space-x-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg hover:bg-white/20 transition-all duration-300">
+                      <Image
+                        src="https://www.google.com/s2/favicons?domain=linkedin.com&sz=128"
+                        alt="LinkedIn"
+                        width={20}
+                        height={20}
+                        className="group-hover:scale-110 transition-transform"
+                      />
+                      <span className="truncate">LinkedIn</span>
+                    </div>
+                  </Link>
+                )}
+                {contact?.github && (
+                  <Link href={contact.github} target="_blank" className="group w-full xs:w-auto sm:w-auto sm:flex-1 max-w-[160px]">
+                    <div className="flex items-center justify-center space-x-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg hover:bg-white/20 transition-all duration-300">
+                      <Image
+                        src="https://www.google.com/s2/favicons?domain=github.com&sz=128"
+                        alt="GitHub"
+                        width={20}
+                        height={20}
+                        className="group-hover:scale-110 transition-transform"
+                      />
+                      <span className="truncate">GitHub</span>
+                    </div>
+                  </Link>
+                )}
+                {contact?.other_links?.map((link: ContactLink) => (
+                  <Link key={link.id} href={link.url} target="_blank" className="group w-full xs:w-auto sm:w-auto sm:flex-1 max-w-[160px]">
+                    <div className="flex items-center justify-center space-x-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg hover:bg-white/20 transition-all duration-300">
+                      <Image
+                        src={
+                          link.logo_url ||
+                          `https://www.google.com/s2/favicons?domain=${new URL(link.url).hostname}&sz=128`
+                        }
+                        alt={link.name}
+                        width={20}
+                        height={20}
+                        className="group-hover:scale-110 transition-transform"
+                      />
+                      <span className="truncate">{link.name}</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
-        ))}
-      </div>
-    </div>
-  </section>
-)}
+        </section>
+
+        {/* Education Section */}
+        {about?.education && about.education.length > 0 && (
+          <section className="py-20 px-4">
+            <div className="max-w-6xl mx-auto">
+              <div className="flex justify-between items-center mb-16">
+                <h2 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                  Education
+                </h2>
+              </div>
+              
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {about.education.map((edu: any, index: number) => (
+                  <div 
+                    key={edu.id}
+                    className="bg-white/10 backdrop-blur-sm rounded-xl p-6 hover:bg-white/20 transition-all duration-300 border border-white/10 hover:border-purple-400/30 group animate-fade-in-up"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <div className="flex items-center mb-4">
+                      {edu.logo && (
+                        <Image
+                          src={edu.logo}
+                          alt={edu.institution}
+                          width={50}
+                          height={50}
+                          className="rounded-lg mr-4 group-hover:scale-110 transition-transform"
+                        />
+                      )}
+                      <div>
+                        <h3 className="text-xl font-semibold text-white group-hover:text-purple-300 transition-colors">
+                          {edu.degree}
+                        </h3>
+                        <p className="text-purple-300">{edu.institution}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2 text-gray-300 mb-4">
+                      <p className="flex justify-between">
+                        <span>Duration:</span>
+                        <span>{edu.startYear} - {edu.pursuing ? 'Present' : edu.endYear}</span>
+                      </p>
+                      <p className="flex justify-between">
+                        <span>Grade:</span>
+                        <span className="text-green-400">{edu.grade}/{edu.gradeScale}</span>
+                      </p>
+                      <p className="flex justify-between">
+                        <span>Level:</span>
+                        <span className="text-blue-400">{edu.level}</span>
+                      </p>
+                    </div>
+
+                    {/* Visit Website Button */}
+                    {edu.domain && (
+                      <div className="pt-4 border-t border-white/10">
+                        <button
+                          onClick={() => {
+                            // Ensure the domain has proper protocol
+                            const domainUrl = edu.domain.startsWith('http') 
+                              ? edu.domain 
+                              : `https://${edu.domain}`;
+                            window.open(domainUrl, '_blank', 'noopener,noreferrer');
+                          }}
+                          className="w-full py-2 px-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-purple-400/50 rounded-lg text-white/80 hover:text-white transition-all duration-300 hover:scale-[1.02] group/btn"
+                        >
+                          <span className="flex items-center justify-center gap-2">
+                            Visit Website
+                            <svg 
+                              className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform duration-300" 
+                              fill="none" 
+                              stroke="currentColor" 
+                              viewBox="0 0 24 24"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                          </span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Experience Section - Only show if experience exists */}
         {about?.experience && about.experience.length > 0 && (
@@ -753,47 +1010,63 @@ export default function PortfolioPage() {
                         )}
 
                         {/* Links */}
-                        {(project.repoLink || deployment) && (
-                          <div className="mt-auto pt-4 border-t border-white/10 flex flex-col gap-2">
-                            
-                            {/* Repository Link */}
-                            {project.repoLink && (
-                              <Link
-                                href={project.repoLink}
-                                target="_blank"
-                                className="inline-flex items-center justify-between w-full text-purple-400 hover:text-purple-300 transition-colors text-sm group/link"
-                              >
-                                <span>View Repository</span>
-                                <span className="transform group-hover/link:translate-x-1 transition-transform">→</span>
-                              </Link>
-                            )}
+                        <div className="mt-auto pt-4 border-t border-white/10 flex flex-col gap-3">
+                          {(project.repoLink || deployment) && (
+                            <div className="flex flex-col gap-2">
+                              {/* Repository Link */}
+                              {project.repoLink && (
+                                <Link
+                                  href={project.repoLink}
+                                  target="_blank"
+                                  className="inline-flex items-center justify-between w-full text-purple-400 hover:text-purple-300 transition-colors text-sm group/link"
+                                >
+                                  <span>View Repository</span>
+                                  <span className="transform group-hover/link:translate-x-1 transition-transform">→</span>
+                                </Link>
+                              )}
 
-                            {/* Deployed/Live Demo Link */}
-                            {deployment && (
-                              <Link
-                                href={deployment.url}
-                                target="_blank"
-                                className="inline-flex items-center justify-between w-full text-green-400 hover:text-green-300 transition-colors text-sm group/link"
-                              >
-                                <span>Live Demo</span>
-                                <span className="transform group-hover/link:translate-x-1 transition-transform">🚀</span>
-                              </Link>
-                            )}
+                              {/* Deployed/Live Demo Link */}
+                              {deployment && (
+                                <Link
+                                  href={deployment.url}
+                                  target="_blank"
+                                  className="inline-flex items-center justify-between w-full text-green-400 hover:text-green-300 transition-colors text-sm group/link"
+                                >
+                                  <span>Live Demo</span>
+                                  <span className="transform group-hover/link:translate-x-1 transition-transform">🚀</span>
+                                </Link>
+                              )}
 
-                            {/* Video Link (if no video embedded but video exists) */}
-                            {video && !video.url.includes("youtube.com") && !video.url.includes("youtu.be") && (
-                              <Link
-                                href={video.url}
-                                target="_blank"
-                                className="inline-flex items-center justify-between w-full text-red-400 hover:text-red-300 transition-colors text-sm group/link"
-                              >
-                                <span>Watch Video</span>
-                                <span className="transform group-hover/link:translate-x-1 transition-transform">🎬</span>
-                              </Link>
-                            )}
-                            
-                          </div>
-                        )}
+                              {/* Video Link (if no video embedded but video exists) */}
+                              {video && !video.url.includes("youtube.com") && !video.url.includes("youtu.be") && (
+                                <Link
+                                  href={video.url}
+                                  target="_blank"
+                                  className="inline-flex items-center justify-between w-full text-red-400 hover:text-red-300 transition-colors text-sm group/link"
+                                >
+                                  <span>Watch Video</span>
+                                  <span className="transform group-hover/link:translate-x-1 transition-transform">🎬</span>
+                                </Link>
+                              )}
+                            </div>
+                          )}
+                          
+                          {/* Expand Button - Always at the very end */}
+                          <button
+                            onClick={() => setExpandedProject(project)}
+                            className="w-full py-2 px-4 bg-gradient-to-r from-purple-600/20 to-pink-600/20 hover:from-purple-600/30 hover:to-pink-600/30 border border-purple-500/30 hover:border-purple-400/50 rounded-lg text-purple-300 hover:text-purple-200 transition-all duration-300 hover:scale-[1.02] group/expand flex items-center justify-center gap-2 mt-2"
+                          >
+                            <span>Expand Details</span>
+                            <svg 
+                              className="w-4 h-4 group-hover/expand:scale-110 transition-transform duration-300" 
+                              fill="none" 
+                              stroke="currentColor" 
+                              viewBox="0 0 24 24"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
+                            </svg>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   );
