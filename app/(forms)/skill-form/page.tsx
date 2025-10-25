@@ -48,18 +48,19 @@ export default function SkillsForm() {
   ];
 
   // Example technical skills
-  const technicalSkillExamples = [
-    { name: "JavaScript", category: "Programming Language", logo_url: "" },
-    { name: "React", category: "Frontend Framework", logo_url: "" },
-    { name: "Node.js", category: "Backend Runtime", logo_url: "" },
-    { name: "Python", category: "Programming Language", logo_url: "" },
-    { name: "TypeScript", category: "Programming Language", logo_url: "" },
-    { name: "PostgreSQL", category: "Database", logo_url: "" },
-    { name: "AWS", category: "Cloud Platform", logo_url: "" },
-    { name: "Docker", category: "DevOps", logo_url: "" },
-    { name: "Git", category: "Version Control", logo_url: "" },
-    { name: "REST APIs", category: "Backend", logo_url: "" }
-  ];
+const technicalSkillExamples = [
+  { name: "JavaScript", category: "Programming Language", logo_url: "https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" },
+  { name: "React", category: "Frontend Framework", logo_url: "https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg" },
+  { name: "Node.js", category: "Backend Runtime", logo_url: "https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original.svg" },
+  { name: "Python", category: "Programming Language", logo_url: "https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" },
+  { name: "TypeScript", category: "Programming Language", logo_url: "https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg" },
+  { name: "PostgreSQL", category: "Database", logo_url: "https://raw.githubusercontent.com/devicons/devicon/master/icons/postgresql/postgresql-original.svg" },
+  { name: "AWS", category: "Cloud Platform", logo_url: "https://raw.githubusercontent.com/devicons/devicon/master/icons/amazonwebservices/amazonwebservices-original.svg" },
+  { name: "Docker", category: "DevOps", logo_url: "https://raw.githubusercontent.com/devicons/devicon/master/icons/docker/docker-original.svg" },
+  { name: "Git", category: "Version Control", logo_url: "https://raw.githubusercontent.com/devicons/devicon/master/icons/git/git-original.svg" },
+  { name: "REST APIs", category: "Backend", logo_url: null }
+];
+
 
   // Fetch existing skills data
   const fetchExistingSkills = useCallback(async () => {
