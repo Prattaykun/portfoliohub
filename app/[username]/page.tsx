@@ -390,9 +390,8 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, isOpen, onClose })
 };
 
 export default function PortfolioPage() {
-  const params = useParams();
-  const username = params.username as string;
-
+const params = useParams();
+const username = decodeURIComponent(params.username as string);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -404,11 +403,11 @@ export default function PortfolioPage() {
         setLoading(true);
 
         // Get user ID from username
-        const { data: usernameData, error: usernameError } = await supabase
-          .from("users_usernames")
-          .select("auth_user_id")
-          .eq("username", username)
-          .single();
+       const { data: usernameData, error: usernameError } = await supabase
+  .from("users_usernames")
+  .select("auth_user_id")
+  .ilike("username", username)
+  .single();
 
         if (usernameError || !usernameData) {
           setError("User not found");
