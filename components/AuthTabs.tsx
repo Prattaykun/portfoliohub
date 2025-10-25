@@ -1,5 +1,4 @@
-//components/AuthTabs.tsx
-
+// components/AuthTabs.tsx
 'use client'
 
 import React, { useState } from 'react'
@@ -13,8 +12,6 @@ type Tab = 'signup' | 'login'
 
 export default function AuthTabs() {
   const [tab, setTab] = useState<Tab>('signup')
-
-  // Common states
   const [identifier, setIdentifier] = useState('')
   const [email, setEmail] = useState('')
   const [username, setUsername] = useState('')
@@ -25,7 +22,6 @@ export default function AuthTabs() {
   const [message, setMessage] = useState<string | null>(null)
   const [forgotEmailOrUsername, setForgotEmailOrUsername] = useState('')
 
-  // ✅ Check username availability first
   async function checkUsername() {
     if (!username.trim()) {
       setMessage('Please enter a username.')
@@ -58,7 +54,6 @@ export default function AuthTabs() {
     }
   }
 
-  // ✅ Signup flow — requires username check done first
   async function signupEmailPassword() {
     if (!available) {
       setMessage('Please check username availability first.')
@@ -82,7 +77,6 @@ export default function AuthTabs() {
 
       const uid = data.user?.id
       if (uid) {
-        // ✅ Update users_usernames with uid, username, email
         const res = await fetch('/api/signup', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -104,7 +98,6 @@ export default function AuthTabs() {
     }
   }
 
-  // ✅ Login flow
   async function loginWithPassword() {
     if (!identifier || !password) {
       setMessage('Please enter email/username and password.')
@@ -140,7 +133,6 @@ export default function AuthTabs() {
     }
   }
 
-  // ✅ OAuth
   async function oauthSignIn(provider: 'google' | 'github' | 'linkedin_oidc') {
     setLoading(true)
     try {
@@ -156,7 +148,6 @@ export default function AuthTabs() {
     }
   }
 
-  // ✅ Forgot password
   async function forgotPasswordSend() {
     if (!forgotEmailOrUsername) {
       setMessage('Please provide email or username')
@@ -183,10 +174,11 @@ export default function AuthTabs() {
 
   return (
     <div className="bg-white/5 p-4 rounded-lg">
+      {/* Tab buttons - unchanged on desktop, responsive on mobile */}
       <div className="flex gap-2 mb-6">
         <button
           className={clsx(
-            'px-4 py-2 rounded-md font-semibold transition-colors',
+            'px-4 py-2 rounded-md font-semibold transition-colors sm:flex-1 md:flex-none',
             tab === 'signup'
               ? 'bg-gradient-to-r from-green-400 to-purple-500 text-white shadow-lg'
               : 'bg-white/6 text-white/80'
@@ -197,7 +189,7 @@ export default function AuthTabs() {
         </button>
         <button
           className={clsx(
-            'px-4 py-2 rounded-md font-semibold transition-colors',
+            'px-4 py-2 rounded-md font-semibold transition-colors sm:flex-1 md:flex-none',
             tab === 'login'
               ? 'bg-gradient-to-r from-green-400 to-purple-500 text-white shadow-lg'
               : 'bg-white/6 text-white/80'
@@ -208,13 +200,13 @@ export default function AuthTabs() {
         </button>
       </div>
 
-      {/* ✅ SIGNUP TAB */}
+      {/* SIGNUP TAB */}
       {tab === 'signup' ? (
         <div className="space-y-4">
-          {/* Step 1: Username check */}
+          {/* Username check - responsive layout */}
           <div>
             <label className="block text-sm text-white/90">Choose Username</label>
-            <div className="flex gap-2 mt-2">
+            <div className="flex flex-col sm:flex-row gap-2 mt-2">
               <input
                 value={username}
                 onChange={e => {
@@ -226,7 +218,8 @@ export default function AuthTabs() {
               />
               <button
                 onClick={checkUsername}
-                className="px-4 py-2 rounded-md bg-white/8 hover:bg-white/10 text-white"
+                disabled={checking}
+                className="px-4 py-3 sm:py-2 rounded-md bg-white/8 hover:bg-white/10 text-white whitespace-nowrap transition-colors"
               >
                 {checking ? 'Checking...' : 'Check'}
               </button>
@@ -239,7 +232,7 @@ export default function AuthTabs() {
             )}
           </div>
 
-          {/* Step 2: Show email/password only after username is available */}
+          {/* Show email/password after username is available */}
           {available && (
             <>
               <div>
@@ -249,6 +242,7 @@ export default function AuthTabs() {
                   onChange={e => setEmail(e.target.value)}
                   className="w-full rounded-md p-3 bg-white/5 text-white outline-none mt-2"
                   placeholder="you@company.com"
+                  type="email"
                 />
               </div>
 
@@ -263,35 +257,56 @@ export default function AuthTabs() {
                 />
               </div>
 
-              <div className="flex items-center gap-3">
+              {/* Buttons section - responsive */}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                 <button
                   onClick={signupEmailPassword}
                   disabled={loading}
-                  className="px-5 py-3 rounded-xl font-semibold bg-gradient-to-r from-blue-400 to-purple-600 hover:scale-[1.01] transition-transform text-white shadow-lg"
+                  className="px-5 py-3 rounded-xl font-semibold bg-gradient-to-r from-blue-400 to-purple-600 hover:scale-[1.01] transition-transform text-white shadow-lg sm:flex-shrink-0"
                 >
                   {loading ? 'Signing up...' : 'Sign up'}
                 </button>
 
-                <div className="text-sm text-white/70">or</div>
+                <div className="text-sm text-white/70 text-center sm:text-left">or</div>
 
-                <div className="flex gap-2">
+                <div className="flex gap-2 justify-center sm:justify-start">
                   <button
                     onClick={() => oauthSignIn('google')}
-                    className="px-3 py-2 rounded-md bg-white/6 text-white"
+                    disabled={loading}
+                    className="flex items-center gap-2 px-3 py-2 rounded-md bg-white/6 text-white hover:bg-white/8 transition-colors"
                   >
-                    Google
+                    <img
+                      src="https://www.google.com/s2/favicons?domain=www.google.com&sz=32"
+                      alt="Google"
+                      className="w-4 h-4"
+                    />
+                    <span className="hidden sm:inline">Google</span>
                   </button>
+
                   <button
                     onClick={() => oauthSignIn('github')}
-                    className="px-3 py-2 rounded-md bg-white/6 text-white"
+                    disabled={loading}
+                    className="flex items-center gap-2 px-3 py-2 rounded-md bg-white/6 text-white hover:bg-white/8 transition-colors"
                   >
-                    GitHub
+                    <img
+                      src="https://www.google.com/s2/favicons?domain=www.github.com&sz=32"
+                      alt="GitHub"
+                      className="w-4 h-4"
+                    />
+                    <span className="hidden sm:inline">GitHub</span>
                   </button>
+
                   <button
                     onClick={() => oauthSignIn('linkedin_oidc')}
-                    className="px-3 py-2 rounded-md bg-white/6 text-white"
+                    disabled={loading}
+                    className="flex items-center gap-2 px-3 py-2 rounded-md bg-white/6 text-white hover:bg-white/8 transition-colors"
                   >
-                    LinkedIn
+                    <img
+                      src="https://www.google.com/s2/favicons?domain=www.linkedin.com&sz=32"
+                      alt="LinkedIn"
+                      className="w-4 h-4"
+                    />
+                    <span className="hidden sm:inline">LinkedIn</span>
                   </button>
                 </div>
               </div>
@@ -299,7 +314,7 @@ export default function AuthTabs() {
           )}
         </div>
       ) : (
-        // ✅ LOGIN TAB
+        // LOGIN TAB
         <div className="space-y-4">
           <div>
             <label className="block text-sm text-white/90">Email or Username</label>
@@ -322,84 +337,89 @@ export default function AuthTabs() {
             />
           </div>
 
-          <div className="flex items-center gap-3">
+          {/* Buttons section - responsive */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <button
               onClick={loginWithPassword}
               disabled={loading}
-              className="px-5 py-3 rounded-xl font-semibold bg-gradient-to-r from-blue-400 to-purple-600 hover:scale-[1.01] transition-transform text-white shadow-lg"
+              className="px-5 py-3 rounded-xl font-semibold bg-gradient-to-r from-blue-400 to-purple-600 hover:scale-[1.01] transition-transform text-white shadow-lg sm:flex-shrink-0"
             >
               {loading ? 'Logging in...' : 'Login'}
             </button>
 
-            <div className="text-sm text-white/70">or</div>
+            <div className="text-sm text-white/70 text-center sm:text-left">or</div>
 
-           <div className="flex gap-2">
-  <button
-    onClick={() => oauthSignIn('google')}
-    className="flex items-center gap-2 px-3 py-2 rounded-md bg-white/6 text-white"
-  >
-    <img
-      src="https://www.google.com/s2/favicons?domain=www.google.com&sz=32"
-      alt="Google"
-      className="w-4 h-4"
-    />
-    Google
-  </button>
+            <div className="flex gap-2 justify-center sm:justify-start">
+              <button
+                onClick={() => oauthSignIn('google')}
+                disabled={loading}
+                className="flex items-center gap-2 px-3 py-2 rounded-md bg-white/6 text-white hover:bg-white/8 transition-colors"
+              >
+                <img
+                  src="https://www.google.com/s2/favicons?domain=www.google.com&sz=32"
+                  alt="Google"
+                  className="w-4 h-4"
+                />
+                <span className="hidden sm:inline">Google</span>
+              </button>
 
-  <button
-    onClick={() => oauthSignIn('github')}
-    className="flex items-center gap-2 px-3 py-2 rounded-md bg-white/6 text-white"
-  >
-    <img
-      src="https://www.google.com/s2/favicons?domain=www.github.com&sz=32"
-      alt="GitHub"
-      className="w-4 h-4"
-    />
-    GitHub
-  </button>
+              <button
+                onClick={() => oauthSignIn('github')}
+                disabled={loading}
+                className="flex items-center gap-2 px-3 py-2 rounded-md bg-white/6 text-white hover:bg-white/8 transition-colors"
+              >
+                <img
+                  src="https://www.google.com/s2/favicons?domain=www.github.com&sz=32"
+                  alt="GitHub"
+                  className="w-4 h-4"
+                />
+                <span className="hidden sm:inline">GitHub</span>
+              </button>
 
-  <button
-    onClick={() => oauthSignIn('linkedin_oidc')}
-    className="flex items-center gap-2 px-3 py-2 rounded-md bg-white/6 text-white"
-  >
-    <img
-      src="https://www.google.com/s2/favicons?domain=www.linkedin.com&sz=32"
-      alt="LinkedIn"
-      className="w-4 h-4"
-    />
-    LinkedIn
-  </button>
-</div>
-
+              <button
+                onClick={() => oauthSignIn('linkedin_oidc')}
+                disabled={loading}
+                className="flex items-center gap-2 px-3 py-2 rounded-md bg-white/6 text-white hover:bg-white/8 transition-colors"
+              >
+                <img
+                  src="https://www.google.com/s2/favicons?domain=www.linkedin.com&sz=32"
+                  alt="LinkedIn"
+                  className="w-4 h-4"
+                />
+                <span className="hidden sm:inline">LinkedIn</span>
+              </button>
+            </div>
           </div>
 
+          {/* Forgot Password - responsive */}
           <details className="mt-2">
             <summary className="text-sm text-white/80 cursor-pointer">
               Forgot password?
             </summary>
-            <div className="mt-2">
-              <div className="flex gap-2">
-                <input
-                  value={forgotEmailOrUsername}
-                  onChange={e => setForgotEmailOrUsername(e.target.value)}
-                  placeholder="email or username"
-                  className="flex-1 rounded-md p-2 bg-white/5 text-white outline-none"
-                />
-                <button
-                  onClick={forgotPasswordSend}
-                  disabled={loading}
-                  className="px-3 py-2 rounded-md bg-white/8 text-white"
-                >
-                  {loading ? 'Sending...' : 'Send reset'}
-                </button>
-              </div>
+            <div className="mt-2 flex flex-col sm:flex-row gap-2">
+              <input
+                value={forgotEmailOrUsername}
+                onChange={e => setForgotEmailOrUsername(e.target.value)}
+                placeholder="email or username"
+                className="flex-1 rounded-md p-3 sm:p-2 bg-white/5 text-white outline-none"
+              />
+              <button
+                onClick={forgotPasswordSend}
+                disabled={loading}
+                className="px-4 py-3 sm:py-2 rounded-md bg-white/8 text-white hover:bg-white/10 transition-colors whitespace-nowrap"
+              >
+                {loading ? 'Sending...' : 'Send reset'}
+              </button>
             </div>
           </details>
         </div>
       )}
 
+      {/* Message Display */}
       {message && (
-        <div className="mt-4 p-3 rounded-md bg-white/6 text-white/90">{message}</div>
+        <div className="mt-4 p-3 rounded-md bg-white/6 text-white/90">
+          {message}
+        </div>
       )}
     </div>
   )
