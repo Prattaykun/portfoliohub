@@ -400,7 +400,7 @@ export default function AuthTabs() {
               <input
                 value={forgotEmailOrUsername}
                 onChange={e => setForgotEmailOrUsername(e.target.value)}
-                placeholder="email or username"
+                placeholder="email"
                 className="flex-1 rounded-md p-3 sm:p-2 bg-white/5 text-white outline-none"
               />
               <button
