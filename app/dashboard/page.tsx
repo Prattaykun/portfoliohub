@@ -77,8 +77,8 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Desktop Sidebar */}
-      <div className="hidden md:fixed md:inset-y-0 md:pt-20 md:left-0 md:w-64 md:bg-white md:shadow-lg md:block">
-        <div className="p-6">
+  <div className="hidden md:fixed md:inset-y-0 md:pt-20 md:left-0 md:w-64 md:bg-white md:shadow-lg md:block md:overflow-y-auto md:pb-8">
+        <div className="pl-6 pt-6">
           <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
           <p className="text-gray-600 text-sm mt-2">Manage your portfolio</p>
         </div>
@@ -89,7 +89,7 @@ export default function Dashboard() {
               onClick={() => setActiveSection(section.id)}
               className={`w-full flex items-center px-6 py-3 text-left transition-colors ${
                 activeSection === section.id
-                  ? 'bg-blue-50 text-blue-600 border-r-2 border-blue-600'
+                  ? 'bg-blue-50 text-base  text-blue-600 border-r-2 border-blue-600'
                   : 'text-gray-600 hover:bg-gray-50'
               }`}
             >
