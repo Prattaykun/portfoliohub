@@ -10,6 +10,7 @@ cloudinary.config({
 })
 
 // Type definitions
+// Update the Profile interface in your existing route.ts
 interface Profile {
   uid: string
   full_name: string
@@ -21,6 +22,7 @@ interface Profile {
   locale: string
   updated_at: string
   created_at: string
+  signature: string 
 }
 
 interface Education {
@@ -157,8 +159,33 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Process signature if available
+    let processedProfile = { ...profile }
+    if (profile.signature) {
+      try {
+        // Call the signature processing API
+        const processResponse = await fetch(`${getBaseUrl()}/api/process-signature`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            signatureUrl: profile.signature
+          })
+        })
+
+        if (processResponse.ok) {
+          const { processedSignatureUrl } = await processResponse.json()
+          processedProfile.signature = processedSignatureUrl
+        }
+      } catch (error) {
+        console.error('Signature processing failed, using original:', error)
+        // Continue with original signature if processing fails
+      }
+    }
+
     // Generate HTML content for the resume
-    const htmlContent = generateResumeHTML(profile, about, skills, projects, contact, langint)
+    const htmlContent = generateResumeHTML(processedProfile, about, skills, projects, contact, langint)
 
     // Generate PDF from HTML using Browserless API
     const pdfBuffer = await generatePDFWithBrowserless(htmlContent)
@@ -179,6 +206,14 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// Helper function to get base URL
+function getBaseUrl(): string {
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`
+  }
+  return `http://localhost:${process.env.PORT || 3000}`
+}
+
 function generateResumeHTML(
   profile: Profile, 
   about: About, 
@@ -188,7 +223,13 @@ function generateResumeHTML(
   langint: LangInt
 ): string {
   const proficiencyLevels = ["Beginner", "Elementary", "Intermediate", "Advanced", "Fluent", "Native"]
-  
+  function getCurrentDate(): string {
+  const currentDate = new Date();
+  const day = currentDate.getDate().toString().padStart(2, '0');
+  const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+  const year = currentDate.getFullYear();
+  return `${day}/${month}/${year}`;
+}
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -457,7 +498,55 @@ function generateResumeHTML(
         .page-break {
             page-break-before: always;
         }
+        .declaration-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
         
+        .declaration-content {
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .signature-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 40px;
+        }
+        
+        .signature-container {
+            text-align: center;
+        }
+        
+        .signature-image {
+            max-width: 200px;
+            max-height: 80px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .signature-line {
+            width: 200px;
+            border-bottom: 1px solid #333;
+            margin-bottom: 10px;
+        }
+        
+        .signature-name {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .date-container {
+            text-align: center;
+        }
+        
+        .date-line {
+            width: 150px;
+            border-bottom: 1px solid #333;
+            margin-bottom: 10px;
+        }
         @media print {
             body {
                 padding: 15px;
@@ -646,6 +735,30 @@ function generateResumeHTML(
         </ul>
     </div>
     ` : ''}
+     <!-- Declaration Section -->
+<div class="section declaration-section">
+    <div class="section-title">DECLARATION</div>
+    <div class="declaration-content">
+        I hereby declare that all the information provided above is true and correct to the best of my knowledge. 
+        I understand that any misrepresentation may lead to disqualification or termination of employment.
+    </div>
+    
+    <div class="signature-area">
+        <div class="signature-container">
+            ${profile.signature ? 
+              `<img src="${escapeHtml(profile.signature)}" alt="Signature" class="signature-image" />` : 
+              '<div class="signature-line"></div>'
+            }
+            <div class="signature-name">${escapeHtml(profile.full_name)}</div>
+        </div>
+        
+        <div class="date-container">
+            <div>${getCurrentDate()}</div>
+            <div class="date-line"></div>
+            <div class="signature-name">Date</div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
   `

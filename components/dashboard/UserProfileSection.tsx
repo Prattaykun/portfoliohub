@@ -3,10 +3,12 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { supabase } from '../../lib/supabaseClient'
+import { CldUploadWidget, type CloudinaryUploadWidgetResults } from 'next-cloudinary'
 
 interface UserProfileSectionProps {
   user: any
   userProfile: any
+  secure_url?: string
 }
 
 export default function UserProfileSection({ user, userProfile }: UserProfileSectionProps) {
@@ -14,11 +16,12 @@ export default function UserProfileSection({ user, userProfile }: UserProfileSec
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
   const [fetchedUsername, setFetchedUsername] = useState<string | null>(null)
+  const [signatureUrl, setSignatureUrl] = useState<string | null>(userProfile?.signature ?? null)
+  const [sigMessage, setSigMessage] = useState<string>('')
 
   const currentUsername = userProfile?.username ?? user?.email?.split('@')[0] ?? 'Not set'
 
   useEffect(() => {
-    // Load username from users_usernames table for this auth user
     const loadUsername = async () => {
       try {
         if (!user?.id) return
@@ -39,12 +42,11 @@ export default function UserProfileSection({ user, userProfile }: UserProfileSec
     loadUsername()
   }, [user?.id])
 
-  // ✅ Case-sensitive username check
   const checkUsername = async (username: string) => {
     const { data, error } = await supabase
       .from('users_usernames')
       .select('username')
-      .eq('username', username) // case-sensitive
+      .eq('username', username)
       .single()
 
     return { exists: !!data, error }
@@ -61,7 +63,6 @@ export default function UserProfileSection({ user, userProfile }: UserProfileSec
       return
     }
 
-    // Check if username exists (case-sensitive)
     const { exists } = await checkUsername(username)
     if (exists) {
       setMessage('Username already taken')
@@ -69,7 +70,6 @@ export default function UserProfileSection({ user, userProfile }: UserProfileSec
       return
     }
 
-    // ✅ Upsert username with original casing preserved
     const { error } = await supabase
       .from('users_usernames')
       .upsert({
@@ -87,6 +87,31 @@ export default function UserProfileSection({ user, userProfile }: UserProfileSec
     setLoading(false)
   }
 
+  // ✅ Handle Cloudinary upload result
+  const handleSignatureUpload = async (result: CloudinaryUploadWidgetResults) => {
+    if (result.event !== 'success') return
+
+    // result.info can be either a string or an object; guard the type before accessing secure_url
+    const uploadedUrl =
+      typeof result.info === 'string' ? undefined : result.info?.secure_url
+    if (!uploadedUrl) return
+
+    setSignatureUrl(uploadedUrl)
+
+    // Save to Supabase
+    const { error } = await supabase
+      .from('user_profiles')
+      .update({ signature: uploadedUrl, updated_at: new Date().toISOString() })
+      .eq('uid', user.id)
+
+    if (error) {
+      console.error('Signature save error:', error)
+      setSigMessage('❌ Error saving signature in database.')
+    } else {
+      setSigMessage('✅ Signature uploaded successfully!')
+    }
+  }
+
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
       <div className="flex items-center justify-between mb-6">
@@ -98,8 +123,8 @@ export default function UserProfileSection({ user, userProfile }: UserProfileSec
           Edit Profile
         </Link>
       </div>
-      
-      {/* Current Profile Info */}
+
+      {/* Profile Info */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div className="space-y-4">
           <div>
@@ -117,7 +142,7 @@ export default function UserProfileSection({ user, userProfile }: UserProfileSec
             <p className="mt-1 text-lg text-gray-900">{userProfile.gender}</p>
           </div>
         </div>
-        
+
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">Nationality</label>
@@ -146,8 +171,8 @@ export default function UserProfileSection({ user, userProfile }: UserProfileSec
         </div>
       )}
 
-      {/* Username Update Form */}
-      <div className="border-t pt-6">
+      {/* Username Update */}
+      <div className="border-t pt-6 mb-8">
         <h3 className="text-lg font-semibold text-gray-800 mb-4">Update Username</h3>
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">Current username</label>
@@ -172,8 +197,63 @@ export default function UserProfileSection({ user, userProfile }: UserProfileSec
           </button>
         </form>
         {message && (
-          <p className={`mt-2 text-sm ${message.includes('Error') ? 'text-red-600' : 'text-green-600'}`}>
+          <p
+            className={`mt-2 text-sm ${
+              message.includes('Error') ? 'text-red-600' : 'text-green-600'
+            }`}
+          >
             {message}
+          </p>
+        )}
+      </div>
+
+      {/* ✅ Signature Upload Section */}
+      <div className="border-t pt-6">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">Upload Digital Signature</h3>
+
+        {signatureUrl ? (
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Current Signature</label>
+            <img
+              src={signatureUrl}
+              alt="Signature"
+              className="border rounded-md w-60 h-auto object-contain"
+            />
+          </div>
+        ) : (
+          <p className="text-sm text-gray-500 mb-4">No signature uploaded yet.</p>
+        )}
+
+        <CldUploadWidget
+          uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!}
+          options={{
+            cropping: true,
+            croppingAspectRatio: 4.5, // Rectangular crop box for signatures
+            sources: ['local', 'camera'],
+            multiple: false,
+            folder: 'signatures',
+            resourceType: 'image',
+          }}
+          onSuccess={handleSignatureUpload}
+        >
+          {({ open }) => (
+            <button
+              type="button"
+              onClick={() => open()}
+              className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+            >
+              {signatureUrl ? 'Replace Signature' : 'Upload Signature'}
+            </button>
+          )}
+        </CldUploadWidget>
+
+        {sigMessage && (
+          <p
+            className={`mt-3 text-sm ${
+              sigMessage.startsWith('✅') ? 'text-green-600' : 'text-red-600'
+            }`}
+          >
+            {sigMessage}
           </p>
         )}
       </div>

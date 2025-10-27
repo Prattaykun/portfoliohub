@@ -166,49 +166,31 @@ export interface ContactFormProps {
 /**
  * Represents a single form question used in ProfileChatForm.
  */
-export interface ProfileQuestion {
-  key:
-    | "full_name"
-    | "date_of_birth"
-    | "gender"
-    | "nationality"
-    | "pronouns"
-    | "locale"
-    | "photo_url";
-
+export type ProfileQuestion = {
+  key: keyof UserProfile;
   question: string;
   placeholder?: string;
-  type?: "text" | "date" | "image";
   options?: string[];
-}
+  type?: "text" | "date" | "image" | "signature";
+};
 
-/**
- * Represents the user’s profile data as stored in the `user_profiles` table.
- */
-export interface UserProfile {
+export type UserProfile = {
   uid: string;
   full_name?: string | null;
-  date_of_birth?: string | null; // Format: YYYY-MM-DD
+  date_of_birth?: string | null;
   gender?: string | null;
   nationality?: string | null;
+  photo_url?: string | null;
   pronouns?: string | null;
   locale?: string | null;
-  photo_url?: string | null;
+  signature?: string | null;
   updated_at?: string | null;
-}
+  created_at?: string | null;
+};
 
-/**
- * The local state shape used inside the ProfileChatForm component.
- */
-export interface ProfileFormState {
-  step: number;
-  answers: Record<string, string>;
-  input: string;
-  selectedDate: Date | null;
-  done: boolean;
-  loading: boolean;
-  isEditing: boolean;
-}
+
+
+
 
 /**
  * Represents the shape of the response returned by Supabase when fetching or upserting the user profile.
@@ -367,3 +349,60 @@ export interface SkillsRow {
   soft: string[];
   technical: RawTechnicalSkill[]; // raw skills may not have IDs yet
 }
+// Signature-specific types
+export interface SignatureProcessingProps {
+  publicId: string;
+  transformations?: SignatureTransformationOptions;
+}
+
+export interface ProcessedSignature {
+  originalUrl: string;
+  processedUrl: string;
+  publicId: string;
+  transformations: string[];
+  uploadedAt: string;
+}
+
+// Component props for signature upload
+export interface SignatureUploadProps {
+  onSignatureProcessed: (signature: ProcessedSignature) => void;
+  onError?: (error: string) => void;
+  isProcessing?: boolean;
+  existingSignature?: string | null;
+  required?: boolean;
+}
+// types.ts or util/types.ts
+
+
+
+
+export interface ProfileFormState {
+  step: number;
+  answers: Record<string, string>;
+  input: string;
+  done: boolean;
+  selectedDate: Date | null;
+  loading: boolean;
+  isEditing: boolean;
+  hasInitializedInput: boolean;
+  processingSignature: boolean;
+}
+
+
+export interface SignatureUploadResponse {
+  success: boolean;
+  processedUrl: string;
+  publicId: string;
+  error?: string;
+}
+
+// For the Cloudinary image transformation options
+export interface SignatureTransformationOptions {
+  removeBackground?: boolean;
+  grayscale?: boolean;
+  width?: number;
+  height?: number;
+  format?: string;
+}
+
+// Extended Cloudinary upload widget results for signature
