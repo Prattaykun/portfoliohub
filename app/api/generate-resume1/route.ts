@@ -20,6 +20,7 @@ interface Profile {
   photo_url: string
   pronouns: string
   locale: string
+    signature: string
   updated_at: string
   created_at: string
 }
@@ -186,7 +187,13 @@ function generateResumeHTML(
   langint: LangInt
 ): string {
   const proficiencyLevels = ["Beginner", "Elementary", "Intermediate", "Advanced", "Fluent", "Native"]
-  
+    function getCurrentDate(): string {
+  const currentDate = new Date();
+  const day = currentDate.getDate().toString().padStart(2, '0');
+  const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+  const year = currentDate.getFullYear();
+  return `${day}/${month}/${year}`;
+}
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -455,7 +462,55 @@ function generateResumeHTML(
         .page-break {
             page-break-before: always;
         }
+        .declaration-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
         
+        .declaration-content {
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .signature-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 40px;
+        }
+        
+        .signature-container {
+            text-align: center;
+        }
+        
+        .signature-image {
+            max-width: 200px;
+            max-height: 80px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .signature-line {
+            width: 200px;
+            border-bottom: 1px solid #333;
+            margin-bottom: 10px;
+        }
+        
+        .signature-name {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .date-container {
+            text-align: center;
+        }
+        
+        .date-line {
+            width: 150px;
+            border-bottom: 1px solid #333;
+            margin-bottom: 10px;
+        }
         @media print {
             body {
                 padding: 15px;
@@ -644,9 +699,34 @@ function generateResumeHTML(
         </ul>
     </div>
     ` : ''}
+     <!-- Declaration Section -->
+<div class="section declaration-section">
+    <div class="section-title">DECLARATION</div>
+    <div class="declaration-content">
+        I hereby declare that all the information provided above is true and correct to the best of my knowledge. 
+        I understand that any misrepresentation may lead to disqualification or termination of employment.
+    </div>
+    
+    <div class="signature-area">
+        <div class="signature-container">
+            ${profile.signature ? 
+              `<img src="${escapeHtml(profile.signature)}" alt="Signature" class="signature-image" />` : 
+              '<div class="signature-line"></div>'
+            }
+            <div class="signature-name">${escapeHtml(profile.full_name)}</div>
+        </div>
+        
+        <div class="date-container">
+            <div>${getCurrentDate()}</div>
+            <div class="date-line"></div>
+            <div class="signature-name">Date</div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
   `
+
 }
 
 function escapeHtml(unsafe: string): string {
