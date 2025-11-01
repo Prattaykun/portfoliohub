@@ -6,6 +6,8 @@ import Image from "next/image";
 import Link from "next/link";
 import Slider from "react-slick";
 import { Project } from "./portfolio";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 interface ProjectModalProps {
   project: Project;
@@ -13,12 +15,78 @@ interface ProjectModalProps {
   onClose: () => void;
 }
 
+// Custom arrow components for the slider
+const NextArrow = (props: any) => {
+  const { className, style, onClick } = props;
+  return (
+    <div
+      className={`${className} next-arrow`}
+      style={{
+        ...style,
+        display: "block",
+        right: "40px",
+        zIndex: 1,
+      }}
+      onClick={onClick}
+    >
+      <div className="w-12 h-12 bg-black/30 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center hover:bg-black/50 hover:border-white/40 transition-all duration-300 group">
+        <svg className="w-6 h-6 text-white group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      </div>
+    </div>
+  );
+};
+
+const PrevArrow = (props: any) => {
+  const { className, style, onClick } = props;
+  return (
+    <div
+      className={`${className} prev-arrow`}
+      style={{
+        ...style,
+        display: "block",
+        left: "10px",
+        zIndex: 1,
+      }}
+      onClick={onClick}
+    >
+      <div className="w-12 h-12 bg-black/30 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center hover:bg-black/50 hover:border-white/40 transition-all duration-300 group">
+        <svg className="w-6 h-6 text-white group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+      </div>
+    </div>
+  );
+};
+
 export const ProjectModal: React.FC<ProjectModalProps> = ({ project, isOpen, onClose }) => {
   if (!isOpen) return null;
 
   const video = project.media?.find((m: any) => m.type === "video");
   const images = project.media?.filter((m: any) => m.type === "image") || [];
   const deployment = project.media?.find((m: any) => m.type === "deployment");
+
+  // Slider settings
+  const sliderSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 4000,
+    nextArrow: <NextArrow />,
+    prevArrow: <PrevArrow />,
+    appendDots: (dots: any) => (
+      <div>
+        <ul className="flex justify-center space-x-2 mt-4"> {dots} </ul>
+      </div>
+    ),
+    customPaging: (i: number) => (
+      <div className="w-3 h-3 bg-white/30 rounded-full hover:bg-white/50 transition-colors cursor-pointer"></div>
+    ),
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-lg animate-fade-in">
@@ -61,7 +129,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, isOpen, onC
                       .replace("watch?v=", "embed/")
                       .replace("youtu.be/", "youtube.com/embed/");
                     return (
-                      <div className="relative w-full h-0 pb-[56.25%] rounded-xl overflow-hidden mb-4">
+                      <div className="relative w-full h-0 pb-[56.25%] rounded-xl overflow-hidden mb-4 border border-purple-500/20 bg-black/50">
                         <iframe
                           src={embedUrl}
                           title={`${project.title} - Video Demo`}
@@ -72,7 +140,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, isOpen, onC
                     );
                   } else {
                     return (
-                      <div className="relative w-full h-96 bg-black rounded-xl flex items-center justify-center mb-4">
+                      <div className="relative w-full h-96 bg-black rounded-xl flex items-center justify-center mb-4 border border-purple-500/20">
                         <div className="absolute inset-0 bg-gradient-to-br from-purple-900/50 to-pink-900/50 rounded-xl"></div>
                         <div className="relative z-10 text-center">
                           <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mb-4 mx-auto">
@@ -82,7 +150,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, isOpen, onC
                           <Link
                             href={video.url}
                             target="_blank"
-                            className="inline-flex items-center space-x-2 bg-white/10 hover:bg-white/20 px-6 py-3 rounded-lg transition-all duration-300"
+                            className="inline-flex items-center space-x-2 bg-white/10 hover:bg-white/20 px-6 py-3 rounded-lg transition-all duration-300 border border-white/20"
                           >
                             <span>Watch Video</span>
                             <span>→</span>
@@ -95,41 +163,36 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, isOpen, onC
               </div>
             )}
 
-            {/* Images Section */}
+            {/* Images Section - Updated with modern styling */}
             {images.length > 0 && (
               <div>
                 <h3 className="text-xl font-semibold text-white mb-4 border-b border-purple-500/30 pb-2">
                   {video ? 'Project Images' : 'Media Gallery'}
                 </h3>
                 {images.length === 1 ? (
-                  <div className="relative w-full h-96 rounded-xl overflow-hidden">
+                  <div className="relative w-full h-96 rounded-xl overflow-hidden border border-purple-500/20 bg-gradient-to-br from-purple-500/10 to-pink-500/10">
                     <Image
                       src={images[0].url}
                       alt={`${project.title} - Main Image`}
                       fill
                       className="object-cover rounded-xl hover:scale-105 transition-transform duration-500"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
                     />
                   </div>
                 ) : (
-                  <div className="rounded-xl overflow-hidden">
-                    <Slider
-                      dots
-                      infinite
-                      speed={500}
-                      slidesToShow={1}
-                      slidesToScroll={1}
-                      arrows={true}
-                      autoplay
-                      autoplaySpeed={4000}
-                    >
+                  <div className="relative rounded-xl overflow-hidden border border-purple-500/20 bg-gradient-to-br from-purple-500/10 to-pink-500/10 p-2">
+                    <Slider {...sliderSettings}>
                       {images.map((img: any, i: number) => (
-                        <div key={i} className="relative h-96">
+                        <div key={i} className="relative h-96 rounded-lg overflow-hidden">
                           <Image
                             src={img.url}
                             alt={`${project.title} - image ${i + 1}`}
                             fill
                             className="object-cover"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
                           />
+                          {/* Gradient overlay for better text readability if needed */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
                         </div>
                       ))}
                     </Slider>
@@ -140,7 +203,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, isOpen, onC
 
             {/* Fallback if no media */}
             {!video && images.length === 0 && (
-              <div className="w-full h-48 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl flex items-center justify-center">
+              <div className="w-full h-48 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl flex items-center justify-center border border-purple-500/30">
                 <span className="text-6xl">🚀</span>
               </div>
             )}
