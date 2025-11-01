@@ -1,0 +1,208 @@
+// app/[username]/portfolio.ts
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
+// Type definitions (same as before)
+export interface Education {
+  id: string;
+  institution: string;
+  degree: string;
+  startYear: string;
+  endYear: string;
+  pursuing: boolean;
+  grade: string;
+  gradeScale: string;
+  level: string;
+  logo?: string;
+  domain?: string;
+}
+
+export interface Experience {
+  id: string;
+  company: string;
+  companyUrl?: string;
+  title: string;
+  start: string;
+  end: string;
+  present: boolean;
+  description: string;
+  logo?: string;
+  skills: string[];
+}
+
+export interface AboutData {
+  bio?: string;
+  roles?: string[];
+  education?: Education[];
+  experience?: Experience[];
+}
+
+export interface Skill {
+  id: string;
+  name: string;
+  logo_url?: string;
+}
+
+export interface SkillsData {
+  technical?: Skill[];
+  soft?: string[];
+}
+
+export interface ProjectMedia {
+  type: "image" | "video" | "deployment";
+  url: string;
+}
+
+export interface ProjectTech {
+  name: string;
+  logo_url?: string;
+}
+
+export interface Project {
+  id: string;
+  title: string;
+  role: string;
+  overview: string;
+  process?: string;
+  results?: string;
+  techStack: ProjectTech[];
+  repoLink?: string;
+  media: ProjectMedia[];
+}
+
+export interface ProjectsData {
+  projects: Project[];
+}
+
+export interface ContactLink {
+  id: string;
+  name: string;
+  url: string;
+  logo_url?: string;
+}
+
+export interface ContactData {
+  email?: string;
+  phone?: string;
+  address?: string;
+  linkedin?: string;
+  github?: string;
+  other_links?: ContactLink[];
+}
+
+export interface Language {
+  id: string;
+  name: string;
+  proficiency: "Beginner" | "Elementary" | "Intermediate" | "Advanced" | "Fluent" | "Native";
+}
+
+export interface LangIntData {
+  language?: Language[];
+  interest?: string[];
+}
+
+export interface ResumeData {
+  resume_url?: string;
+}
+
+export interface ProfileData {
+  uid: string;
+  full_name: string;
+  photo_url?: string;
+}
+
+export interface UserData {
+  profile: ProfileData;
+  about: AboutData | null;
+  skills: SkillsData | null;
+  projects: ProjectsData | null;
+  contact: ContactData | null;
+  langint: LangIntData | null;
+  resume: ResumeData | null;
+}
+
+export async function fetchUserData(username: string): Promise<{ data: UserData | null; error: string | null }> {
+  try {
+    // Get user ID from username
+    const { data: usernameData, error: usernameError } = await supabase
+      .from("users_usernames")
+      .select("auth_user_id")
+      .ilike("username", username)
+      .single();
+
+    if (usernameError || !usernameData) {
+      return { data: null, error: "User not found" };
+    }
+
+    // Fetch all user data in parallel
+    const [
+      { data: profile },
+      { data: about },
+      { data: skills },
+      { data: projects },
+      { data: contact },
+      { data: langint },
+      { data: resume },
+    ] = await Promise.all([
+      supabase
+        .from("user_profiles")
+        .select("*")
+        .eq("uid", usernameData.auth_user_id)
+        .single(),
+      supabase
+        .from("about")
+        .select("*")
+        .eq("auth_user_id", usernameData.auth_user_id)
+        .single(),
+      supabase
+        .from("skills")
+        .select("*")
+        .eq("auth_user_id", usernameData.auth_user_id)
+        .single(),
+      supabase
+        .from("project")
+        .select("*")
+        .eq("id", usernameData.auth_user_id)
+        .single(),
+      supabase
+        .from("contact")
+        .select("*")
+        .eq("auth_user_id", usernameData.auth_user_id)
+        .single(),
+      supabase
+        .from("langint")
+        .select("*")
+        .eq("auth_user_id", usernameData.auth_user_id)
+        .single(),
+      supabase
+        .from("resumes")
+        .select("*")
+        .eq("auth_user_id", usernameData.auth_user_id)
+        .single(),
+    ]);
+
+    if (!profile) {
+      return { data: null, error: "User profile not found" };
+    }
+
+    return {
+      data: {
+        profile,
+        about,
+        skills,
+        projects,
+        contact,
+        langint,
+        resume,
+      },
+      error: null,
+    };
+  } catch (err) {
+    console.error("Error fetching user data:", err);
+    return { data: null, error: "Failed to load portfolio" };
+  }
+}
