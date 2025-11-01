@@ -15,25 +15,28 @@ interface ProjectModalProps {
   onClose: () => void;
 }
 
+
 // Custom arrow components for the slider
 const NextArrow = (props: any) => {
   const { className, style, onClick } = props;
   return (
     <div
-      className={`${className} next-arrow`}
+      className={`${className}`}
       style={{
         ...style,
         display: "block",
-        right: "40px",
-        zIndex: 1,
+        right: "20px",
+        top: "50%",
+        transform: "translateY(-50%)",
+        zIndex: 100,
       }}
       onClick={onClick}
     >
-      <div className="w-12 h-12 bg-black/30 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center hover:bg-black/50 hover:border-white/40 transition-all duration-300 group">
-        <svg className="w-6 h-6 text-white group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      {/* <div className="w-12 h-12 bg-black/20 backdrop-blur-md border border-white/10 rounded-full flex items-center justify-center hover:bg-black/30 hover:border-white/20 transition-all duration-300 group">
+        <svg className="w-6 h-6 text-white/90 group-hover:text-white group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
         </svg>
-      </div>
+      </div> */}
     </div>
   );
 };
@@ -42,20 +45,22 @@ const PrevArrow = (props: any) => {
   const { className, style, onClick } = props;
   return (
     <div
-      className={`${className} prev-arrow`}
+      className={`${className} `}
       style={{
         ...style,
         display: "block",
-        left: "10px",
-        zIndex: 1,
+        left: "20px",
+        top: "50%",
+        transform: "translateY(-50%)",
+        zIndex: 100,
       }}
       onClick={onClick}
     >
-      <div className="w-12 h-12 bg-black/30 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center hover:bg-black/50 hover:border-white/40 transition-all duration-300 group">
-        <svg className="w-6 h-6 text-white group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      {/* <div className="w-12 h-12 bg-black/20 backdrop-blur-md border border-white/10 rounded-full flex items-center justify-center hover:bg-black/30 hover:border-white/20 transition-all duration-300 group">
+        <svg className="w-6 h-6 text-white/90 group-hover:text-white group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
-      </div>
+      </div> */}
     </div>
   );
 };
