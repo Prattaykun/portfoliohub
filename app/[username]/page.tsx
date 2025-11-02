@@ -17,6 +17,7 @@ export default function PortfolioPage() {
   const params = useParams();
   const username = decodeURIComponent(params.username as string);
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedProject, setExpandedProject] = useState<Project | null>(null);
@@ -43,6 +44,20 @@ export default function PortfolioPage() {
   useEffect(() => {
     loadUserData();
   }, [loadUserData]);
+
+  // detect mobile viewport on client and update state so we can conditionally avoid heavy visuals
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia('(max-width: 767px)');
+    const onChange = () => setIsMobile(mq.matches);
+    onChange();
+    if (mq.addEventListener) mq.addEventListener('change', onChange);
+    else mq.addListener(onChange);
+    return () => {
+      if (mq.removeEventListener) mq.removeEventListener('change', onChange);
+      else mq.removeListener(onChange);
+    };
+  }, []);
 
   const handleDownloadResume = useCallback(() => {
     if (userData?.resume?.resume_url) {
@@ -76,11 +91,13 @@ export default function PortfolioPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white relative overflow-hidden">
-      {/* Particles Background */}
-      <Particles 
-        className="absolute inset-0 z-0 opacity-60 pointer-events-none" 
-        quantity={80} 
-      />
+      {/* Particles Background (disabled on small screens for performance) */}
+      {!isMobile && (
+        <Particles
+          className="absolute inset-0 z-0 opacity-60 pointer-events-none"
+          quantity={80}
+        />
+      )}
 
       {/* Project Modal */}
       <ProjectModal 
