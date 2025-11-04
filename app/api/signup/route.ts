@@ -36,7 +36,7 @@ export async function POST(req: Request) {
       .select()
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: 'Unexpected server error, If you already have an account through other providers, please log in or try reset password to set new password for the same email.' }, { status: 500 })
     }
 
     return NextResponse.json({ ok: true, data })
