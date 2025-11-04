@@ -42,7 +42,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, data })
   } catch (err: any) {
     return NextResponse.json(
-      { error: err?.message || 'Unexpected server error' },
+      { error: 'Unexpected server error, If you already have an account through other providers, please log in or try reset password to set new password for the same email.' },
       { status: 500 }
     )
   }
