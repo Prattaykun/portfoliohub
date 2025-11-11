@@ -20,7 +20,7 @@ interface Profile {
   photo_url: string
   pronouns: string
   locale: string
-    signature: string
+  signature: string
   updated_at: string
   created_at: string
 }
@@ -139,6 +139,22 @@ interface LangInt {
   created_at: string
 }
 
+interface CertificateSkill {
+  name: string
+  logo_url?: string
+  category?: string
+  source?: string
+}
+
+interface Certificate {
+  name: string
+  organization?: string
+  issue_date?: string
+  credential_id?: string
+  credential_url?: string
+  skills?: CertificateSkill[]
+}
+
 interface RequestPayload {
   profile: Profile
   about: About
@@ -146,11 +162,12 @@ interface RequestPayload {
   projects: Projects
   contact: Contact
   langint: LangInt
+  certificates?: Certificate[]
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const { profile, about, skills, projects, contact, langint }: RequestPayload = await request.json()
+    const { profile, about, skills, projects, contact, langint, certificates = [] }: RequestPayload = await request.json()
 
     if (!profile || !about || !contact) {
       return NextResponse.json(
@@ -159,8 +176,33 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Process signature if available
+    let processedProfile = { ...profile }
+    if (profile.signature) {
+      try {
+        // Call the signature processing API
+        const processResponse = await fetch(`${getBaseUrl()}/api/process-signature`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            signatureUrl: profile.signature
+          })
+        })
+
+        if (processResponse.ok) {
+          const { processedSignatureUrl } = await processResponse.json()
+          processedProfile.signature = processedSignatureUrl
+        }
+      } catch (error) {
+        console.error('Signature processing failed, using original:', error)
+        // Continue with original signature if processing fails
+      }
+    }
+
     // Generate HTML content for the resume
-    const htmlContent = generateResumeHTML(profile, about, skills, projects, contact, langint)
+    const htmlContent = generateResumeHTML(processedProfile, about, skills, projects, contact, langint, certificates)
 
     // Generate PDF from HTML
     const pdfBuffer = await generatePDF(htmlContent)
@@ -172,10 +214,21 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Resume generation error:', error)
     return NextResponse.json(
-      { error: 'Failed to generate resume' },
+      { 
+        error: 'Failed to generate resume',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     )
   }
+}
+
+// Helper function to get base URL
+function getBaseUrl(): string {
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`
+  }
+  return `http://localhost:${process.env.PORT || 3000}`
 }
 
 function generateResumeHTML(
@@ -184,16 +237,19 @@ function generateResumeHTML(
   skills: Skills, 
   projects: Projects, 
   contact: Contact,
-  langint: LangInt
+  langint: LangInt,
+  certificates: Certificate[] = []
 ): string {
   const proficiencyLevels = ["Beginner", "Elementary", "Intermediate", "Advanced", "Fluent", "Native"]
-    function getCurrentDate(): string {
-  const currentDate = new Date();
-  const day = currentDate.getDate().toString().padStart(2, '0');
-  const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
-  const year = currentDate.getFullYear();
-  return `${day}/${month}/${year}`;
-}
+  
+  function getCurrentDate(): string {
+    const currentDate = new Date();
+    const day = currentDate.getDate().toString().padStart(2, '0');
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+    const year = currentDate.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -462,6 +518,7 @@ function generateResumeHTML(
         .page-break {
             page-break-before: always;
         }
+        
         .declaration-section {
             margin-top: 30px;
             padding-top: 20px;
@@ -511,6 +568,7 @@ function generateResumeHTML(
             border-bottom: 1px solid #333;
             margin-bottom: 10px;
         }
+        
         @media print {
             body {
                 padding: 15px;
@@ -637,6 +695,49 @@ function generateResumeHTML(
         </div>
     </div>
 
+    <!-- Certificates Section -->
+    ${certificates && certificates.length > 0 ? `
+    <div class="section">
+        <div class="section-title">CERTIFICATIONS</div>
+        ${certificates.map(cert => `
+            <div style="margin-bottom: 12px;">
+                <div style="font-weight: bold; font-size: 15px; color: #333;">
+                    ${escapeHtml(cert.name)}
+                </div>
+                
+                ${cert.organization ? `
+                    <div style="font-size: 14px; color: #666;">
+                        Issued by: ${escapeHtml(cert.organization)}
+                    </div>
+                ` : ''}
+
+                ${cert.issue_date ? `
+                    <div style="font-size: 13px; color: #888;">
+                        Date: ${formatDate(cert.issue_date)}
+                    </div>
+                ` : ''}
+
+                ${cert.credential_id ? `
+                    <div style="font-size: 13px; color: #444;">
+                        Credential ID: ${escapeHtml(cert.credential_id)}
+                    </div>
+                ` : ''}
+
+                ${cert.skills && cert.skills.length > 0 ? `
+                    <div style="margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px;">
+                        ${cert.skills.map(s => `
+                            <div style="display: inline-flex; align-items: center; gap: 4px; background: #f4f4f4; border: 1px solid #e0e0e0; padding: 4px 8px; border-radius: 4px; font-size: 13px;">
+                                ${s.logo_url ? `<img src="${escapeHtml(s.logo_url)}" style="width:14px;height:14px;object-fit:contain;" />` : ''}
+                                <span>${escapeHtml(s.name)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+            </div>
+        `).join('')}
+    </div>
+    ` : ''}
+    
     <!-- Projects Section -->
     <div class="section">
         <div class="section-title">PROJECTS</div>
@@ -699,34 +800,34 @@ function generateResumeHTML(
         </ul>
     </div>
     ` : ''}
-     <!-- Declaration Section -->
-<div class="section declaration-section">
-    <div class="section-title">DECLARATION</div>
-    <div class="declaration-content">
-        I hereby declare that all the information provided above is true and correct to the best of my knowledge. 
-        I understand that any misrepresentation may lead to disqualification or termination of employment.
-    </div>
-    
-    <div class="signature-area">
-        <div class="signature-container">
-            ${profile.signature ? 
-              `<img src="${escapeHtml(profile.signature)}" alt="Signature" class="signature-image" />` : 
-              '<div class="signature-line"></div>'
-            }
-            <div class="signature-name">${escapeHtml(profile.full_name)}</div>
+
+    <!-- Declaration Section -->
+    <div class="section declaration-section">
+        <div class="section-title">DECLARATION</div>
+        <div class="declaration-content">
+            I hereby declare that all the information provided above is true and correct to the best of my knowledge. 
+            I understand that any misrepresentation may lead to disqualification or termination of employment.
         </div>
         
-        <div class="date-container">
-            <div>${getCurrentDate()}</div>
-            <div class="date-line"></div>
-            <div class="signature-name">Date</div>
+        <div class="signature-area">
+            <div class="signature-container">
+                ${profile.signature ? 
+                  `<img src="${escapeHtml(profile.signature)}" alt="Signature" class="signature-image" />` : 
+                  '<div class="signature-line"></div>'
+                }
+                <div class="signature-name">${escapeHtml(profile.full_name)}</div>
+            </div>
+            
+            <div class="date-container">
+                <div>${getCurrentDate()}</div>
+                <div class="date-line"></div>
+                <div class="signature-name">Date</div>
+            </div>
         </div>
     </div>
-</div>
 </body>
 </html>
   `
-
 }
 
 function escapeHtml(unsafe: string): string {
