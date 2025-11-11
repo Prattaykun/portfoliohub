@@ -662,7 +662,7 @@ export default function SkillsForm() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="text-sm text-zinc-300">
-                    Add certifications. Attach images/PDFs, tag related skills (searches both tables), and include verification links.
+                    Add certifications. Attach images/PDFs, tag related skills, and include verification links.
                   </div>
                   <button onClick={() => addCertificate()} className="text-sm underline hover:text-blue-300">
                     + Add Certificate
