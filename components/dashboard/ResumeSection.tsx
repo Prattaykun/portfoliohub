@@ -1,3 +1,4 @@
+//components/dashboard/ResumeSection.tsx
 "use client"
 
 import { useState, useEffect } from "react"
@@ -149,7 +150,15 @@ const checkProfileCompleteness = async (): Promise<{ isComplete: boolean; missin
       if (!profile || !about || !contact) throw new Error("Incomplete data for resume generation")
 
       // ✅ Include langint
-      const payload = { profile, about, skills, projects, contact, langint }
+const payload = { 
+  profile, 
+  about, 
+  skills, 
+  projects, 
+  contact, 
+  langint,
+  certificates: skills?.certificates ?? []  // ✅ include certificates
+}
 
       const response = await fetch(`/api/${process.env.NEXT_PUBLIC_GENERATE_RESUME_ENDPOINT}`, {
         method: "POST",

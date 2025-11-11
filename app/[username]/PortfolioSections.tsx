@@ -26,7 +26,29 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
 }) => {
   const { profile, about, skills, projects, contact, langint, resume } = userData;
 
-  // Education Section
+  // ---------- Helpers used by Certificates ----------
+  const isPdf = (m: any) => {
+    const fmt = String(m?.format || "").toLowerCase();
+    const url = String(m?.url || "").toLowerCase();
+    return fmt === "pdf" || url.endsWith(".pdf");
+  };
+
+  const isImage = (m: any) => {
+    // exclude pdfs even if Cloudinary stored it with resource_type=image
+    if (isPdf(m)) return false;
+    const url = String(m?.url || "").toLowerCase();
+    return /\.(png|jpg|jpeg|gif|webp|bmp|svg)$/.test(url);
+  };
+
+  const fileLabel = (m: any) => {
+    const fmt = String(m?.format || "").toUpperCase();
+    if (fmt) return fmt;
+    const url = String(m?.url || "");
+    const last = url.split("/").pop() || "FILE";
+    return last.length > 24 ? last.slice(0, 21) + "..." : last;
+  };
+
+  // ---------- Education ----------
   const renderEducation = () => {
     if (!about?.education || about.education.length === 0) return null;
 
@@ -80,7 +102,7 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
                 </div>
 
                 {edu.domain && (
-                  <div className="pt-4 border-t border-white/10">
+                  <div className="pt-4 border t border-white/10">
                     <button
                       onClick={() => {
                         const domainUrl = edu.domain!.startsWith('http') 
@@ -112,7 +134,7 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
     );
   };
 
-  // Experience Section
+  // ---------- Experience ----------
   const renderExperience = () => {
     if (!about?.experience || about.experience.length === 0) return null;
 
@@ -123,7 +145,7 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
             Experience
           </h2>
           
-          <div className="space-y-8">
+        <div className="space-y-8">
             {about.experience.map((exp: Experience, index: number) => (
               <div 
                 key={exp.id}
@@ -182,7 +204,7 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
     );
   };
 
-  // Skills Section
+  // ---------- Skills ----------
   const renderSkills = () => {
     if (!skills) return null;
 
@@ -242,7 +264,147 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
     );
   };
 
-  // Projects Section
+  // ---------- Certificates (NEW) ----------
+  const renderCertificates = () => {
+    const certificates = skills?.certificates || [];
+    if (!certificates || certificates.length === 0) return null;
+
+    return (
+      <section className="py-20 px-4 bg-white/5">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-4xl font-bold text-center mb-16 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+            Certificates
+          </h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
+            {certificates.map((cert: any, idx: number) => (
+              <div
+                key={`${cert.name}-${idx}`}
+                className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-purple-400/30 transition-all duration-300 animate-fade-in-up flex flex-col"
+                style={{ animationDelay: `${idx * 80}ms` }}
+              >
+                {/* Header */}
+                <div className="flex items-start justify-between gap-4 mb-3">
+                  <div className="min-w-0">
+                    <h3 className="text-lg font-semibold text-white">{cert.name || "Certificate"}</h3>
+                    {cert.organization && (
+                      <p className="text-purple-300 text-sm">{cert.organization}</p>
+                    )}
+                  </div>
+                  {cert.issue_date && (
+                    <span className="text-xs text-purple-200 bg-purple-900/40 px-2 py-1 rounded-full shrink-0">
+                      {new Date(cert.issue_date).toLocaleDateString()}
+                    </span>
+                  )}
+                </div>
+
+                {/* Credential */}
+                {(cert.credential_id || cert.credential_url) && (
+                  <div className="text-sm text-gray-300 space-y-1 mb-4">
+                    {cert.credential_id && (
+                      <div>
+                        <span className="text-gray-400">ID: </span>
+                        <span className="font-medium text-white">{cert.credential_id}</span>
+                      </div>
+                    )}
+                    {cert.credential_url && cert.credential_url.trim() !== "" && (
+                      <div className="truncate">
+                        <Link
+                          href={cert.credential_url}
+                          target="_blank"
+                          className="text-blue-300 hover:text-blue-200 underline break-all"
+                        >
+                          Verify Credential ↗
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Skills chips */}
+                {Array.isArray(cert.skills) && cert.skills.length > 0 && (
+                  <div className="mb-4">
+                    <div className="text-sm text-gray-300 mb-2">Related skills</div>
+                    <div className="flex flex-wrap gap-2">
+                      {cert.skills.map((s: any, i: number) => (
+                        <span
+                          key={`${s?.source || 'skill'}-${s?.name || i}-${i}`}
+                          className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-gray-100 text-sm border border-white/10"
+                        >
+                          {s?.logo_url ? (
+                            <Image
+                              src={s.logo_url}
+                              alt={s?.name || "skill"}
+                              width={16}
+                              height={16}
+                              className="rounded-sm"
+                            />
+                          ) : null}
+                          <span className="font-medium">{s?.name || "Skill"}</span>
+                          {s?.source && (
+                            <span className="text-[10px] uppercase tracking-wide text-gray-400">
+                              {s.source}
+                            </span>
+                          )}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Media grid */}
+                {Array.isArray(cert.media) && cert.media.length > 0 ? (
+                  <div className="mt-auto">
+                    <div className="text-sm text-gray-300 mb-2">Attachments</div>
+                    <div className="grid grid-cols-2 gap-3">
+                      {cert.media.map((m: any, i: number) => (
+                        <div key={i} className="border rounded-md p-2 bg-white/5">
+                          {/* Show PDF icon if pdf, else show image; otherwise fallback link */}
+                          {isPdf(m) ? (
+                            <Link href={m?.url} target="_blank" className="block">
+                              <Image
+                                src="/pdf.png"
+                                alt={fileLabel(m)}
+                                width={400}
+                                height={300}
+                                className="w-full h-28 object-contain rounded bg-white"
+                              />
+                            </Link>
+                          ) : isImage(m) ? (
+                            <Link href={m?.url} target="_blank" className="block">
+                              <Image
+                                src={m?.url}
+                                alt={fileLabel(m)}
+                                width={400}
+                                height={300}
+                                className="w-full h-28 object-cover rounded"
+                              />
+                            </Link>
+                          ) : (
+                            <Link
+                              href={m?.url}
+                              target="_blank"
+                              className="flex items-center justify-center w-full h-28 rounded bg-white text-sm text-blue-700 underline"
+                            >
+                              {fileLabel(m)}
+                            </Link>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-sm text-gray-400">No attachments.</div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  };
+
+  // ---------- Projects ----------
   const renderProjects = () => {
     if (!projects?.projects || projects.projects.length === 0) return null;
 
@@ -456,7 +618,7 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
     );
   };
 
-  // Languages & Interests Section
+  // ---------- Languages & Interests ----------
   const renderLanguagesAndInterests = () => {
     if (!langint?.language && !langint?.interest) return null;
 
@@ -522,7 +684,7 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
     );
   };
 
-  // Footer
+  // ---------- Footer ----------
   const renderFooter = () => (
     <footer className="py-12 px-4 border-t border-white/10">
       <div className="max-w-6xl mx-auto text-center">
@@ -551,6 +713,7 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
       {renderEducation()}
       {renderExperience()}
       {renderSkills()}
+      {renderCertificates()}{/* ← NEW: Certificates right after Skills */}
       {renderProjects()}
       {renderLanguagesAndInterests()}
       {renderFooter()}

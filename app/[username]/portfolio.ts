@@ -47,9 +47,34 @@ export interface Skill {
   logo_url?: string;
 }
 
+export interface CertificateMedia {
+  url: string;
+  format?: string;          // "pdf", "jpg", etc.
+  public_id?: string;
+  resource_type?: string;   // sometimes "image" even for pdf
+}
+
+export interface CertificateSkill {
+  name: string;
+  source: "soft" | "technical"; // where it came from
+  category?: string;
+  logo_url?: string;
+}
+
+export interface Certificate {
+  name: string;
+  organization?: string;
+  issue_date?: string;          // ISO date string
+  credential_id?: string;
+  credential_url?: string;
+  skills?: CertificateSkill[];
+  media?: CertificateMedia[];
+}
+
 export interface SkillsData {
   technical?: Skill[];
   soft?: string[];
+  certificates?: Certificate[];
 }
 
 export interface ProjectMedia {
