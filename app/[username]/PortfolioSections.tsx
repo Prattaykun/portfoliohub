@@ -102,7 +102,7 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
                 </div>
 
                 {edu.domain && (
-                  <div className="pt-4 border t border-white/10">
+                  <div className="pt-4">
                     <button
                       onClick={() => {
                         const domainUrl = edu.domain!.startsWith('http') 
