@@ -69,7 +69,7 @@ export default function Navbar() {
       {/* Desktop Navigation */}
       <ul className="hidden md:flex items-center gap-6 text-zinc-300">
         {/* {/* <Link href="/projects" className="hover:text-white transition-colors">Projects</Link> */}
-        <Link href="/Prattay" className="hover:text-white transition-colors">Contact Me</Link>
+        <Link href="/Prattay" className="hover:text-white transition-colors">Contact The Dev.</Link>
         {user ? (
           <>
             <Link href="/dashboard" className="inline-block">
@@ -126,7 +126,7 @@ export default function Navbar() {
         {menuOpen && (
           <div className="absolute right-0 mt-2 w-40 bg-black/80 rounded-lg shadow-lg backdrop-blur-md border border-white/10 py-2 flex flex-col text-zinc-300">
             {/* <Link href="/projects" className="px-4 py-2 hover:bg-white/10">Projects</Link> */}
-            <Link href="/Prattay" className="px-4 py-2 hover:bg-white/10">Contact Me</Link> 
+            <Link href="/Prattay" className="px-4 py-2 hover:bg-white/10">Contact The Dev.</Link> 
             {user ? (
               <button
                 onClick={handleLogout}
