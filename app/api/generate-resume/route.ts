@@ -38,12 +38,6 @@ interface Education {
   institution: string
 }
 
-/**
- * New structure for experience:
- * about.experience: CompanyExperience[]
- * CompanyExperience: { id, logo, company, companyUrl, roles: Role[] }
- * Role: { id, start, end, title, skills, present, attachments, description }
- */
 interface Role {
   id: string
   start: string
@@ -292,12 +286,7 @@ function generateResumeHTML(
     return !!(skills && Array.isArray(skills.soft) && skills.soft.length > 0)
   }
 
-  /**
-   * Render experience grouped by company.
-   * For each company: show company logo + name
-   * Under company, list roles sorted: present first, then by start desc (latest first).
-   * Each role shows title, date range and description.
-   */
+
   function renderExperienceByCompany(companies?: CompanyExperience[]): string {
     if (!companies || companies.length === 0) return ''
     return `
@@ -401,12 +390,14 @@ function generateResumeHTML(
 
         .summary { text-align:justify; line-height:1.7; }
 
-        .education-item, .project-item { margin-bottom:18px; padding-left:10px; }
-        .item-header { display:flex; align-items:flex-start; margin-bottom:8px; }
-        .item-logo { width:40px; height:40px; border-radius:4px; margin-right:12px; object-fit:contain; }
-        .item-title-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
-        .item-title { font-weight:700; font-size:16px; color:#333; }
-        .item-date { color:#888; font-size:14px; white-space:nowrap; }
+        /* Education / item styles: ensure date sits on the right and doesn't overlap */
+        .education-item { margin-bottom:18px; }
+        .item-header { display:flex; align-items:flex-start; gap:12px; margin-bottom:8px; }
+        .item-logo { width:40px; height:40px; border-radius:4px; object-fit:contain; flex:0 0 40px; }
+        .item-content { flex:1 1 auto; min-width:0; } /* min-width:0 allows children to truncate instead of overflowing */
+        .item-title-row { display:grid; grid-template-columns: 1fr auto; align-items:center; column-gap:12px; }
+        .item-title { font-weight:700; font-size:16px; color:#333; overflow-wrap:break-word; word-break:break-word; }
+        .item-date { color:#888; font-size:14px; white-space:nowrap; justify-self:end; }
         .item-subtitle { color:#666; font-size:14px; margin-bottom:4px; }
         .item-description { margin-top:6px; text-align:justify; font-size:14px; line-height:1.5; }
 
@@ -417,7 +408,7 @@ function generateResumeHTML(
         .company-logo-placeholder { width:56px; height:56px; border-radius:6px; background:#f0f0f0; }
         .company-name { font-weight:700; font-size:16px; color:#111; }
 
-        /* Roles list for a company - small timeline like style */
+        
         .company-roles { padding-left:8px; }
         .role-row { position:relative; padding-left:28px; margin-bottom:14px; }
         .role-timeline-dot {
