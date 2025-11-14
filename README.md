@@ -14,6 +14,7 @@ The application provides a user-friendly dashboard for managing portfolio conten
     -   **About**: Bio, roles, education, and work experience.
     -   **Skills**: Separate inputs for technical and soft skills with search and auto-fill.
     -   **Projects**: Showcase your work with titles, descriptions, tech stacks, media (images/videos), and repository links.
+    -   **Dynamic Media Sections**: Add multiple sections for Achievements, Services, Testimonials, extracurriculars, and more.
     -   **Contact**: Share your email, phone, and social links (LinkedIn, GitHub, etc.).
     -   **Languages & Interests**: Add spoken languages and personal interests.
 -   **Secure Authentication**: Secure sign-up and login with email/password or via OAuth providers (Google, GitHub, LinkedIn).
