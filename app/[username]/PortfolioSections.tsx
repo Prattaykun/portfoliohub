@@ -89,7 +89,7 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
             </svg>
           </button>
 
-          <div className="text-center mb-6">
+          <div className="text-center pt-10 mb-6">
             <h3 className="text-2xl font-bold text-white">{title}</h3>
             {sectionName && <div className="text-sm text-gray-300 mt-1">{sectionName}</div>}
             {/* <div className="text-xs text-gray-400 mt-2 uppercase">{type}</div> */}
