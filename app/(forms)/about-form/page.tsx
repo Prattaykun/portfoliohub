@@ -749,7 +749,7 @@ export default function AboutForm() {
                                 <div className="text-xs whitespace-nowrap">Offer letter</div>
                                 <CldUploadWidget
                                   uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!}
-                                  options={{ multiple: false, folder: "offer_letters", resourceType: "auto" }}
+                                  options={{ multiple: false, folder: "offer_letters", resourceType: "image" }}
                                   onSuccess={(res: CloudinaryUploadResultInfo) => {
                                     if (res?.info?.secure_url) updateExperience(ex.id, { offerLetter: res.info.secure_url });
                                   }}

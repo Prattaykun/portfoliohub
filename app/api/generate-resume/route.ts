@@ -225,7 +225,7 @@ export async function POST(request: NextRequest) {
 // Helper function to get base URL
 function getBaseUrl(): string {
   if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`
+    return `https://${process.env.NEXT_PUBLIC_SITE_URL}`
   }
   return `http://localhost:${process.env.PORT || 3000}`
 }
