@@ -38,25 +38,37 @@ interface Education {
   institution: string
 }
 
-interface Experience {
+/**
+ * New structure for experience:
+ * about.experience: CompanyExperience[]
+ * CompanyExperience: { id, logo, company, companyUrl, roles: Role[] }
+ * Role: { id, start, end, title, skills, present, attachments, description }
+ */
+interface Role {
   id: string
-  end: string
-  logo: string
   start: string
+  end: string
   title: string
-  skills: string[]
+  skills?: string[]
+  present?: boolean
+  attachments?: string[]
+  description?: string
+}
+
+interface CompanyExperience {
+  id: string
+  logo?: string
+  roles: Role[]
   company: string
-  present: boolean
-  companyUrl: string
-  description: string
-  offerLetter: string
+  companyUrl?: string
 }
 
 interface About {
   auth_user_id: string
   bio: string
   education: Education[]
-  experience: Experience[]
+  // changed to CompanyExperience[]
+  experience: CompanyExperience[]
   updated_at: string
   roles: string[]
 }
@@ -70,9 +82,11 @@ interface TechnicalSkill {
 
 interface Skills {
   auth_user_id: string
-  soft: string[]
+  soft: string[] | null
   updated_at: string
-  technical: TechnicalSkill[]
+  technical: TechnicalSkill[] | null
+  // media column stored as array of objects; type relaxed to any here
+  media?: any
 }
 
 interface ProjectMedia {
@@ -249,332 +263,206 @@ function generateResumeHTML(
     return `${day}/${month}/${year}`;
   }
 
+  // Extract achievements from skills.media if present
+  const achievements: { title: string; description?: string }[] = []
+  try {
+    if (skills?.media && Array.isArray(skills.media)) {
+      // find any media block where name equals 'Achievements' (case-insensitive)
+      const achBlocks = skills.media.filter((m: any) => (m?.name || '').toLowerCase() === 'achievements')
+      for (const block of achBlocks) {
+        const items = Array.isArray(block.items) ? block.items : []
+        for (const it of items) {
+          // Per instruction: if type === 'text' -> use url as title, else use title
+          const title = it?.type === 'text' ? (it?.url || it?.title || '') : (it?.title || it?.url || '')
+          const description = it?.description || ''
+          if (title) achievements.push({ title, description })
+        }
+      }
+    }
+  } catch (e) {
+    // ignore parse errors; achievements remain empty
+    console.warn('Error parsing achievements from skills.media', e)
+  }
+
+  // Helper to safely check arrays
+  function hasTechnicalSkills(): boolean {
+    return !!(skills && Array.isArray(skills.technical) && skills.technical.length > 0)
+  }
+  function hasSoftSkills(): boolean {
+    return !!(skills && Array.isArray(skills.soft) && skills.soft.length > 0)
+  }
+
+  /**
+   * Render experience grouped by company.
+   * For each company: show company logo + name
+   * Under company, list roles sorted: present first, then by start desc (latest first).
+   * Each role shows title, date range and description.
+   */
+  function renderExperienceByCompany(companies?: CompanyExperience[]): string {
+    if (!companies || companies.length === 0) return ''
+    return `
+    <div class="section">
+      <div class="section-title">EXPERIENCE</div>
+      <div class="companies">
+        ${companies.map((company) => {
+          // defensive defaults
+          const roles = Array.isArray(company.roles) ? company.roles.slice() : []
+          // sort: present first, then by start desc (newest first)
+          roles.sort((a: Role, b: Role) => {
+            if ((a.present ? 1 : 0) !== (b.present ? 1 : 0)) {
+              return (b.present ? 1 : 0) - (a.present ? 1 : 0) // present first
+            }
+            const aStart = a.start ? new Date(a.start).getTime() : 0
+            const bStart = b.start ? new Date(b.start).getTime() : 0
+            return bStart - aStart
+          })
+
+          return `
+            <div class="company-block">
+              <div class="company-header">
+                ${company.logo ? `<img src="${escapeHtml(company.logo)}" alt="${escapeHtml(company.company)}" class="company-logo-large" />` : `<div class="company-logo-placeholder"></div>`}
+                <div class="company-header-text">
+                  <div class="company-name">${escapeHtml(company.company)}</div>
+                </div>
+              </div>
+
+              <div class="company-roles">
+                ${roles.map(role => {
+                  const startText = formatDate(role.start)
+                  const endText = role.present ? 'Present' : formatDate(role.end)
+                  const dateLine = `${startText} - ${endText}`
+                  return `
+                    <div class="role-row">
+                      <div class="role-timeline-dot"></div>
+                      <div class="role-content">
+                        <div class="role-title">${escapeHtml(role.title)}</div>
+                        <div class="role-date">${escapeHtml(dateLine)}</div>
+                        ${role.description ? `<div class="role-desc">${escapeHtml(role.description)}</div>` : ''}
+                      </div>
+                    </div>
+                  `
+                }).join('')}
+              </div>
+            </div>
+          `
+        }).join('')}
+      </div>
+    </div>
+    `
+  }
+
   return `
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${profile.full_name} - Resume</title>
+    <title>${escapeHtml(profile.full_name)} - Resume</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        /* Made-with badge at the end of the document */
+.made-with {
+  margin-top: 30px;
+  text-align: center;
+  font-size: 13px;
+  color: #666;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  opacity: 0.95;
+}
+.made-with-img {
+  width: 120px;
+  height: auto;
+  display: block;
+}
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 210mm;
-            margin: 0 auto;
-            padding: 25px;
-            background: #fff;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          color: #333;
+          max-width: 210mm;
+          margin: 0 auto;
+          padding: 25px;
+          background: #fff;
+          line-height: 1.5;
         }
-        
-        .header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 25px;
-            border-bottom: 2px solid #2c5aa0;
-            padding-bottom: 20px;
+        .header { display:flex; align-items:center; margin-bottom:25px; border-bottom:2px solid #2c5aa0; padding-bottom:20px; }
+        .profile-photo { width:120px; height:120px; border-radius:50%; object-fit:cover; border:3px solid #2c5aa0; margin-right:25px; }
+        .header-content { flex:1; }
+        .name { font-size:28px; font-weight:700; color:#2c5aa0; margin-bottom:5px; }
+        .roles { font-size:18px; color:#666; margin-bottom:15px; font-style:italic; }
+        .contact-info { display:flex; flex-wrap:wrap; gap:15px; font-size:14px; color:#555; }
+        .contact-item { display:flex; align-items:center; gap:6px; }
+        .contact-icon { width:16px; height:16px; border-radius:2px; }
+
+        .section { margin-bottom:20px; }
+        .section-title { font-size:18px; font-weight:700; color:#2c5aa0; border-bottom:1px solid #ddd; padding-bottom:8px; margin-bottom:12px; }
+
+        .summary { text-align:justify; line-height:1.7; }
+
+        .education-item, .project-item { margin-bottom:18px; padding-left:10px; }
+        .item-header { display:flex; align-items:flex-start; margin-bottom:8px; }
+        .item-logo { width:40px; height:40px; border-radius:4px; margin-right:12px; object-fit:contain; }
+        .item-title-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
+        .item-title { font-weight:700; font-size:16px; color:#333; }
+        .item-date { color:#888; font-size:14px; white-space:nowrap; }
+        .item-subtitle { color:#666; font-size:14px; margin-bottom:4px; }
+        .item-description { margin-top:6px; text-align:justify; font-size:14px; line-height:1.5; }
+
+        /* Company block */
+        .company-block { margin-bottom:18px; padding-left:6px; border-left: none; }
+        .company-header { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+        .company-logo-large { width:56px; height:56px; object-fit:contain; border-radius:6px; }
+        .company-logo-placeholder { width:56px; height:56px; border-radius:6px; background:#f0f0f0; }
+        .company-name { font-weight:700; font-size:16px; color:#111; }
+
+        /* Roles list for a company - small timeline like style */
+        .company-roles { padding-left:8px; }
+        .role-row { position:relative; padding-left:28px; margin-bottom:14px; }
+        .role-timeline-dot {
+          position:absolute;
+          left:6px;
+          top:6px;
+          width:12px;
+          height:12px;
+          background:#bdbdbd;
+          border-radius:50%;
         }
-        
-        .profile-photo {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #2c5aa0;
-            margin-right: 25px;
-        }
-        
-        .header-content {
-            flex: 1;
-        }
-        
-        .name {
-            font-size: 28px;
-            font-weight: bold;
-            color: #2c5aa0;
-            margin-bottom: 5px;
-        }
-        
-        .roles {
-            font-size: 18px;
-            color: #666;
-            margin-bottom: 15px;
-            font-style: italic;
-        }
-        
-        .contact-info {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            font-size: 14px;
-            color: #555;
-        }
-        
-        .contact-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .contact-icon {
-            width: 16px;
-            height: 16px;
-            border-radius: 2px;
-        }
-        
-        .section {
-            margin-bottom: 20px;
-        }
-        
-        .section-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #2c5aa0;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 5px;
-            margin-bottom: 15px;
-        }
-        
-        .summary {
-            text-align: justify;
-            line-height: 1.7;
-        }
-        
-        .education-item, .experience-item, .project-item {
-            margin-bottom: 18px;
-            padding-left: 10px;
-        }
-        
-        .item-header {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 8px;
-        }
-        
-        .item-logo {
-            width: 40px;
-            height: 40px;
-            border-radius: 4px;
-            margin-right: 12px;
-            object-fit: contain;
-        }
-        
-        .item-content {
-            flex: 1;
-        }
-        
-        .item-title-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 4px;
-        }
-        
-        .item-title {
-            font-weight: bold;
-            font-size: 16px;
-            color: #333;
-        }
-        
-        .item-date {
-            color: #888;
-            font-size: 14px;
-            white-space: nowrap;
-        }
-        
-        .item-subtitle {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 4px;
-        }
-        
-        .item-description {
-            margin-top: 6px;
-            text-align: justify;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-        
-        .skills-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        
-        .skills-category {
-            margin-bottom: 15px;
-        }
-        
-        .skills-category-title {
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #555;
-        }
-        
-        .skills-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 8px;
-        }
-        
-        .skill-item {
-            background: #f8f9fa;
-            padding: 8px 12px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            border: 1px solid #e9ecef;
-        }
-        
-        .skill-logo {
-            width: 16px;
-            height: 16px;
-        }
-        
-        .soft-skill-item {
-            background: #f8f9fa;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 14px;
-            border: 1px solid #e9ecef;
-        }
-        
-        .languages-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-top: 10px;
-        }
-        
-        .language-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        
-        .language-name {
-            font-weight: 500;
-            flex: 1;
-        }
-        
-        .language-proficiency {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .stars {
-            display: flex;
-            gap: 2px;
-        }
-        
-        .star {
-            color: #ffc107;
-            font-size: 16px;
-        }
-        
-        .empty-star {
-            color: #e0e0e0;
-            font-size: 16px;
-        }
-        
-        .proficiency-text {
-            font-size: 14px;
-            color: #666;
-            min-width: 80px;
-            text-align: right;
-        }
-        
-        .interests-list {
-            list-style: none;
-            padding-left: 0;
-        }
-        
-        .interest-item {
-            padding: 4px 0;
-            position: relative;
-            padding-left: 20px;
-        }
-        
-        .interest-item:before {
-            content: "•";
-            color: #2c5aa0;
-            font-weight: bold;
-            position: absolute;
-            left: 8px;
-        }
-        
-        .page-break {
-            page-break-before: always;
-        }
-        
-        .declaration-section {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #ddd;
-        }
-        
-        .declaration-content {
-            margin-bottom: 20px;
-            line-height: 1.6;
-        }
-        
-        .signature-area {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-top: 40px;
-        }
-        
-        .signature-container {
-            text-align: center;
-        }
-        
-        .signature-image {
-            max-width: 200px;
-            max-height: 80px;
-            margin-bottom: 10px;
-            border-bottom: 1px solid #333;
-        }
-        
-        .signature-line {
-            width: 200px;
-            border-bottom: 1px solid #333;
-            margin-bottom: 10px;
-        }
-        
-        .signature-name {
-            font-weight: bold;
-            color: #333;
-        }
-        
-        .date-container {
-            text-align: center;
-        }
-        
-        .date-line {
-            width: 150px;
-            border-bottom: 1px solid #333;
-            margin-bottom: 10px;
-        }
-        
+        .role-content { }
+        .role-title { font-weight:700; font-size:15px; color:#222; margin-bottom:4px; }
+        .role-date { color:#777; font-size:13px; margin-bottom:6px; }
+        .role-desc { color:#444; font-size:14px; text-align:justify; }
+
+        /* Skills grid */
+        .skills-container { display:grid; grid-template-columns: 1fr 1fr; gap:20px; }
+        .skills-category-title { font-weight:700; margin-bottom:8px; color:#555; }
+        .skills-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap:8px; }
+        .skill-item, .soft-skill-item { background:#f8f9fa; padding:8px 12px; border-radius:6px; display:flex; align-items:center; gap:8px; font-size:14px; border:1px solid #e9ecef; }
+        .skill-logo { width:16px; height:16px; }
+
+        .languages-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:15px; margin-top:10px; }
+        .language-item { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #f0f0f0; }
+        .language-name { font-weight:500; flex:1; }
+        .language-proficiency { display:flex; align-items:center; gap:10px; }
+        .stars { display:flex; gap:2px; }
+        .star { color:#ffc107; font-size:16px; }
+        .empty-star { color:#e0e0e0; font-size:16px; }
+        .proficiency-text { font-size:14px; color:#666; min-width:80px; text-align:right; }
+
+        .interests-list { list-style:none; padding-left:0; }
+        .interest-item { padding:4px 0; position:relative; padding-left:20px; }
+        .interest-item:before { content:"•"; color:#2c5aa0; font-weight:bold; position:absolute; left:8px; }
+
+        .declaration-section { margin-top:30px; padding-top:20px; border-top:1px solid #ddd; }
+        .signature-area { display:flex; justify-content:space-between; align-items:flex-end; margin-top:40px; }
+        .signature-image { max-width:200px; max-height:80px; margin-bottom:10px; border-bottom:1px solid #333; }
+        .signature-line { width:200px; border-bottom:1px solid #333; margin-bottom:10px; }
+        .signature-name { font-weight:700; color:#333; }
+        .date-line { width:150px; border-bottom:1px solid #333; margin-bottom:10px; }
+
         @media print {
-            body {
-                padding: 15px;
-            }
-            .page-break {
-                page-break-before: always;
-            }
+          body { padding:15px; }
         }
     </style>
 </head>
@@ -586,26 +474,31 @@ function generateResumeHTML(
             <div class="name">${escapeHtml(profile.full_name)}</div>
             <div class="roles">${about.roles?.map(role => escapeHtml(role)).join(' • ') || 'B.Tech Student, Electronics & Communication Engineering'}</div>
             <div class="contact-info">
+                ${contact.phone ? `
                 <div class="contact-item">
                     <img src="https://img.icons8.com/?size=100&id=9730&format=png&color=000000" class="contact-icon" />
                     <span>${escapeHtml(contact.phone)}</span>
-                </div>
+                </div>` : ''}
+                ${contact.email ? `
                 <div class="contact-item">
                     <img src="https://img.icons8.com/?size=100&id=12623&format=png&color=000000" class="contact-icon" />
                     <span>${escapeHtml(contact.email)}</span>
-                </div>
+                </div>` : ''}
+                ${contact.linkedin ? `
                 <div class="contact-item">
                     <img src="https://www.google.com/s2/favicons?domain=linkedin.com&sz=128" class="contact-icon" />
                     <span>${escapeHtml(contact.linkedin.replace('https://', '').replace('www.', ''))}</span>
-                </div>
+                </div>` : ''}
+                ${contact.github ? `
                 <div class="contact-item">
                     <img src="https://www.google.com/s2/favicons?domain=github.com&sz=128" class="contact-icon" />
                     <span>${escapeHtml(contact.github.replace('https://', '').replace('www.', ''))}</span>
-                </div>
+                </div>` : ''}
+                ${contact.address ? `
                 <div class="contact-item">
                     <img src="https://img.icons8.com/?size=100&id=7880&format=png&color=000000" class="contact-icon" />
                     <span>${escapeHtml(contact.address)}</span>
-                </div>
+                </div>` : ''}
             </div>
         </div>
     </div>
@@ -638,61 +531,38 @@ function generateResumeHTML(
         `).join('')}
     </div>
 
-    <!-- Experience Section -->
-    ${about.experience && about.experience.length > 0 ? `
+    <!-- Experience Section (companies with roles) -->
+    ${renderExperienceByCompany(about.experience)}
+
+    <!-- Skills Section (conditionally rendered) -->
+    ${(hasTechnicalSkills() || hasSoftSkills()) ? `
     <div class="section">
-        <div class="section-title">EXPERIENCE</div>
-        ${about.experience.map(exp => `
-            <div class="experience-item">
-                <div class="item-header">
-                    ${exp.logo ? `<img src="${escapeHtml(exp.logo)}" alt="${escapeHtml(exp.company)}" class="item-logo" />` : '<div class="item-logo"></div>'}
-                    <div class="item-content">
-                        <div class="item-title-row">
-                            <div class="item-title">${escapeHtml(exp.title)}</div>
-                            <div class="item-date">${formatDate(exp.start)} - ${exp.present ? 'Present' : formatDate(exp.end)}</div>
-                        </div>
-                        <div class="item-subtitle">${escapeHtml(exp.company)}</div>
-                        <div class="item-description">${escapeHtml(exp.description)}</div>
-                        ${exp.skills?.length > 0 ? `
-                            <div class="item-description">
-                                <strong>Technologies:</strong> ${exp.skills.map(skill => escapeHtml(skill)).join(', ')}
-                            </div>
-                        ` : ''}
-                    </div>
+      <div class="section-title">SKILLS</div>
+      <div class="skills-container">
+        ${hasTechnicalSkills() ? `
+          <div class="skills-category">
+            <div class="skills-category-title">Technical Skills</div>
+            <div class="skills-grid">
+              ${skills.technical!.map(skill => `
+                <div class="skill-item">
+                  ${skill.logo_url ? `<img src="${escapeHtml(skill.logo_url)}" alt="${escapeHtml(skill.name)}" class="skill-logo" />` : ''}
+                  <span>${escapeHtml(skill.name)}</span>
                 </div>
+              `).join('')}
             </div>
-        `).join('')}
+          </div>
+        ` : ''}
+        ${hasSoftSkills() ? `
+          <div class="skills-category">
+            <div class="skills-category-title">Soft Skills</div>
+            <div class="skills-grid">
+              ${skills.soft!.map((s: string) => `<div class="soft-skill-item">${escapeHtml(s)}</div>`).join('')}
+            </div>
+          </div>
+        ` : ''}
+      </div>
     </div>
     ` : ''}
-
-    <!-- Skills Section -->
-    <div class="section">
-        <div class="section-title">SKILLS</div>
-        <div class="skills-container">
-            <!-- Technical Skills -->
-            <div class="skills-category">
-                <div class="skills-category-title">Technical Skills</div>
-                <div class="skills-grid">
-                    ${skills.technical?.map(skill => `
-                        <div class="skill-item">
-                            ${skill.logo_url ? `<img src="${escapeHtml(skill.logo_url)}" alt="${escapeHtml(skill.name)}" class="skill-logo" />` : ''}
-                            <span>${escapeHtml(skill.name)}</span>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-            
-            <!-- Soft Skills -->
-            <div class="skills-category">
-                <div class="skills-category-title">Soft Skills</div>
-                <div class="skills-grid">
-                    ${skills.soft?.map(skill => `
-                        <div class="soft-skill-item">${escapeHtml(skill)}</div>
-                    `).join('')}
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Certificates Section -->
     ${certificates && certificates.length > 0 ? `
@@ -736,7 +606,7 @@ function generateResumeHTML(
         `).join('')}
     </div>
     ` : ''}
-    
+
     <!-- Projects Section -->
     <div class="section">
         <div class="section-title">PROJECTS</div>
@@ -760,6 +630,19 @@ function generateResumeHTML(
         `).join('')}
     </div>
 
+    <!-- Achievements: render before Languages & Interests -->
+    ${achievements.length > 0 ? `
+      <div class="section">
+        <div class="section-title">ACHIEVEMENTS</div>
+        ${achievements.map(a => `
+          <div style="margin-bottom:10px;">
+            <div style="font-weight:700; font-size:15px; color:#222;">${escapeHtml(a.title)}</div>
+            ${a.description ? `<div style="font-size:14px;color:#444;margin-top:6px;">${escapeHtml(a.description)}</div>` : ''}
+          </div>
+        `).join('')}
+      </div>
+    ` : ''}
+
     <!-- Languages Section -->
     ${langint?.language && langint.language.length > 0 ? `
     <div class="section">
@@ -767,7 +650,7 @@ function generateResumeHTML(
         <div class="languages-grid">
             ${langint.language.map(lang => {
                 const proficiencyIndex = proficiencyLevels.indexOf(lang.proficiency);
-                const starCount = proficiencyIndex + 1; // 1-6 stars
+                const starCount = proficiencyIndex >= 0 ? proficiencyIndex + 1 : 1;
                 return `
                 <div class="language-item">
                     <div class="language-name">${escapeHtml(lang.name)}</div>
@@ -800,7 +683,7 @@ function generateResumeHTML(
     </div>
     ` : ''}
 
-    <!-- Declaration Section -->
+    <!-- Declaration + Signature -->
     <div class="section declaration-section">
         <div class="section-title">DECLARATION</div>
         <div class="declaration-content">
@@ -824,6 +707,14 @@ function generateResumeHTML(
             </div>
         </div>
     </div>
+        <!-- Made with badge (end of PDF) -->
+    <div class="section">
+      <div class="made-with">
+        <div>Made with 💙</div>
+        <img src="https://portfoliohub-pi.vercel.app/logo1.png" alt="Made with PortfolioHub" class="made-with-img" />
+      </div>
+    </div>
+
 </body>
 </html>
   `
@@ -832,6 +723,7 @@ function generateResumeHTML(
 function escapeHtml(unsafe: string): string {
   if (!unsafe) return ''
   return unsafe
+    .toString()
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
@@ -850,6 +742,7 @@ function formatDate(dateString: string): string {
     // Handle "Present" case
     if (dateString === 'Present') return dateString
     
+    // Many inputs may be YYYY-MM or full ISO; Date constructor handles YYYY-MM as start of month
     const date = new Date(dateString)
     if (isNaN(date.getTime())) {
       return dateString
