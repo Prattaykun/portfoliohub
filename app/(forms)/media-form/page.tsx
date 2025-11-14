@@ -226,7 +226,7 @@ export default function MediaForm() {
 
         <div className="mb-4">
           <div className="flex items-center justify-between">
-            <div className="text-xs text-zinc-200 mb-1">Cards (media, videos, YT-links)</div>
+            <div className="text-xs text-zinc-200 mb-1">Cards (media, videos, links)</div>
             <div className="flex gap-2">
               <button onClick={() => addCardToSection(section.id, { type: "image" })} className="text-sm underline">+ Image</button>
               <button onClick={() => addCardToSection(section.id, { type: "video" })} className="text-sm underline">+ Video</button>
