@@ -12,8 +12,13 @@ import {
   ExperienceEntry, 
   SchoolSearchResult, 
   CompanySearchResult,
-  CloudinaryUploadResultInfo
+  CloudinaryUploadResultInfo,
+  RoleEntry
 } from '@/util/types';
+
+// NOTE: ensure your ExperienceEntry in '@/util/types' matches the shape used below:
+// ExperienceEntry = { id, company, companyUrl, logo, roles: RoleEntry[] }
+// RoleEntry = { id, title, start, end, present, description, skills, skillsInput, attachments }
 
 export default function AboutForm() {
   const [step, setStep] = useState(0);
@@ -74,7 +79,44 @@ export default function AboutForm() {
         setRoles(data.roles || []);
         setBio(data.bio || "");
         setEducation(data.education || []);
-        setExperience(data.experience || []);
+
+        // Normalize experience: convert legacy items into company+roles shape if needed
+        const exs: ExperienceEntry[] = (data.experience || []).map((ex: any) => {
+          // If ex already has roles, ensure skillsInput exists for each role
+          if (ex.roles && Array.isArray(ex.roles)) {
+            return {
+              ...ex,
+              roles: ex.roles.map((r: any) => ({
+                ...r,
+                skillsInput: r.skills ? r.skills.join(", ") : (r.skillsInput ?? ""),
+                attachments: r.attachments ?? [],
+              })),
+            };
+          }
+
+          // If legacy flat experience (single role per company), map to roles array
+          return {
+            id: ex.id ?? Math.random().toString(36).slice(2),
+            company: ex.company ?? ex.companyName ?? "Company / Project",
+            companyUrl: ex.companyUrl ?? ex.company_url ?? "",
+            logo: ex.logo ?? "",
+            roles: [
+              {
+                id: Math.random().toString(36).slice(2),
+                title: ex.title ?? "Role title",
+                start: ex.start ?? "",
+                end: ex.end ?? "",
+                present: ex.present ?? false,
+                description: ex.description ?? "",
+                skills: ex.skills ?? [],
+                skillsInput: ex.skills ? ex.skills.join(", ") : (ex.skillsInput ?? ""),
+                attachments: ex.attachments ?? (ex.offerLetter ? [ex.offerLetter] : []),
+              }
+            ],
+          };
+        });
+
+        setExperience(exs);
       }
     } catch (error) {
       console.error("Error fetching existing data:", error);
@@ -84,7 +126,7 @@ export default function AboutForm() {
     }
   };
 
-  // Resume-based examples (from attached resume)
+  // Resume-based examples (education)
   const eduExamples: Partial<EducationEntry>[] = [
     {
       level: "Graduation",
@@ -116,37 +158,53 @@ export default function AboutForm() {
     },
   ];
 
-  const expExamples: Partial<ExperienceEntry>[] = [
-    {
-      title: "Frontend Engineer Intern",
-      company: "TechInnovate Solutions",
-      companyUrl: "",
-      start: "2024-06",
-      end: "2024-09",
-      present: false,
-      skills: ["React", "TypeScript", "Redux", "Jest"],
-      description: "Developed and maintained responsive web applications using React and TypeScript, improving user engagement by 25% through optimized UI components.",
-    },
-    {
-      title: "Full Stack Developer",
-      company: "DigitalFlow Systems",
-      companyUrl: "",
-      start: "2024-10",
-      end: "",
-      present: true,
-      skills: ["Next.js", "Node.js", "PostgreSQL", "AWS"],
-      description: "Building scalable full-stack applications with Next.js and Node.js, implementing real-time features and optimizing database performance.",
-    },
-    {
-      title: "Software Engineering Intern",
-      company: "CloudNexa Technologies",
-      companyUrl: "",
-      start: "2024-01",
-      end: "2024-05",
-      skills: ["Python", "Django", "Docker", "REST APIs"],
-      description: "Contributed to backend service development using Django, reducing API response times by 40% through query optimization and caching strategies.",
-    },
-  ];
+  // Example companies with roles (for quick add)
+const expExamples: Partial<ExperienceEntry>[] = [
+  {
+    company: "TechInnovate Solutions",
+    companyUrl: "",
+    logo: "",
+    roles: [
+      {
+        id: Math.random().toString(36).slice(2),
+        title: "Frontend Engineer Intern",
+        start: "2024-06",
+        end: "2024-09",
+        present: false,
+        skills: ["React", "TypeScript", "Redux", "Jest"],
+        description: "Built responsive front-end components and improved engagement.",
+      }
+    ]
+  },
+  {
+    company: "DigitalFlow Systems",
+    roles: [
+      {
+        id: Math.random().toString(36).slice(2),
+        title: "Full Stack Developer",
+        start: "2024-10",
+        end: "",
+        present: true,
+        skills: ["Next.js", "Node.js", "PostgreSQL", "AWS"],
+        description: "Building scalable full-stack applications with Next.js and Node.js.",
+      }
+    ]
+  },
+  {
+    company: "CloudNexa Technologies",
+    roles: [
+      {
+        id: Math.random().toString(36).slice(2),
+        title: "Software Engineering Intern",
+        start: "2024-01",
+        end: "2024-05",
+        skills: ["Python", "Django", "Docker", "REST APIs"],
+        description: "Contributed to backend services and cut response times.",
+      }
+    ]
+  },
+];
+
 
   // Debounced search functions
   const searchSchools = useCallback(
@@ -200,29 +258,31 @@ export default function AboutForm() {
   );
 
   // Update favicon when domain changes
-  const updateFaviconFromDomain = useCallback((domain: string, id: string, isEducation: boolean): void => {
-    if (!domain) return;
+// updated — accepts undefined and null, guards early
+const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string, isEducation = false): void => {
+  if (!domain || !id) return; // guard when domain or id is missing
 
-    try {
-      // Extract domain from URL if full URL is provided
-      let cleanDomain = domain;
-      if (domain.includes('//')) {
-        cleanDomain = new URL(domain.startsWith('http') ? domain : `https://${domain}`).hostname;
-      }
-
-      const faviconUrl = `https://www.google.com/s2/favicons?domain=${cleanDomain}&sz=64`;
-
-      if (isEducation) {
-        updateEducation(id, { logo: faviconUrl, domain: cleanDomain });
-      } else {
-        updateExperience(id, { logo: faviconUrl });
-      }
-    } catch (error) {
-      console.error("Error generating favicon URL:", error);
+  try {
+    // Extract domain from URL if full URL is provided
+    let cleanDomain = domain;
+    if (domain.includes('//')) {
+      cleanDomain = new URL(domain.startsWith('http') ? domain : `https://${domain}`).hostname;
     }
-  }, []);
 
-  // helpers for education
+    const faviconUrl = `https://www.google.com/s2/favicons?domain=${cleanDomain}&sz=64`;
+
+    if (isEducation) {
+      updateEducation(id, { logo: faviconUrl, domain: cleanDomain });
+    } else {
+      updateExperience(id, { logo: faviconUrl });
+    }
+  } catch (error) {
+    console.error("Error generating favicon URL:", error);
+  }
+}, []);
+
+
+  // helpers for education (unchanged)
   const makeEducation = (seed?: Partial<EducationEntry>): EducationEntry => ({
     id: Math.random().toString(36).slice(2),
     level: seed?.level ?? "Graduation",
@@ -242,25 +302,58 @@ export default function AboutForm() {
     setEducation((s) => s.map((e) => (e.id === id ? { ...e, ...patch } : e)));
   const removeEducation = (id: string): void => setEducation((s) => s.filter((e) => e.id !== id));
 
-  // helpers for experience
-  const makeExperience = (seed?: Partial<ExperienceEntry>): ExperienceEntry => ({
+  // helpers for experience (company-level with multiple roles)
+  const makeRole = (seed?: Partial<any>) => ({
     id: Math.random().toString(36).slice(2),
     title: seed?.title ?? "Role title",
-    company: seed?.company ?? "Company / Project",
-    companyUrl: seed?.companyUrl ?? "",
     start: seed?.start ?? "",
     end: seed?.end ?? "",
     present: seed?.present ?? false,
-    skills: seed?.skills ?? [],
-    logo: seed?.logo ?? "",
-    offerLetter: seed?.offerLetter ?? "",
     description: seed?.description ?? "",
+    skills: seed?.skills ?? [],
+    skillsInput: seed?.skills ? seed.skills.join(", ") : (seed?.skillsInput ?? ""),
+    attachments: seed?.attachments ?? [],
+  });
+
+  const makeExperience = (seed?: Partial<ExperienceEntry>): ExperienceEntry => ({
+    id: Math.random().toString(36).slice(2),
+    company: seed?.company ?? "Company / Project",
+    companyUrl: seed?.companyUrl ?? "",
+    logo: seed?.logo ?? "",
+    roles: (seed?.roles && Array.isArray(seed.roles)) ? seed.roles.map((r: any) => ({
+      ...makeRole(r)
+    })) : [ makeRole(seed?.roles ?? undefined) ],
   });
 
   const addExperience = (seed?: Partial<ExperienceEntry>): void => setExperience((s) => [...s, makeExperience(seed)]);
   const updateExperience = (id: string, patch: Partial<ExperienceEntry>): void =>
     setExperience((s) => s.map((e) => (e.id === id ? { ...e, ...patch } : e)));
   const removeExperience = (id: string): void => setExperience((s) => s.filter((e) => e.id !== id));
+
+  // role-level helpers
+  const addRoleToCompany = (companyId: string, seed?: Partial<any>): void => {
+    setExperience((s) =>
+      s.map((ex) =>
+        ex.id === companyId ? { ...ex, roles: [...ex.roles, makeRole(seed)] } : ex
+      )
+    );
+  };
+
+  const updateRole = (companyId: string, roleId: string, patch: Partial<any>): void => {
+    setExperience((s) =>
+      s.map((ex) =>
+        ex.id === companyId ? { ...ex, roles: ex.roles.map((r) => (r.id === roleId ? { ...r, ...patch } : r)) } : ex
+      )
+    );
+  };
+
+  const removeRole = (companyId: string, roleId: string): void => {
+    setExperience((s) =>
+      s.map((ex) =>
+        ex.id === companyId ? { ...ex, roles: ex.roles.filter((r) => r.id !== roleId) } : ex
+      )
+    );
+  };
 
   const handleNext = async (): Promise<void> => {
     if (current.type === "education" && education.length === 0) {
@@ -283,12 +376,21 @@ export default function AboutForm() {
       } = await supabase.auth.getUser();
       if (!user) throw new Error("Not logged in");
 
+      // Clean transient fields: skillsInput only
+      const cleanedExperience = experience.length
+        ? experience.map((ex) => ({
+            ...ex,
+            // map roles to remove transient skillsInput
+            roles: ex.roles.map(({ skillsInput, ...rest }: any) => rest),
+          }))
+        : null;
+
       const payload = {
         auth_user_id: user.id,
         roles: roles.length ? roles : null,
         bio: bio || null,
         education: education.length ? education : null,
-        experience: experience.length ? experience : null,
+        experience: cleanedExperience,
         updated_at: new Date().toISOString(),
       };
 
@@ -313,7 +415,7 @@ export default function AboutForm() {
   const roleExamples = [
     "Frontend Engineer",
     "Backend Engineer",
-    "Full‑stack Developer",
+    "Full-stack Developer",
     "ML Engineer",
     "Cloud Architect",
   ];
@@ -328,7 +430,7 @@ export default function AboutForm() {
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-tr from-green-900 via-blue-900 to-purple-900 text-white px-4 py-10">
-        <div className="w-full max-w-2xl bg-white/8 backdrop-blur-xl rounded-3xl p-8 border border-white/10 shadow-2xl text-center">
+        <div className="w-full max-w-4xl bg-white/8 backdrop-blur-xl rounded-3xl p-8 border border-white/10 shadow-2xl text-center">
           <div className="text-xl">Loading your profile...</div>
         </div>
       </div>
@@ -337,13 +439,14 @@ export default function AboutForm() {
 
   return (
     <div className="min-h-screen flex flex-col pt-30 items-center justify-center bg-gradient-to-tr from-green-900 via-blue-900 to-purple-900 text-white px-4 py-10">
+      {/* widened container for desktop to give experience cards more room */}
       <motion.div
         key={current.key}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-2xl bg-white/8 backdrop-blur-xl rounded-3xl p-8 border border-white/10 shadow-2xl"
+        className="w-full max-w-4xl bg-white/8 backdrop-blur-xl rounded-3xl p-8 border border-white/10 shadow-2xl"
       >
         {!done ? (
           <>
@@ -384,12 +487,12 @@ export default function AboutForm() {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && addRole(input)}
-                    placeholder="Add a role (e.g. Full‑stack Engineer)"
+                    placeholder="Add a role (e.g. Full-stack Engineer)"
                     className="flex-1 text-center px-4 py-3 rounded-full bg-white/10 border border-white/20 focus:ring-2 focus:ring-blue-400 outline-none"
                   />
                   <button
                     onClick={() => addRole(input)}
-                    className="px-4 py-3 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 font-semibold hover:scale-105 transition-transform"
+                    className="px-4 py-3 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 font-semibold hover:scale-105 transition-transform whitespace-normal"
                   >
                     Add
                   </button>
@@ -401,7 +504,7 @@ export default function AboutForm() {
                     <button
                       key={ex}
                       onClick={() => addRole(ex)}
-                      className="bg-white/10 px-3 py-1 rounded-full text-sm hover:bg-white/20 transition"
+                      className="bg-white/10 px-3 py-1 rounded-full text-sm hover:bg-white/20 transition whitespace-normal"
                     >
                       {ex}
                     </button>
@@ -464,7 +567,7 @@ export default function AboutForm() {
                           {e.logo && (
                             <Image src={e.logo} alt="Logo" width={24} height={24} className="w-6 h-6 rounded" />
                           )}
-                          <strong className="text-sm">{e.level} — {e.degree}</strong>
+                          <strong className="text-sm break-words">{e.level} — {e.degree}</strong>
                         </div>
                         <div className="flex gap-2">
                           <button onClick={() => removeEducation(e.id)} className="text-xs hover:text-red-300 transition">Remove</button>
@@ -495,7 +598,7 @@ export default function AboutForm() {
                               searchSchools(ev.target.value, e.id);
                             }}
                             placeholder="Institution" 
-                            className="w-full px-2 py-2 rounded-md bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none" 
+                            className="w-full px-2 py-2 rounded-md bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none break-words" 
                           />
                           {activeSchoolSearchId === e.id && schoolSearchResults.length > 0 && (
                             <div className="absolute z-10 top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-600 rounded-md shadow-lg max-h-60 overflow-y-auto">
@@ -583,7 +686,7 @@ export default function AboutForm() {
                               }}
                             >
                               {({ open }) => (
-                                <button type="button" onClick={() => open()} className="px-3 py-2 rounded-full bg-white/10 text-sm hover:bg-white/20 transition">
+                                <button type="button" onClick={() => open()} className="px-3 py-2 rounded-full bg-white/10 text-sm hover:bg-white/20 transition whitespace-normal">
                                   {e.logo ? "Change Logo" : "Upload Logo"}
                                 </button>
                               )}
@@ -604,20 +707,14 @@ export default function AboutForm() {
                     {experience.length > 0 ? "Your work experiences" : "Add your work / project experiences"} — optional, tap examples to autofill
                   </div>
                   <div className="flex gap-2">
-                    <button onClick={() => addExperience()} className="text-sm underline hover:text-white transition">+ Add</button>
+                    <button onClick={() => addExperience()} className="text-sm underline hover:text-white transition">+ Add Company</button>
                   </div>
                 </div>
 
-                {experience.length === 0 && (
-                  <div className="text-center py-6 text-zinc-400 border border-dashed border-white/20 rounded-xl">
-                    No experiences added — you can add some or continue to finish
-                  </div>
-                )}
-
                 <div className="flex flex-wrap gap-2">
                   {expExamples.map((ex, i) => (
-                    <button key={i} onClick={() => addExperience(ex)} className="bg-white/8 px-3 py-1 rounded-full text-sm hover:bg-white/20 transition">
-                      {ex.title} • {ex.company}
+                    <button key={i} onClick={() => addExperience(ex)} className="bg-white/8 px-3 py-1 rounded-full text-sm hover:bg-white/20 transition whitespace-normal">
+                      {ex.roles?.[0]?.title ?? "Role"} • {ex.company}
                     </button>
                   ))}
                 </div>
@@ -625,142 +722,178 @@ export default function AboutForm() {
                 <div className="mt-3 space-y-3">
                   {experience.map((ex) => (
                     <motion.div key={ex.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="p-4 bg-white/6 rounded-xl border border-white/8">
-                      <div className="flex justify-between items-start">
-                        <div className="flex items-center gap-2">
-                          {ex.logo && (
-                            <Image src={ex.logo} alt="Logo" width={24} height={24} className="w-6 h-6 rounded" />
-                          )}
-                          <div>
-                            <strong className="text-sm">{ex.title}</strong>
-                            <div className="text-xs text-zinc-300">{ex.company}</div>
+                      <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-3">
+                        <div className="flex items-start gap-3 min-w-0">
+                          {ex.logo && <Image src={ex.logo} alt="Logo" width={40} height={40} className="w-10 h-10 rounded object-cover flex-shrink-0" />}
+                          <div className="min-w-0">
+                            <input
+                              value={ex.company}
+                              onChange={(ev) => updateExperience(ex.id, { company: ev.target.value })}
+                              placeholder="Company / Project"
+                              className="text-lg font-semibold bg-transparent border-b border-white/10 pb-1 outline-none w-full truncate"
+                            />
+                            {/* COMPANY URL: styled clearly as a field with label */}
+                            <label className="text-xs text-zinc-400 block mt-1">Company URL (optional)</label>
+                            <input
+                              value={ex.companyUrl}
+                              onChange={(ev) => updateExperience(ex.id, { companyUrl: ev.target.value })}
+                              placeholder="https://example.com or example.com"
+                              className="mt-1 text-xs px-2 py-2 rounded-md bg-white/5 border border-white/12 text-white focus:ring-2 focus:ring-blue-400 outline-none w-full"
+                            />
                           </div>
                         </div>
-                        <div className="flex gap-2">
-                          <button onClick={() => removeExperience(ex.id)} className="text-xs hover:text-red-300 transition">Remove</button>
+
+                        <div className="flex items-center gap-2">
+                          <CldUploadWidget
+                            uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!}
+                            options={{ multiple: false, folder: "company_logos" }}
+                            onSuccess={(res: CloudinaryUploadResultInfo) => {
+                              if (res?.info?.secure_url) updateExperience(ex.id, { logo: res.info.secure_url });
+                            }}
+                          >
+                            {({ open }) => (
+                              <button type="button" onClick={() => open()} className="px-3 py-1 rounded-full bg-white/10 text-sm hover:bg-white/20 transition whitespace-normal">
+                                {ex.logo ? "Change Logo" : "Upload Logo"}
+                              </button>
+                            )}
+                          </CldUploadWidget>
+
+                          <button onClick={() => updateFaviconFromDomain(ex.companyUrl, ex.id, false)} disabled={!ex.companyUrl} className="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 transition text-sm whitespace-normal">
+                            Fetch Logo
+                          </button>
+
+                          {/* Company remove button — more visible/destructive */}
+                          <button
+                            onClick={() => removeExperience(ex.id)}
+                            className="flex items-center gap-2 text-sm text-red-400 hover:text-white bg-red-600/10 px-3 py-1 rounded-md transition"
+                            title="Remove company and all roles"
+                          >
+                            {/* simple SVG trash icon */}
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                              <polyline points="3 6 5 6 21 6"></polyline>
+                              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                              <path d="M10 11v6"></path>
+                              <path d="M14 11v6"></path>
+                              <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+                            </svg>
+                            Remove Company
+                          </button>
                         </div>
                       </div>
 
-                      <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {/* Row 1: Title and Company */}
-                        <input value={ex.title} onChange={(ev) => updateExperience(ex.id, { title: ev.target.value })} placeholder="Role / Title" className="px-2 py-2 rounded-md bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none" />
-                        
-                        <div className="relative">
-                          <input 
-                            value={ex.company} 
-                            onChange={(ev) => {
-                              updateExperience(ex.id, { company: ev.target.value });
-                              searchCompanies(ev.target.value, ex.id);
-                            }}
-                            placeholder="Company / Project" 
-                            className="w-full px-2 py-2 rounded-md bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none" 
-                          />
-                          {activeCompanySearchId === ex.id && companySearchResults.length > 0 && (
-                            <div className="absolute z-10 top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-600 rounded-md shadow-lg max-h-60 overflow-y-auto">
-                              {companySearchResults.map((company, index) => (
-                                <button
-                                  key={index}
-                                  className="w-full px-3 py-2 text-left hover:bg-gray-700 text-sm border-b border-gray-600 last:border-b-0"
-                                  onClick={() => {
-                                    updateExperience(ex.id, { company: company.Company_name });
-                                    setCompanySearchResults([]);
-                                    setActiveCompanySearchId(null);
-                                  }}
-                                >
-                                  <div className="font-medium">{company.Company_name}</div>
-                                  {company.Description && (
-                                    <div className="text-xs text-gray-400 truncate">{company.Description}</div>
-                                  )}
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                        </div>
+                      <div className="mt-4 space-y-3">
+                        {/* Roles list - each role is a responsive grid */}
+                        {ex.roles.map((role) => (
+                          <div key={role.id} className="p-3 bg-white/5 rounded-md border border-white/8">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              {/* left: details (span 2 on md) */}
+                              <div className="md:col-span-2 min-w-0">
+                                <input
+                                  value={role.title}
+                                  onChange={(ev) => updateRole(ex.id, role.id, { title: ev.target.value })}
+                                  placeholder="Role / Title"
+                                  className="w-full px-2 py-1 rounded-md bg-transparent border-b border-white/10 outline-none truncate"
+                                />
 
-                        {/* Row 2: Company URL - full width */}
-                        <div className="col-span-full flex gap-2 items-center">
-                          <input 
-                            value={ex.companyUrl} 
-                            onChange={(ev) => updateExperience(ex.id, { companyUrl: ev.target.value })}
-                            placeholder="Company URL (optional)" 
-                            className="flex-1 px-2 py-2 rounded-md bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none" 
-                          />
-                          <button
-                            onClick={() => updateFaviconFromDomain(ex.companyUrl, ex.id, false)}
-                            className="px-3 py-2 rounded-md bg-white/10 hover:bg-white/20 transition text-sm whitespace-nowrap"
-                            disabled={!ex.companyUrl}
-                          >
-                            Fetch Logo
-                          </button>
-                        </div>
+                                <div className="mt-2 flex flex-wrap gap-2 items-center">
+                                  <input type="month" value={role.start} onChange={(ev) => updateRole(ex.id, role.id, { start: ev.target.value })} className="px-2 py-1 rounded-md bg-white/6 border border-white/10 outline-none" />
+                                  <span className="text-zinc-400">to</span>
+                                  <input type="month" value={role.end} onChange={(ev) => updateRole(ex.id, role.id, { end: ev.target.value })} className="px-2 py-1 rounded-md bg-white/6 border border-white/10 outline-none" />
+                                  <label className="flex items-center gap-2 ml-3 text-sm whitespace-nowrap">
+                                    <input type="checkbox" checked={role.present} onChange={(ev) => updateRole(ex.id, role.id, { present: ev.target.checked })} />
+                                    Present
+                                  </label>
+                                </div>
 
-                        {/* Row 3: Date inputs - full width */}
-                        <div className="col-span-full flex items-center gap-4">
-                          <div className="flex-1 flex gap-2 items-center">
-                            <input type="month" value={ex.start} onChange={(ev) => updateExperience(ex.id, { start: ev.target.value })} className="flex-1 px-2 py-2 rounded-md bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none" />
-                            <span className="text-zinc-400">to</span>
-                            <input type="month" value={ex.end} onChange={(ev) => updateExperience(ex.id, { end: ev.target.value })} className="flex-1 px-2 py-2 rounded-md bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none" />
-                          </div>
-                          <label className="flex items-center gap-2 text-sm whitespace-nowrap">
-                            <input type="checkbox" checked={ex.present} onChange={(ev) => updateExperience(ex.id, { present: ev.target.checked })} /> 
-                            Present
-                          </label>
-                        </div>
+                                <textarea
+                                  value={role.description}
+                                  onChange={(ev) => updateRole(ex.id, role.id, { description: ev.target.value })}
+                                  placeholder="Short description / responsibilities"
+                                  className="w-full mt-2 px-2 py-2 rounded-md bg-white/6 border border-white/10 outline-none min-h-[80px] resize-vertical"
+                                />
 
-                        {/* Row 4: Description - full width */}
-                        <div className="col-span-full">
-                          <textarea value={ex.description} onChange={(ev) => updateExperience(ex.id, { description: ev.target.value })} placeholder="Short description / responsibilities" className="w-full px-2 py-2 rounded-md bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none" />
-                        </div>
+                                <div className="mt-2">
+                                  <label className="block text-xs mb-1">Skills acquired (comma separated)</label>
 
-                        {/* Row 5: Skills and logo upload - full width */}
-                        <div className="col-span-full flex flex-wrap gap-4 items-center">
-                          <div className="flex-1 min-w-[200px]">
-                            <label className="block text-xs mb-1">Skills acquired (comma separated)</label>
-                            <input
-                              value={ex.skills?.join(", ")}
-                              onChange={(ev) => updateExperience(ex.id, { skills: ev.target.value.split(",").map((s) => s.trim()).filter(Boolean) })}
-                              placeholder="e.g. React, Node, Docker"
-                              className="w-full px-2 py-2 rounded-md bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none"
-                            />
-                          </div>
+                                  <input
+                                    value={role.skillsInput ?? role.skills?.join(", ") ?? ""}
+                                    onChange={(ev) => updateRole(ex.id, role.id, { skillsInput: ev.target.value })}
+                                    onBlur={() => {
+                                      const raw = (role.skillsInput ?? role.skills?.join(", ") ?? "");
+                                      const skillsArray = raw.split(",").map((s) => s.trim()).filter(Boolean);
+                                      updateRole(ex.id, role.id, { skills: skillsArray, skillsInput: raw });
+                                    }}
+                                    onKeyDown={(e) => { if (e.key === "Enter") (e.currentTarget as HTMLInputElement).blur(); }}
+                                    placeholder="e.g. React, Node, Docker"
+                                    className="w-full px-2 py-2 rounded-md bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none"
+                                  />
+                                  <div className="text-xs text-zinc-400 mt-1">Separate skills with commas — editing preserves your commas until you leave the field.</div>
+                                </div>
+                              </div>
 
-                          <div className="flex gap-4 items-center">
-                            {ex.logo && (
-                              <Image src={ex.logo} alt="Logo" width={24} height={24} className="w-6 h-6 rounded" />
-                            )}
-                            <div className="flex flex-col gap-2">
-                              <div className="flex gap-2 items-center">
-                                <div className="text-xs whitespace-nowrap">Company logo</div>
+                              {/* right: attachments & controls */}
+                              <div className="flex flex-col items-stretch gap-3">
+                                <div className="flex items-center justify-between gap-2">
+                                  {/* Role remove button — more visible/destructive */}
+                                  <button
+                                    onClick={() => removeRole(ex.id, role.id)}
+                                    className="flex items-center gap-2 text-sm text-red-400 hover:text-white bg-red-600/10 px-3 py-1 rounded-md transition"
+                                    title="Remove this role"
+                                  >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                                      <polyline points="3 6 5 6 21 6"></polyline>
+                                      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                                      <path d="M10 11v6"></path>
+                                      <path d="M14 11v6"></path>
+                                      <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+                                    </svg>
+                                    Remove Role
+                                  </button>
+
+                                  <div className="text-xs text-zinc-400">Attachments</div>
+                                </div>
+
                                 <CldUploadWidget
                                   uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!}
-                                  options={{ multiple: false, folder: "company_logos" }}
+                                  options={{ multiple: false, folder: "role_attachments", resourceType: "image" }}
                                   onSuccess={(res: CloudinaryUploadResultInfo) => {
-                                    if (res?.info?.secure_url) updateExperience(ex.id, { logo: res.info.secure_url });
+                                    if (res?.info?.secure_url) {
+                                      const newUrl = res.info.secure_url;
+                                      updateRole(ex.id, role.id, { attachments: [...(role.attachments ?? []), newUrl] });
+                                    }
                                   }}
                                 >
                                   {({ open }) => (
-                                    <button type="button" onClick={() => open()} className="px-3 py-1 rounded-full bg-white/10 text-sm whitespace-nowrap hover:bg-white/20 transition">
-                                      {ex.logo ? "Change Logo" : "Upload Logo"}
+                                    <button type="button" onClick={() => open()} className="w-full px-3 py-1 rounded-full bg-white/10 text-sm whitespace-normal hover:bg-white/20 transition">
+                                      Upload
                                     </button>
                                   )}
                                 </CldUploadWidget>
-                              </div>
-                              
-                              <div className="flex gap-2 items-center">
-                                <div className="text-xs whitespace-nowrap">Offer letter</div>
-                                <CldUploadWidget
-                                  uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!}
-                                  options={{ multiple: false, folder: "offer_letters", resourceType: "image" }}
-                                  onSuccess={(res: CloudinaryUploadResultInfo) => {
-                                    if (res?.info?.secure_url) updateExperience(ex.id, { offerLetter: res.info.secure_url });
-                                  }}
-                                >
-                                  {({ open }) => (
-                                    <button type="button" onClick={() => open()} className="px-3 py-1 rounded-full bg-white/10 text-sm whitespace-nowrap hover:bg-white/20 transition">Upload Offer</button>
-                                  )}
-                                </CldUploadWidget>
+
+                                <div className="flex flex-wrap gap-2">
+                                  {role.attachments?.map((att, idx) => (
+                                    <div key={idx} className="relative w-14 h-14 rounded overflow-hidden bg-gray-700">
+                                      <Image src={att} alt={`att-${idx}`} width={56} height={56} className="object-cover w-full h-full" />
+                                      <button
+                                        onClick={() => {
+                                          const filtered = (role.attachments || []).filter((a) => a !== att);
+                                          updateRole(ex.id, role.id, { attachments: filtered });
+                                        }}
+                                        className="absolute -top-1 -right-1 text-xs bg-red-500 rounded-full w-5 h-5 flex items-center justify-center"
+                                        title="Remove attachment"
+                                      >
+                                        ×
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
                               </div>
                             </div>
                           </div>
+                        ))}
+
+                        <div className="mt-2">
+                          <button onClick={() => addRoleToCompany(ex.id)} className="px-3 py-1 rounded-full bg-white/10 text-sm hover:bg-white/20 transition whitespace-normal">+ Add Role</button>
                         </div>
                       </div>
                     </motion.div>

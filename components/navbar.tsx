@@ -34,7 +34,7 @@ export default function Navbar() {
       const { data } = await supabase
         .from("users_usernames")
         .select("username")
-        .eq("uid", user.id)
+        .eq("auth_user_id", user.id)
         .single();
       if (data?.username) setUsername(data.username);
     };

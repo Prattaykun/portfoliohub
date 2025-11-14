@@ -1,64 +1,175 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { supabase } from '../../lib/supabaseClient'
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabaseClient";
+
+type AnyObj = Record<string, any>;
 
 export default function AboutSection({ user }: { user: any }) {
-  const [aboutData, setAboutData] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
-  const router = useRouter()
+  const [aboutData, setAboutData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
-    fetchAboutData()
-  }, [user])
+    fetchAboutData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   const fetchAboutData = async () => {
-    const { data, error } = await supabase
-      .from('about')
-      .select('*')
-      .eq('auth_user_id', user.id)
-      .single()
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("about")
+        .select("*")
+        .eq("auth_user_id", user?.id)
+        .single();
 
-    console.log('About data from Supabase:', data) // Debug log
-    console.log('Education type:', typeof data?.education) // Debug log
-    console.log('Education value:', data?.education) // Debug log
+      if (error || !data) {
+        router.push("/about-form");
+        return;
+      }
 
-    if (error || !data) {
-      router.push('/about-form')
-      return
+      setAboutData(data);
+    } catch (err) {
+      console.error("fetchAboutData error:", err);
+      router.push("/about-form");
+    } finally {
+      setLoading(false);
     }
+  };
 
-    setAboutData(data)
-    setLoading(false)
-  }
-
-  // Safe data parsing function
+  // Safe data parsing function (keeps your earlier behavior)
   const parseData = (data: any) => {
-    if (!data) return []
-    
-    console.log('Parsing data:', data) // Debug log
-    
-    // If it's already an array, return it
-    if (Array.isArray(data)) return data
-    
-    // If it's a string, try to parse it
-    if (typeof data === 'string') {
+    if (!data) return [];
+
+    if (Array.isArray(data)) return data;
+
+    if (typeof data === "string") {
       try {
-        return JSON.parse(data)
+        return JSON.parse(data);
       } catch (error) {
-        console.error('Error parsing JSON:', error)
-        return []
+        console.error("Error parsing JSON:", error);
+        return [];
       }
     }
-    
-    // If it's an object but not an array, wrap it in an array
-    if (typeof data === 'object' && data !== null) {
-      return [data]
+
+    if (typeof data === "object" && data !== null) return [data];
+
+    return [];
+  };
+
+  // turn experience entry into normalized companies-with-roles shape:
+  // { id, company, companyUrl, logo, roles: [ { id, title, start, end, present, description, skills, offerLetter, attachments, location } ] }
+  const normalizeExperience = (raw: any[]): AnyObj[] => {
+    if (!raw || raw.length === 0) return [];
+
+    // If already companies (roles array present), clean and return
+    const looksLikeCompanies = raw.every((r) => r && (Array.isArray(r.roles) || r.company));
+    if (looksLikeCompanies) {
+      return raw.map((r: any) => ({
+        id: r.id ?? Math.random().toString(36).slice(2),
+        company: r.company ?? r.companyName ?? "",
+        companyUrl: r.companyUrl ?? r.company_url ?? "",
+        logo: r.logo ?? "",
+        roles:
+          Array.isArray(r.roles) && r.roles.length > 0
+            ? r.roles.map((role: any) => ({
+                id: role.id ?? Math.random().toString(36).slice(2),
+                title: role.title ?? role.name ?? "",
+                start: role.start ?? role.from ?? "",
+                end: role.end ?? role.to ?? "",
+                present: !!role.present,
+                description: role.description ?? "",
+                skills: role.skills ?? role.skills ?? [],
+                offerLetter: role.offerLetter ?? null,
+                attachments: role.attachments ?? [],
+                location: role.location ?? role.place ?? "",
+              }))
+            : // fallback to single role created from top-level props
+              [
+                {
+                  id: Math.random().toString(36).slice(2),
+                  title: r.title ?? "",
+                  start: r.start ?? "",
+                  end: r.end ?? "",
+                  present: !!r.present,
+                  description: r.description ?? "",
+                  skills: r.skills ?? [],
+                  offerLetter: r.offerLetter ?? null,
+                  attachments: r.attachments ?? (r.offerLetter ? [r.offerLetter] : []),
+                  location: r.location ?? "",
+                },
+              ],
+      }));
     }
-    
-    return []
-  }
+
+    // Fallback: treat each item as a single-role company
+    return raw.map((r: any) => ({
+      id: r.id ?? Math.random().toString(36).slice(2),
+      company: r.company ?? r.companyName ?? r.company_url ?? r.title ?? "Company / Project",
+      companyUrl: r.companyUrl ?? r.company_url ?? "",
+      logo: r.logo ?? "",
+      roles: [
+        {
+          id: Math.random().toString(36).slice(2),
+          title: r.title ?? r.role ?? "",
+          start: r.start ?? "",
+          end: r.end ?? "",
+          present: !!r.present,
+          description: r.description ?? "",
+          skills: r.skills ?? [],
+          offerLetter: r.offerLetter ?? null,
+          attachments: r.attachments ?? (r.offerLetter ? [r.offerLetter] : []),
+          location: r.location ?? "",
+        },
+      ],
+    }));
+  };
+
+  const educationData = parseData(aboutData?.education);
+  const rawExperience = parseData(aboutData?.experience);
+  const experienceData = normalizeExperience(rawExperience);
+  const rolesData = parseData(aboutData?.roles);
+
+  // Helpers
+  const formatMonthYear = (monthStr?: string) => {
+    if (!monthStr) return "";
+    // expected input "YYYY-MM" or "YYYY-MM-DD"
+    try {
+      const parts = monthStr.split("-");
+      if (parts.length < 2) {
+        const d = new Date(monthStr);
+        if (isNaN(d.getTime())) return monthStr;
+        return d.toLocaleString(undefined, { month: "short", year: "numeric" });
+      }
+      const year = Number(parts[0]);
+      const month = Number(parts[1]) - 1;
+      const d = new Date(year, month);
+      return d.toLocaleString(undefined, { month: "short", year: "numeric" });
+    } catch {
+      return monthStr;
+    }
+  };
+
+  const computeDuration = (start?: string, end?: string, present?: boolean) => {
+    try {
+      if (!start) return "";
+      const s = new Date(start.length === 7 ? `${start}-01` : start);
+      const e = present || !end ? new Date() : new Date(end.length === 7 ? `${end}-01` : end);
+      if (isNaN(s.getTime()) || isNaN(e.getTime())) return "";
+      const totalMonths = (e.getFullYear() - s.getFullYear()) * 12 + (e.getMonth() - s.getMonth());
+      if (totalMonths < 0) return "";
+      const yrs = Math.floor(totalMonths / 12);
+      const mos = totalMonths % 12;
+      const parts = [];
+      if (yrs > 0) parts.push(`${yrs} yr${yrs > 1 ? "s" : ""}`);
+      if (mos > 0) parts.push(`${mos} mo${mos > 1 ? "s" : ""}`);
+      return parts.join(" ");
+    } catch {
+      return "";
+    }
+  };
 
   if (loading) {
     return (
@@ -72,7 +183,7 @@ export default function AboutSection({ user }: { user: any }) {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   if (!aboutData) {
@@ -81,31 +192,21 @@ export default function AboutSection({ user }: { user: any }) {
         <div className="text-center py-8">
           <p className="text-gray-500 mb-4">No about data found</p>
           <button
-            onClick={() => router.push('/about-form')}
+            onClick={() => router.push("/about-form")}
             className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             Add About Information
           </button>
         </div>
       </div>
-    )
+    );
   }
-
-  const educationData = parseData(aboutData.education)
-  const experienceData = parseData(aboutData.experience)
-  const rolesData = parseData(aboutData.roles)
-
-  console.log('Parsed education:', educationData) // Debug log
-  console.log('Parsed experience:', experienceData) // Debug log
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-800">About & Experience</h2>
-        <button
-          onClick={() => router.push('/about-form')}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
+        <button onClick={() => router.push("/about-form")} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
           Edit
         </button>
       </div>
@@ -116,10 +217,7 @@ export default function AboutSection({ user }: { user: any }) {
           <h3 className="text-lg font-semibold text-gray-800 mb-3">Roles</h3>
           <div className="flex flex-wrap gap-2">
             {rolesData.map((role: string, index: number) => (
-              <span
-                key={index}
-                className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium"
-              >
+              <span key={index} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
                 {role}
               </span>
             ))}
@@ -130,9 +228,7 @@ export default function AboutSection({ user }: { user: any }) {
       {/* Bio */}
       <div className="mb-8">
         <h3 className="text-lg font-semibold text-gray-800 mb-3">Bio</h3>
-        <p className="text-gray-700 leading-relaxed">
-          {aboutData.bio || 'No bio added yet.'}
-        </p>
+        <p className="text-gray-700 leading-relaxed">{aboutData.bio || "No bio added yet."}</p>
       </div>
 
       {/* Education */}
@@ -143,7 +239,6 @@ export default function AboutSection({ user }: { user: any }) {
             {educationData.map((edu: any, index: number) => (
               <div key={edu.id || index} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
                 <div className="flex items-start space-x-4">
-                  {/* Education Institution Logo */}
                   {edu.logo && (
                     <div className="flex-shrink-0">
                       <img
@@ -151,8 +246,7 @@ export default function AboutSection({ user }: { user: any }) {
                         alt={edu.institution}
                         className="w-12 h-12 rounded-lg object-contain border"
                         onError={(e) => {
-                          // Fallback if logo fails to load
-                          (e.target as HTMLImageElement).style.display = 'none'
+                          (e.target as HTMLImageElement).style.display = "none";
                         }}
                       />
                     </div>
@@ -160,12 +254,12 @@ export default function AboutSection({ user }: { user: any }) {
                   <div className="flex-1">
                     <div className="flex items-start justify-between mb-2">
                       <div>
-                        <h4 className="font-semibold text-gray-800 text-lg">{edu.degree || 'No degree specified'}</h4>
-                        <p className="text-gray-600 font-medium">{edu.institution || 'No institution specified'}</p>
+                        <h4 className="font-semibold text-gray-800 text-lg">{edu.degree || "No degree specified"}</h4>
+                        <p className="text-gray-600 font-medium">{edu.institution || "No institution specified"}</p>
                       </div>
                       {edu.domain && (
                         <a
-                          href={edu.domain.startsWith('http') ? edu.domain : `https://${edu.domain}`}
+                          href={edu.domain.startsWith("http") ? edu.domain : `https://${edu.domain}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-blue-600 hover:text-blue-700 text-sm ml-2"
@@ -174,23 +268,19 @@ export default function AboutSection({ user }: { user: any }) {
                         </a>
                       )}
                     </div>
-                    
+
                     <div className="space-y-1">
                       <p className="text-sm text-gray-500">
-                        {edu.startYear} - {edu.pursuing ? 'Present' : (edu.endYear || 'Present')}
+                        {edu.startYear} - {edu.pursuing ? "Present" : edu.endYear || "Present"}
                       </p>
-                      
+
                       {edu.grade && (
                         <p className="text-sm text-gray-600">
-                          Grade: {edu.grade}/{edu.gradeScale || '10'}
+                          Grade: {edu.grade}/{edu.gradeScale || "10"}
                         </p>
                       )}
-                      
-                      {edu.level && (
-                        <p className="text-sm text-gray-500 capitalize">
-                          {edu.level.toLowerCase()}
-                        </p>
-                      )}
+
+                      {edu.level && <p className="text-sm text-gray-500 capitalize">{edu.level.toLowerCase()}</p>}
                     </div>
                   </div>
                 </div>
@@ -202,81 +292,133 @@ export default function AboutSection({ user }: { user: any }) {
         )}
       </div>
 
-      {/* Experience */}
+      {/* Experience - LinkedIn style timeline */}
       <div>
         <h3 className="text-lg font-semibold text-gray-800 mb-4">Experience</h3>
+
         {experienceData.length > 0 ? (
           <div className="space-y-6">
-            {experienceData.map((exp: any, index: number) => (
-              <div key={exp.id || index} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                <div className="flex items-start justify-between mb-3">
+            {experienceData.map((company: AnyObj, cIndex: number) => (
+              <div key={company.id || cIndex} className="relative border rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div className="flex gap-4 items-start">
+                  {/* Left column: logo + company name */}
+                  <div className="w-28 min-w-[7rem] flex-shrink-0">
+                    <div className="flex flex-col items-start">
+                      <div className="bg-white rounded-md p-1 border w-16 h-16 flex items-center justify-center overflow-hidden">
+                        {company.logo ? (
+                          // logo image
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={company.logo} alt={company.company} className="w-full h-full object-contain" onError={(e) => ((e.target as HTMLImageElement).style.display = "none")} />
+                        ) : (
+                          // placeholder token
+                          <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-500">🏢</div>
+                        )}
+                      </div>
+
+                      <div className="mt-3">
+                        <div className="text-sm font-semibold text-gray-800 leading-none">{company.company || "Company"}</div>
+                        <div className="text-xs text-gray-500 mt-1">{/* optional company level summary */}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right column: timeline and roles */}
                   <div className="flex-1">
-                    <div className="flex items-start space-x-3">
-                      {/* Company Logo */}
-                      {exp.logo && (
-                        <img
-                          src={exp.logo}
-                          alt={exp.company}
-                          className="w-10 h-10 rounded object-contain flex-shrink-0 border"
-                          onError={(e) => {
-                            // Fallback if logo fails to load
-                            (e.target as HTMLImageElement).style.display = 'none'
-                          }}
-                        />
-                      )}
-                      <div>
-                        <h4 className="font-semibold text-gray-800 text-lg">{exp.title || 'No title specified'}</h4>
-                        <div className="flex items-center space-x-2 mt-1">
-                          <p className="text-gray-600 font-medium">{exp.company || 'No company specified'}</p>
-                          {exp.companyUrl && (
-                            <a
-                              href={exp.companyUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-600 hover:text-blue-700 text-sm"
-                            >
-                              ↗
-                            </a>
-                          )}
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                      {/* timeline gutter (dots + line) column - md sized */}
+                      <div className="hidden md:block md:col-span-1 relative">
+                        {/* vertical line covering full roles height; we render per-company line later */}
+                      </div>
+
+                      <div className="md:col-span-11">
+                        {/* Company header row on top (company duration aggregated) */}
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <div className="text-sm text-gray-600">
+                              {/* optionally compute aggregated duration across roles */}
+                              {(() => {
+                                // compute earliest start and latest end/present
+                                const starts = company.roles?.map((r: AnyObj) => r.start).filter(Boolean) || [];
+                                const ends = company.roles?.map((r: AnyObj) => (r.present ? null : r.end)).filter(Boolean) || [];
+                                const aggStart = starts.length ? starts.sort()[0] : "";
+                                const aggEnd =
+                                  company.roles?.some((r: AnyObj) => r.present) || !ends.length ? "Present" : ends.sort().reverse()[0];
+                                return `${formatMonthYear(aggStart)} — ${aggEnd === "Present" ? "Present" : formatMonthYear(aggEnd)}`;
+                              })()}
+                            </div>
+                          </div>
+
+                          <div className="text-sm text-gray-500">{/* place for company metadata */}</div>
+                        </div>
+
+                        {/* Roles as timeline items */}
+                        <div className="relative">
+                          {/* vertical line for timeline on desktop */}
+                          <div className="hidden md:block absolute left-0 top-0 bottom-0 w-0.5 bg-gray-200 ml-3" />
+
+                          <div className="space-y-6 pl-0 md:pl-8">
+                            {company.roles?.map((role: AnyObj, rIndex: number) => (
+                              <div key={role.id || rIndex} className="flex gap-4 items-start">
+                                {/* dot */}
+                                <div className="hidden md:flex flex-col items-center w-8">
+                                  <div className="w-3 h-3 rounded-full bg-gray-400 mt-1"></div>
+                                </div>
+
+                                <div className="flex-1">
+                                  <div className="flex items-start justify-between">
+                                    <div>
+                                      <h4 className="text-md font-semibold text-gray-800">{role.title || "Role title"}</h4>
+                                      <div className="text-sm text-gray-600 mt-1">
+                                        {formatMonthYear(role.start)} — {role.present ? "Present" : (role.end ? formatMonthYear(role.end) : "Present")}
+                                        {" · "}
+                                        <span className="text-gray-500">{computeDuration(role.start, role.end, role.present)}</span>
+                                      </div>
+
+                                      {role.location && <div className="text-sm text-gray-500">{role.location}</div>}
+                                    </div>
+
+                                    {/* small company-level or role-level link/attachment icon */}
+                                    <div className="text-sm text-gray-500 ml-3 whitespace-nowrap" />
+                                  </div>
+
+                                  {role.description && <p className="text-gray-700 mt-2">{role.description}</p>}
+
+                                  {/* skills / chips */}
+                                  {role.skills && role.skills.length > 0 && (
+                                    <div className="mt-2 flex flex-wrap gap-2">
+                                      {role.skills.map((s: string, i: number) => (
+                                        <span key={i} className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-sm">
+                                          {s}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  )}
+
+                                  {/* attachments / offer letter thumbnails */}
+                                  {((role.attachments && role.attachments.length > 0) || role.offerLetter) && (
+                                    <div className="mt-3 flex flex-wrap gap-3 items-center">
+                                      {role.offerLetter && (
+                                        <a href={role.offerLetter} target="_blank" rel="noreferrer" className="text-blue-600 hover:text-blue-700 text-sm">
+                                          View Offer →{" "}
+                                        </a>
+                                      )}
+                                      {(role.attachments || []).map((att: string, ai: number) => (
+                                        <a key={ai} href={att} target="_blank" rel="noreferrer" className="block w-24 h-14 rounded overflow-hidden border bg-gray-50">
+                                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                                          <img src={att} alt={`att-${ai}`} className="w-full h-full object-cover" onError={(e) => ((e.target as HTMLImageElement).style.display = "none")} />
+                                        </a>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div className="text-right text-sm text-gray-500 whitespace-nowrap ml-4">
-                    {exp.start} - {exp.present ? 'Present' : (exp.end || 'Present')}
-                  </div>
                 </div>
-                
-                {exp.description && (
-                  <p className="text-gray-700 mb-3">{exp.description}</p>
-                )}
-                
-                {exp.skills && exp.skills.length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {exp.skills.map((skill: string, skillIndex: number) => (
-                      <span
-                        key={skillIndex}
-                        className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-sm"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                )}
-
-                {exp.offerLetter && (
-                  <div className="mt-3">
-                    <a
-                      href={exp.offerLetter}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-700 text-sm flex items-center space-x-1"
-                    >
-                      <span>View Offer Letter</span>
-                      <span>→</span>
-                    </a>
-                  </div>
-                )}
               </div>
             ))}
           </div>
@@ -286,9 +428,7 @@ export default function AboutSection({ user }: { user: any }) {
       </div>
 
       {/* Last Updated */}
-      <div className="mt-8 pt-6 border-t text-sm text-gray-500">
-        Last updated: {new Date(aboutData.updated_at).toLocaleDateString()}
-      </div>
+      <div className="mt-8 pt-6 border-t text-sm text-gray-500">Last updated: {new Date(aboutData.updated_at).toLocaleDateString()}</div>
     </div>
-  )
+  );
 }

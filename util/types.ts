@@ -13,19 +13,31 @@ export interface EducationEntry {
   gradeScale: string;
 }
 
-export interface ExperienceEntry {
+
+
+
+// Example changes to types - adapt to your file
+export type RoleEntry = {
   id: string;
   title: string;
+  start?: string;
+  end?: string;
+  present?: boolean;
+  description?: string;
+  skills?: string[];
+  skillsInput?: string; // transient
+  attachments?: string[]; // per-role attachments / images URLs
+};
+
+export type ExperienceEntry = {
+  id: string;
   company: string;
-  companyUrl: string;
-  start: string;
-  end: string;
-  present: boolean;
-  skills: string[];
-  logo: string;
-  offerLetter: string;
-  description: string;
-}
+  companyUrl?: string;
+  logo?: string;
+  roles: RoleEntry[]; // <-- multiple roles
+  // any legacy fields you had can remain, but prefer roles for per-position info
+};
+
 
 export interface SchoolSearchResult {
   'School Name': string;

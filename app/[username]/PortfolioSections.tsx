@@ -92,7 +92,7 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
           <div className="text-center mb-6">
             <h3 className="text-2xl font-bold text-white">{title}</h3>
             {sectionName && <div className="text-sm text-gray-300 mt-1">{sectionName}</div>}
-            <div className="text-xs text-gray-400 mt-2 uppercase">{type}</div>
+            {/* <div className="text-xs text-gray-400 mt-2 uppercase">{type}</div> */}
           </div>
 
           <div className="mb-6">
@@ -189,30 +189,188 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
     );
   };
 
-  // ---------- Experience (unchanged) ----------
+  // ---------- Experience (modern timeline UI, modified) ----------
+  const formatMonthYear = (monthStr?: string) => {
+    if (!monthStr) return "";
+    try {
+      const parts = monthStr.split("-");
+      if (parts.length < 2) {
+        const d = new Date(monthStr);
+        if (isNaN(d.getTime())) return monthStr;
+        return d.toLocaleString(undefined, { month: "short", year: "numeric" });
+      }
+      const year = Number(parts[0]);
+      const month = Number(parts[1]) - 1;
+      const d = new Date(year, month);
+      return d.toLocaleString(undefined, { month: "short", year: "numeric" });
+    } catch {
+      return monthStr;
+    }
+  };
+
+  const computeDuration = (start?: string, end?: string, present?: boolean) => {
+    try {
+      if (!start) return "";
+      const s = new Date(start.length === 7 ? `${start}-01` : start);
+      const e = present || !end ? new Date() : new Date(end.length === 7 ? `${end}-01` : end);
+      if (isNaN(s.getTime()) || isNaN(e.getTime())) return "";
+      const totalMonths = (e.getFullYear() - s.getFullYear()) * 12 + (e.getMonth() - s.getMonth());
+      if (totalMonths < 0) return "";
+      const yrs = Math.floor(totalMonths / 12);
+      const mos = totalMonths % 12;
+      const parts = [];
+      if (yrs > 0) parts.push(`${yrs} yr${yrs > 1 ? "s" : ""}`);
+      if (mos > 0) parts.push(`${mos} mo${mos > 1 ? "s" : ""}`);
+      return parts.join(" ");
+    } catch {
+      return "";
+    }
+  };
+
   const renderExperience = () => {
     if (!about?.experience || about.experience.length === 0) return null;
+
+    // normalize to company + roles
+    const normalized = about.experience.map((exp: any) => {
+      if (Array.isArray(exp.roles)) return exp;
+      return {
+        id: exp.id ?? Math.random().toString(36).slice(2),
+        company: exp.company ?? exp.companyName ?? exp.companyUrl ?? exp.title ?? "Company",
+        companyUrl: exp.companyUrl ?? exp.company_url ?? "",
+        logo: exp.logo ?? "",
+        roles: [
+          {
+            id: exp.id ? `${exp.id}-role` : Math.random().toString(36).slice(2),
+            title: exp.title ?? "Role",
+            start: exp.start ?? "",
+            end: exp.end ?? "",
+            present: exp.present ?? false,
+            description: exp.description ?? "",
+            skills: exp.skills ?? [],
+            attachments: exp.attachments ?? (exp.offerLetter ? [exp.offerLetter] : []),
+            offerLetter: exp.offerLetter ?? null,
+            location: exp.location ?? "",
+          },
+        ],
+      };
+    });
+
     return (
-      <section className="py-20 px-4 bg-white/5">
+      <section className="py-20 px-4 bg-gradient-to-b from-transparent to-white/2">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold text-center mb-16 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Experience</h2>
+          <h2 className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Experience</h2>
+
           <div className="space-y-8">
-            {about.experience.map((exp: Experience, index: number) => (
-              <div key={exp.id} className="bg-white/10 backdrop-blur-sm rounded-xl p-8 hover:bg-white/20 transition-all duration-300 border border-white/10 hover:border-purple-400/30 group animate-fade-in-up" style={{ animationDelay: `${index * 100}ms` }}>
-                <div className="flex items-start mb-4">
-                  {exp.logo && <Image src={exp.logo} alt={exp.company} width={60} height={60} className="rounded-lg mr-6 group-hover:scale-110 transition-transform" />}
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <h3 className="text-2xl font-semibold text-white group-hover:text-purple-300 transition-colors">{exp.title}</h3>
-                        {exp.companyUrl ? <Link href={exp.companyUrl} target="_blank" className="text-xl text-purple-300 hover:text-purple-200 transition-colors">{exp.company} ↗</Link> : <p className="text-xl text-purple-300">{exp.company}</p>}
+            {normalized.map((company: any, cIdx: number) => (
+              <div key={company.id || cIdx} className="relative bg-white/6 rounded-2xl p-6 md:p-8 border border-white/8 hover:shadow-2xl transition-shadow duration-300 overflow-hidden">
+                <div className="md:flex md:items-start md:gap-6">
+                  {/* left: logo + company (no boxed background) */}
+                  <div className="md:w-36 flex-shrink-0 flex items-center md:items-start gap-4">
+                    {company.logo ? (
+                      <div className="w-20 h-20 rounded-lg overflow-hidden flex items-center justify-center">
+                        {/* plain img to avoid external domain config issues */}
+                        <img src={company.logo} alt={company.company} className="w-full h-full object-contain" onError={(e) => ((e.target as HTMLImageElement).style.display = "none")} />
                       </div>
-                      <span className="text-purple-300 bg-purple-900/50 px-3 py-1 rounded-full text-sm">{exp.start} - {exp.present ? 'Present' : exp.end}</span>
+                    ) : (
+                      <div className="w-20 h-20 rounded-lg flex items-center justify-center text-gray-400">🏢</div>
+                    )}
+
+                    <div className="hidden md:block">
+                      <div className="text-sm font-semibold text-gray-200">{company.company}</div>
+                      {company.companyUrl ? (
+                        <a href={company.companyUrl.startsWith("http") ? company.companyUrl : `https://${company.companyUrl}`} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-300 hover:text-blue-200">
+                          Visit ↗
+                        </a>
+                      ) : (
+                        <div className="text-xs text-gray-400">No website</div>
+                      )}
                     </div>
-                    <p className="text-gray-300 mb-4">{exp.description}</p>
-                    {exp.skills && exp.skills.length > 0 && <div className="flex flex-wrap gap-2">{exp.skills.map((skill: string) => <span key={skill} className="bg-purple-900/50 text-purple-300 px-3 py-1 rounded-full text-sm border border-purple-700/50">{skill}</span>)}</div>}
+                  </div>
+
+                  {/* right: roles & timeline */}
+                  <div className="flex-1 mt-4 md:mt-0">
+                    <div className="hidden md:block absolute left-[140px] top-8 bottom-8 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent pointer-events-none" />
+
+                    <div className="space-y-6">
+                      {company.roles?.map((role: any, rIdx: number) => (
+                        <div key={role.id || rIdx} className="md:flex md:items-start md:gap-6">
+                          {/* dot + connector (desktop) */}
+                          <div className="hidden md:flex flex-col items-center w-12">
+                            <div className="w-3 h-3 rounded-full bg-purple-400 shadow-lg" />
+                            {rIdx < company.roles.length - 1 && <div className="flex-1 w-px bg-white/6 mt-2" />}
+                          </div>
+
+                          <div className="flex-1">
+                            <div className="flex justify-between items-start gap-4">
+                              <div className="min-w-0">
+                                <h3 className="text-lg md:text-xl font-semibold text-white hover:text-purple-300 transition-colors">{role.title}</h3>
+                                <div className="text-sm text-gray-300 mt-1">
+                                  <span>{formatMonthYear(role.start)}</span>
+                                  {" — "}
+                                  <span>{role.present ? "Present" : (role.end ? formatMonthYear(role.end) : "Present")}</span>
+                                  {" · "}
+                                  <span className="text-gray-400">{computeDuration(role.start, role.end, role.present)}</span>
+                                </div>
+                                {role.location && <div className="text-sm text-gray-400 mt-1">{role.location}</div>}
+                              </div>
+
+                              <div className="flex-shrink-0 ml-3 flex items-center gap-3">
+                                {role.offerLetter && (
+                                  <a href={role.offerLetter} target="_blank" rel="noopener noreferrer" className="text-sm bg-emerald-700/20 text-emerald-200 px-3 py-1 rounded-full border border-emerald-600/30 hover:bg-emerald-700/30 transition">
+                                    Offer
+                                  </a>
+                                )}
+                              </div>
+                            </div>
+
+                            {role.description && (
+                              <p className="text-gray-300 mt-3 leading-relaxed">{role.description}</p>
+                            )}
+
+                            {/* skills */}
+                            {role.skills && role.skills.length > 0 && (
+                              <div className="mt-3 flex flex-wrap gap-2">
+                                {role.skills.map((s: string, si: number) => (
+                                  <span key={si} className="px-2 py-1 bg-white/6 text-gray-200 rounded-full text-xs border border-white/8">
+                                    {s}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+
+                            {/* attachments: moved to bottom of role and made larger */}
+                            {role.attachments && role.attachments.length > 0 && (
+                              <div className="mt-4">
+                                <div className="text-sm text-gray-400 mb-2">Attachments</div>
+                                <div className="flex items-center gap-3 flex-wrap">
+                                  {role.attachments.map((att: string, ai: number) => (
+                                    <a key={ai} href={att} target="_blank" rel="noopener noreferrer" className="w-32 h-20 rounded overflow-hidden border border-white/8 block transition-transform hover:scale-105">
+                                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                                      <img src={att} alt={`attachment-${ai}`} className="w-full h-full object-cover" onError={(e) => ((e.target as HTMLImageElement).style.display = "none")} />
+                                    </a>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+
+                      {/* mobile footer showing company + website */}
+                      <div className="md:hidden mt-3 flex items-center justify-between gap-3">
+                        <div className="text-sm text-gray-400">{company.company}</div>
+                        {company.companyUrl ? (
+                          <a className="text-sm text-blue-300 hover:text-blue-200" href={company.companyUrl.startsWith("http") ? company.companyUrl : `https://${company.companyUrl}`} target="_blank" rel="noreferrer">↗ Website</a>
+                        ) : (
+                          <div className="text-xs text-gray-500">No website</div>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
+
+                {/* subtle hover overlay */}
+                <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-tr from-transparent to-white/2 opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
               </div>
             ))}
           </div>
@@ -340,61 +498,60 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
   };
 
   // ---------- Media / Portfolio Sections (card grid) ----------
-const renderMediaSections = () => {
-  const mediaSections: MediaSection[] = (skills?.media as MediaSection[]) || [];
+  const renderMediaSections = () => {
+    const mediaSections: MediaSection[] = (skills?.media as MediaSection[]) || [];
 
-  // keep only sections that have at least one item
-  const visibleSections = mediaSections.filter(
-    (s) => Array.isArray(s.items) && s.items.length > 0
-  );
+    // keep only sections that have at least one item
+    const visibleSections = mediaSections.filter(
+      (s) => Array.isArray(s.items) && s.items.length > 0
+    );
 
-  if (visibleSections.length === 0) return null;
+    if (visibleSections.length === 0) return null;
 
-  return (
-    <section className="py-20 px-4">
-      <div className="max-w-6xl mx-auto">
-        <div className="space-y-10">
-          {visibleSections.map((section: MediaSection, sIdx: number) => {
-            const items: MediaItem[] = Array.isArray(section.items) ? section.items : [];
-            return (
-              <div
-                key={section.id || sIdx}
-                className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-purple-400/30 transition-all duration-300"
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-2xl font-semibold text-white">{section.name || "Section"}</h3>
+    return (
+      <section className="py-20 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="space-y-10">
+            {visibleSections.map((section: MediaSection, sIdx: number) => {
+              const items: MediaItem[] = Array.isArray(section.items) ? section.items : [];
+              return (
+                <div
+                  key={section.id || sIdx}
+                  className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-purple-400/30 transition-all duration-300"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-2xl font-semibold text-white">{section.name || "Section"}</h3>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                    {items.map((item) => (
+                      <div key={item.id || item.title} className="p-0">
+                        <MediaCard
+                          item={item}
+                          sectionName={section.name}
+                          onExpand={(it: any) =>
+                            setExpandedMedia({ item: it, sectionName: section.name })
+                          }
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                  {items.map((item) => (
-                    <div key={item.id || item.title} className="p-0">
-                      <MediaCard
-                        item={item}
-                        sectionName={section.name}
-                        onExpand={(it: any) =>
-                          setExpandedMedia({ item: it, sectionName: section.name })
-                        }
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </div>
 
-      {expandedMedia && (
-        <MediaModal
-          item={expandedMedia.item}
-          sectionName={expandedMedia.sectionName}
-          onClose={() => setExpandedMedia(null)}
-        />
-      )}
-    </section>
-  );
-};
-
+        {expandedMedia && (
+          <MediaModal
+            item={expandedMedia.item}
+            sectionName={expandedMedia.sectionName}
+            onClose={() => setExpandedMedia(null)}
+          />
+        )}
+      </section>
+    );
+  };
 
   // ---------- Languages & Interests (unchanged) ----------
   const renderLanguagesAndInterests = () => {
