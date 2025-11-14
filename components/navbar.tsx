@@ -70,6 +70,7 @@ export default function Navbar() {
       <ul className="hidden md:flex items-center gap-6 text-zinc-300">
         {/* {/* <Link href="/projects" className="hover:text-white transition-colors">Projects</Link> */}
         <Link href="/Prattay" className="hover:text-white transition-colors">Contact The Dev.</Link>
+        <Link href="/kunal" className="hover:text-white transition-colors">Demo Portfolio</Link>
         {user ? (
           <>
             <Link href="/dashboard" className="inline-block">
@@ -79,7 +80,7 @@ export default function Navbar() {
             </Link>
             <button
               onClick={handleLogout}
-              className="ml-3 text-sm text-zinc-400 hover:text-white"
+              className="ml-3 text-sm text-red-600 hover:text-red-700 font-medium"
             >
               Logout
             </button>
@@ -127,10 +128,11 @@ export default function Navbar() {
           <div className="absolute right-0 mt-2 w-40 bg-black/80 rounded-lg shadow-lg backdrop-blur-md border border-white/10 py-2 flex flex-col text-zinc-300">
             {/* <Link href="/projects" className="px-4 py-2 hover:bg-white/10">Projects</Link> */}
             <Link href="/Prattay" className="px-4 py-2 hover:bg-white/10">Contact The Dev.</Link> 
-            {user ? (
+            <Link href="/kunal" className="px-4 py-2 hover:bg-white/10">Demo Portfolio</Link>
+              {user ? (
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 text-left hover:bg-white/10"
+                className="px-4 py-2 text-left text-red-600 hover:bg-white/10 hover:text-red-700"
               >
                 Logout
               </button>
