@@ -566,7 +566,7 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
                 <div className="space-y-4">
                   {langint.language.map((lang) => {
                     const proficiencyLevels = ["Beginner", "Elementary", "Intermediate", "Advanced", "Fluent", "Native"];
-                    const starCount = Math.max(0, Math.min(5, proficiencyLevels.indexOf(lang.proficiency) + 1));
+                    const starCount = Math.max(0, Math.min(6, proficiencyLevels.indexOf(lang.proficiency) + 1));
                     return (
                       <div key={lang.id} className="flex items-center justify-between py-2 border-b border-white/10 last:border-b-0">
                         <span className="text-gray-300">{lang.name}</span>
