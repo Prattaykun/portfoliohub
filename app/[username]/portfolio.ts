@@ -5,6 +5,59 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
+export type MediaType = "image" | "video" | "deployment" | "link" | "text";
+
+export interface MediaBase {
+  id: string;
+  type: MediaType;
+  title?: string;
+  description?: string;
+}
+
+/** Image media */
+export interface ImageMedia extends MediaBase {
+  type: "image";
+  url: string;
+  width?: number;
+  height?: number;
+  format?: string;
+}
+
+/** Video media (youtube/vimeo/direct link) */
+export interface VideoMedia extends MediaBase {
+  type: "video";
+  url: string;
+  thumbnail?: string;
+}
+
+/** Deployment / live demo */
+export interface DeploymentMedia extends MediaBase {
+  type: "deployment";
+  url: string;
+}
+
+/** Generic link */
+export interface LinkMedia extends MediaBase {
+  type: "link";
+  url: string;
+  label?: string;
+}
+
+/** Text-based item — stored in DB currently in `url` field */
+export interface TextMedia extends MediaBase {
+  type: "text";
+  url: string; // currently used for content; consider renaming to `content` later
+}
+
+/** Union of all media item shapes */
+export type MediaItem = ImageMedia | VideoMedia | DeploymentMedia | LinkMedia | TextMedia;
+
+/** Section grouping media items (this matches your jsonb[] structure) */
+export interface MediaSection {
+  id: string;
+  name: string;
+  items: MediaItem[];
+}
 
 // Type definitions (same as before)
 export interface Education {
@@ -71,11 +124,14 @@ export interface Certificate {
   media?: CertificateMedia[];
 }
 
+/* ----- SkillsData updated to include media sections ----- */
 export interface SkillsData {
   technical?: Skill[];
   soft?: string[];
   certificates?: Certificate[];
+  media?: MediaSection[]; // <-- this must be present
 }
+
 
 export interface ProjectMedia {
   type: "image" | "video" | "deployment";

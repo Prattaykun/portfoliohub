@@ -1,3 +1,4 @@
+// app/dashboard/page.tsx
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -7,6 +8,7 @@ import UserProfileSection from '@/components/dashboard/UserProfileSection'
 import AboutSection from '@/components/dashboard/AboutSection'
 import SkillsSection from '@/components/dashboard/SkillsSection'
 import ProjectsSection from '@/components/dashboard/ProjectsSection'
+import MediaSection from '@/components/dashboard/MediaSection' // <-- imported MediaSection
 import ContactSection from '@/components/dashboard/ContactSection'
 import ResumeSection from '@/components/dashboard/ResumeSection'
 import SharePortfolio from '@/components/dashboard/SharePortfolio'
@@ -64,6 +66,7 @@ export default function Dashboard() {
     { id: 'about', name: 'About', icon: '📝' },
     { id: 'skills', name: 'Skills', icon: '💡' },
     { id: 'projects', name: 'Projects', icon: '🚀' },
+    { id: 'media', name: 'Media', icon: '🗂️' }, // <- media/portfolio tab added
     { id: 'languages', name: 'Languages & Interests', icon: '🌐' },
     { id: 'contact', name: 'Contact', icon: '📞' },
     { id: 'resume', name: 'Resume', icon: '📄' },
@@ -71,13 +74,14 @@ export default function Dashboard() {
   ]
 
   // Split into visible (bottom bar) and extra (dropdown)
+  // Note: bottomTabs now includes Portfolio (media) so mobile nav shows it directly.
   const bottomTabs = sections.slice(0, 5)
   const extraTabs = sections.slice(5)
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Desktop Sidebar */}
-  <div className="hidden md:fixed md:inset-y-0 md:pt-20 md:left-0 md:w-64 md:bg-white md:shadow-lg md:block md:overflow-y-auto md:pb-8">
+      <div className="hidden md:fixed md:inset-y-0 md:pt-20 md:left-0 md:w-64 md:bg-white md:shadow-lg md:block md:overflow-y-auto md:pb-8">
         <div className="pl-6 pt-6">
           <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
           <p className="text-gray-600 text-sm mt-2">Manage your portfolio</p>
@@ -109,6 +113,7 @@ export default function Dashboard() {
           {activeSection === 'about' && <AboutSection user={user} />}
           {activeSection === 'skills' && <SkillsSection user={user} />}
           {activeSection === 'projects' && <ProjectsSection user={user} />}
+          {activeSection === 'media' && <MediaSection user={user} />} {/* <-- render MediaSection */}
           {activeSection === 'languages' && <LanguageInterests user={user} />}
           {activeSection === 'contact' && <ContactSection user={user} />}
           {activeSection === 'resume' && <ResumeSection user={user} />}
