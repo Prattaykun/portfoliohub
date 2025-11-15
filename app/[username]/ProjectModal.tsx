@@ -176,28 +176,32 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, isOpen, onC
                 </h3>
                 {images.length === 1 ? (
                   <div className="relative w-full h-96 rounded-xl overflow-hidden border border-purple-500/20 bg-gradient-to-br from-purple-500/10 to-pink-500/10">
-                    <Image
-                      src={images[0].url}
-                      alt={`${project.title} - Main Image`}
-                      fill
-                      className="object-cover rounded-xl hover:scale-105 transition-transform duration-500"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
-                    />
+                    <a href={images[0].url} target="_blank" rel="noopener noreferrer" className="block w-full h-full relative">
+                      <Image
+                        src={images[0].url}
+                        alt={`${project.title} - Main Image`}
+                        fill
+                        className="object-cover rounded-xl hover:scale-105 transition-transform duration-500"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+                      />
+                    </a>
                   </div>
                 ) : (
                   <div className="relative rounded-xl overflow-hidden border border-purple-500/20 bg-gradient-to-br from-purple-500/10 to-pink-500/10 p-2">
                     <Slider {...sliderSettings}>
                       {images.map((img: any, i: number) => (
                         <div key={i} className="relative h-96 rounded-lg overflow-hidden">
-                          <Image
-                            src={img.url}
-                            alt={`${project.title} - image ${i + 1}`}
-                            fill
-                            className="object-cover"
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
-                          />
-                          {/* Gradient overlay for better text readability if needed */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                          <a href={img.url} target="_blank" rel="noopener noreferrer" className="block w-full h-full relative">
+                            <Image
+                              src={img.url}
+                              alt={`${project.title} - image ${i + 1}`}
+                              fill
+                              className="object-cover"
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+                            />
+                            {/* Gradient overlay for better text readability if needed */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                          </a>
                         </div>
                       ))}
                     </Slider>
