@@ -171,7 +171,9 @@ interface RequestPayload {
   langint: LangInt
   certificates?: Certificate[]
 }
-
+//removed part in project rendering
+//<strong>Process:</strong> ${escapeHtml(project.process)}<br/>
+//${project.results ? `<strong>Results:</strong> ${escapeHtml(project.results)}<br/>` : ''}
 export async function POST(request: NextRequest) {
   try {
     const { profile, about, skills, projects, contact, langint, certificates = [] }: RequestPayload = await request.json()
@@ -611,8 +613,6 @@ function generateResumeHTML(
                         <div class="item-subtitle">Role: ${escapeHtml(project.role)}</div>
                         <div class="item-description">
                             <strong>Overview:</strong> ${escapeHtml(project.overview)}<br/>
-                            <strong>Process:</strong> ${escapeHtml(project.process)}<br/>
-                            ${project.results ? `<strong>Results:</strong> ${escapeHtml(project.results)}<br/>` : ''}
                             <strong>Tech Stack:</strong> ${project.techStack?.map(tech => escapeHtml(tech.name)).join(', ')}
                         </div>
                     </div>
