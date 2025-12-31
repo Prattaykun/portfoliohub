@@ -79,8 +79,9 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, isOpen, onC
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 4000,
+    adaptiveHeight: true,
+    // autoplay: true,
+    // autoplaySpeed: 4000,
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
     appendDots: (dots: any) => (
@@ -136,7 +137,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, isOpen, onC
                         : null;
 
                       return (
-                        <div key={i} className="relative h-96 rounded-lg overflow-hidden">
+                        <div key={i} className="relative rounded-lg overflow-hidden">
                           {isYouTube ? (
                             <div className="relative w-full h-0 pb-[56.25%] rounded-xl overflow-hidden mb-4 border border-purple-500/20 bg-black/50">
                               <iframe
@@ -147,7 +148,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, isOpen, onC
                               ></iframe>
                             </div>
                           ) : (
-                            <div className="relative w-full h-96 bg-black rounded-xl flex items-center justify-center mb-4 border border-purple-500/20">
+                            <div className="relative w-full h-56 sm:h-72 md:h-96 bg-black rounded-xl flex items-center justify-center mb-4 border border-purple-500/20">
                               <div className="absolute inset-0 bg-gradient-to-br from-purple-900/50 to-pink-900/50 rounded-xl"></div>
                               <div className="relative z-10 text-center">
                                 <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mb-4 mx-auto">
