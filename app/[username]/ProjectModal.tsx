@@ -68,7 +68,7 @@ const PrevArrow = (props: any) => {
 export const ProjectModal: React.FC<ProjectModalProps> = ({ project, isOpen, onClose }) => {
   if (!isOpen) return null;
 
-  const video = project.media?.find((m: any) => m.type === "video");
+  const videos = project.media?.filter((m: any) => m.type === "video") || [];
   const images = project.media?.filter((m: any) => m.type === "image") || [];
   const deployment = project.media?.find((m: any) => m.type === "deployment");
 
@@ -122,49 +122,54 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, isOpen, onC
           {/* Media Section */}
           <div className="mb-8 space-y-6">
             {/* Video Section */}
-            {video && (
+            {videos.length > 0 && (
               <div>
                 <h3 className="text-xl font-semibold text-white mb-4 border-b border-purple-500/30 pb-2">
                   Video Demo
                 </h3>
-                {(() => {
-                  const isYouTube = video.url.includes("youtube.com") || video.url.includes("youtu.be");
-                  if (isYouTube) {
-                    const embedUrl = video.url
-                      .replace("watch?v=", "embed/")
-                      .replace("youtu.be/", "youtube.com/embed/");
-                    return (
-                      <div className="relative w-full h-0 pb-[56.25%] rounded-xl overflow-hidden mb-4 border border-purple-500/20 bg-black/50">
-                        <iframe
-                          src={embedUrl}
-                          title={`${project.title} - Video Demo`}
-                          allowFullScreen
-                          className="absolute top-0 left-0 w-full h-full rounded-xl"
-                        ></iframe>
-                      </div>
-                    );
-                  } else {
-                    return (
-                      <div className="relative w-full h-96 bg-black rounded-xl flex items-center justify-center mb-4 border border-purple-500/20">
-                        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/50 to-pink-900/50 rounded-xl"></div>
-                        <div className="relative z-10 text-center">
-                          <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mb-4 mx-auto">
-                            <span className="text-3xl">🎬</span>
-                          </div>
-                          <p className="text-white text-lg mb-4">Video Available</p>
-                          <Link
-                            href={video.url}
-                            target="_blank"
-                            className="inline-flex items-center space-x-2 bg-white/10 hover:bg-white/20 px-6 py-3 rounded-lg transition-all duration-300 border border-white/20"
-                          >
-                            <span>Watch Video</span>
-                            <span>→</span>
-                          </Link>
+                <div className="relative rounded-xl overflow-hidden border border-purple-500/20 bg-gradient-to-br from-purple-500/10 to-pink-500/10 p-2">
+                  <Slider {...sliderSettings}>
+                    {videos.map((video: any, i: number) => {
+                      const isYouTube = video.url.includes("youtube.com") || video.url.includes("youtu.be");
+                      const embedUrl = isYouTube
+                        ? video.url.replace("watch?v=", "embed/").replace("youtu.be/", "youtube.com/embed/")
+                        : null;
+
+                      return (
+                        <div key={i} className="relative h-96 rounded-lg overflow-hidden">
+                          {isYouTube ? (
+                            <div className="relative w-full h-0 pb-[56.25%] rounded-xl overflow-hidden mb-4 border border-purple-500/20 bg-black/50">
+                              <iframe
+                                src={embedUrl}
+                                title={`${project.title} - Video Demo ${i + 1}`}
+                                allowFullScreen
+                                className="absolute top-0 left-0 w-full h-full rounded-xl"
+                              ></iframe>
+                            </div>
+                          ) : (
+                            <div className="relative w-full h-96 bg-black rounded-xl flex items-center justify-center mb-4 border border-purple-500/20">
+                              <div className="absolute inset-0 bg-gradient-to-br from-purple-900/50 to-pink-900/50 rounded-xl"></div>
+                              <div className="relative z-10 text-center">
+                                <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mb-4 mx-auto">
+                                  <span className="text-3xl">🎬</span>
+                                </div>
+                                <p className="text-white text-lg mb-4">Video Available</p>
+                                <Link
+                                  href={video.url}
+                                  target="_blank"
+                                  className="inline-flex items-center space-x-2 bg-white/10 hover:bg-white/20 px-6 py-3 rounded-lg transition-all duration-300 border border-white/20"
+                                >
+                                  <span>Watch Video</span>
+                                  <span>→</span>
+                                </Link>
+                              </div>
+                            </div>
+                          )}
                         </div>
-                      </div>
-                    );
-                  }
-                })()}
+                      );
+                    })}
+                  </Slider>
+                </div>
               </div>
             )}
 
@@ -172,7 +177,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, isOpen, onC
             {images.length > 0 && (
               <div>
                 <h3 className="text-xl font-semibold text-white mb-4 border-b border-purple-500/30 pb-2">
-                  {video ? 'Project Images' : 'Media Gallery'}
+                  {videos.length > 0 ? 'Project Images' : 'Media Gallery'}
                 </h3>
                 {images.length === 1 ? (
                   <div className="relative w-full h-96 rounded-xl overflow-hidden border border-purple-500/20 bg-gradient-to-br from-purple-500/10 to-pink-500/10">
@@ -211,7 +216,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, isOpen, onC
             )}
 
             {/* Fallback if no media */}
-            {!video && images.length === 0 && (
+            {videos.length === 0 && images.length === 0 && (
               <div className="w-full h-48 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl flex items-center justify-center border border-purple-500/30">
                 <span className="text-6xl">🚀</span>
               </div>
@@ -310,9 +315,9 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, isOpen, onC
                   </Link>
                 )}
 
-                {video && !video.url.includes("youtube.com") && !video.url.includes("youtu.be") && (
+                {videos.length > 0 && videos.every((v: any) => !v.url.includes("youtube.com") && !v.url.includes("youtu.be")) && (
                   <Link
-                    href={video.url}
+                    href={videos[0].url}
                     target="_blank"
                     className="flex items-center space-x-3 bg-red-600/20 hover:bg-red-600/30 border border-red-500/50 px-6 py-3 rounded-lg transition-all duration-300 hover:scale-105 group"
                   >

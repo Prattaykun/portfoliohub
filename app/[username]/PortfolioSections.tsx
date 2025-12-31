@@ -457,7 +457,7 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
               const deployment = project.media?.find((m: any) => m.type === "deployment");
               return (
                 <div key={project.id} className="bg-white/10 backdrop-blur-sm rounded-xl border border-white/10 hover:border-purple-400/30 transition-all duration-300 group hover:scale-105 animate-fade-in-up flex flex-col" style={{ animationDelay: `${index * 100}ms` }}>
-                  <div className="relative h-48 overflow-hidden rounded-t-xl">
+                  {/* <div className="relative h-48 overflow-hidden rounded-t-xl">
                     {video ? (() => {
                       const isYT = isYouTube(String(video.url || ""));
                       if (isYT) {
@@ -466,7 +466,70 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
                       }
                       return <div className="relative w-full h-full bg-black flex items-center justify-center"><div className="absolute inset-0 bg-gradient-to-br from-purple-900/50 to-pink-900/50"></div><div className="relative z-10 text-center"><div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-2 mx-auto"><span className="text-2xl">🎬</span></div><p className="text-white text-sm">Video Available</p></div></div>;
                     })() : images.length > 0 ? (images.length === 1 ? <Image src={images[0].url} alt={project.title} fill className="object-cover group-hover:scale-110 transition-transform duration-300" /> : <Slider dots infinite speed={500} slidesToShow={1} slidesToScroll={1} arrows={false} autoplay autoplaySpeed={4000}>{images.map((img: any, i: number) => <div key={i} className="relative h-48"><Image src={img.url} alt={`${project.title} - image ${i + 1}`} fill className="object-cover rounded-t-xl" /></div>)}</Slider>) : <div className="w-full h-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center"><span className="text-4xl">🚀</span></div>}
+                  </div> */}
+                  <div
+                    className="relative h-48 overflow-hidden rounded-t-xl cursor-pointer"
+                    onClick={() => onExpandProject(project)}
+                  >
+                    {video
+                      ? (() => {
+                          const isYT = isYouTube(String(video.url || ""));
+                          if (isYT) {
+                            const embedUrl = toYouTubeEmbed(String(video.url || ""));
+                            return (
+                              <div className="relative w-full h-0 pb-[56.25%]">
+                                <iframe
+                                  src={embedUrl}
+                                  title={project.title}
+                                  allowFullScreen
+                                  className="absolute top-0 left-0 w-full h-full rounded-t-xl pointer-events-none"
+                                />
+                              </div>
+                            );
+                          }
+                          return (
+                            <div className="relative w-full h-full bg-black flex items-center justify-center">
+                              <div className="absolute inset-0 bg-gradient-to-br from-purple-900/50 to-pink-900/50" />
+                              <div className="relative z-10 text-center">
+                                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-2 mx-auto">
+                                  <span className="text-2xl">🎬</span>
+                                </div>
+                                <p className="text-white text-sm">Video Available</p>
+                              </div>
+                            </div>
+                          );
+                        })()
+                      : images.length > 0
+                      ? (
+                        <Slider
+                          dots
+                          infinite
+                          speed={500}
+                          slidesToShow={1}
+                          slidesToScroll={1}
+                          autoplay
+                          autoplaySpeed={4000}
+                          arrows={false}
+                        >
+                          {images.map((img: any, i: number) => (
+                            <div key={i} className="relative h-48">
+                              <Image
+                                src={img.url}
+                                alt={`${project.title} - image ${i + 1}`}
+                                fill
+                                className="object-cover rounded-t-xl"
+                              />
+                            </div>
+                          ))}
+                        </Slider>
+                        )
+                      : (
+                        <div className="w-full h-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
+                          <span className="text-4xl">🚀</span>
+                        </div>
+                        )}
                   </div>
+
 
                   <div className="p-6 flex-1 flex flex-col">
                     <h3 className="text-xl font-semibold mb-2 text-white group-hover:text-purple-300 transition-colors">{project.title}</h3>
