@@ -37,21 +37,12 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       openGraph: {
         title: data.title,
         description: data.description,
-        images: [
-          {
-            url: data.image, // use direct user photo
-            width: 800,
-            height: 800,
-            alt: `${username}'s Profile Picture`
-          }
-        ],
         url: data.url,
       },
       twitter: {
-        card: "summary",
+        card: "summary_large_image",
         title: data.title,
         description: data.description,
-        images: [data.image],
       },
     };
   } catch (error) {
@@ -60,7 +51,6 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     // Fallback metadata (still no OG image generation)
     const fallbackTitle = `${username}'s Portfolio | PortfolioHub`;
     const fallbackDescription = `Check out ${username}'s portfolio on PortfolioHub`;
-    const fallbackImage = "https://res.cloudinary.com/dckndb9ux/image/upload/v1761344574/Screenshot_2025-10-24_212856_lt4hdq.png";
     const fallbackUrl = `https://portfoliohub-pi.vercel.app/${username}`;
 
     return {
@@ -69,21 +59,12 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       openGraph: {
         title: fallbackTitle,
         description: fallbackDescription,
-        images: [
-          {
-            url: fallbackImage,
-            width: 800,
-            height: 800,
-            alt: `${username}'s Portfolio`
-          }
-        ],
         url: fallbackUrl,
       },
       twitter: {
-        card: "summary",
+        card: "summary_large_image",
         title: fallbackTitle,
         description: fallbackDescription,
-        images: [fallbackImage],
       },
     };
   }
