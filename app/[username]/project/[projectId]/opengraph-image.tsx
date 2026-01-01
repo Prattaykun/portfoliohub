@@ -19,7 +19,7 @@ async function getYoutubeThumbnail(url: string): Promise<string | null> {
 
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_CLOUD_KEY;
 
-  // If API key is available, try to get high res thumbnail via API
+  //  try to get thumbnail via API
   if (apiKey) {
     try {
       const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${apiKey}&part=snippet`);
