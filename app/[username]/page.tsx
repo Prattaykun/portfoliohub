@@ -16,6 +16,7 @@ import "./portfolio.css";
 export default function PortfolioPage() {
   const params = useParams();
   const username = decodeURIComponent(params.username as string);
+  const projectId = params.projectId ? decodeURIComponent(params.projectId as string) : null;
   const [userData, setUserData] = useState<UserData | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -44,6 +45,15 @@ export default function PortfolioPage() {
   useEffect(() => {
     loadUserData();
   }, [loadUserData]);
+
+  useEffect(() => {
+    if (userData && projectId) {
+      const project = userData.projects?.projects.find((p) => p.id === projectId);
+      if (project) {
+        setExpandedProject(project);
+      }
+    }
+  }, [userData, projectId]);
 
   // detect mobile viewport on client and update state so we can conditionally avoid heavy visuals
   useEffect(() => {

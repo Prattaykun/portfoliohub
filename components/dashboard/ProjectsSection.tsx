@@ -13,13 +13,24 @@ export default function ProjectsSection({ user }: ProjectsSectionProps) {
   const [editingProject, setEditingProject] = useState<string | null>(null)
   const [formData, setFormData] = useState<any>({})
   const [message, setMessage] = useState('')
+  const [username, setUsername] = useState<string | null>(null)
   const router = useRouter()
 
   useEffect(() => {
     if (user) {
       fetchProjectsData()
+      fetchUsername()
     }
   }, [user])
+
+  const fetchUsername = async () => {
+    const { data } = await supabase
+      .from('users_usernames')
+      .select('username')
+      .eq('auth_user_id', user.id)
+      .single()
+    if (data) setUsername(data.username)
+  }
 
   const fetchProjectsData = async () => {
     try {
@@ -236,6 +247,22 @@ export default function ProjectsSection({ user }: ProjectsSectionProps) {
                       <h3 className="text-xl font-semibold text-gray-800">{project.title}</h3>
                       <p className="text-gray-600 mt-1">{project.role}</p>
                     </div>
+                    {username && (
+                      <button
+                        onClick={() => {
+                          const url = `${window.location.origin}/${username}/project/${project.id}`;
+                          navigator.clipboard.writeText(url);
+                          setMessage('Project link copied to clipboard!');
+                          setTimeout(() => setMessage(''), 3000);
+                        }}
+                        className="text-gray-500 hover:text-blue-600 p-2 rounded-full hover:bg-blue-50 transition-colors"
+                        title="Copy Share Link"
+                      >
+                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                        </svg>
+                      </button>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
