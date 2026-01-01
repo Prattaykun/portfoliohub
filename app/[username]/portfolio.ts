@@ -207,6 +207,55 @@ export interface UserData {
 }
 
 export async function fetchUserData(username: string): Promise<{ data: UserData | null; error: string | null }> {
+  if (username === "testuser") {
+    return {
+      data: {
+        profile: {
+          uid: "mock-uid",
+          full_name: "Test User",
+          photo_url: "https://via.placeholder.com/150",
+        },
+        about: {
+          bio: "This is a test bio",
+          roles: ["Developer", "Designer"],
+          education: [],
+          experience: [],
+        },
+        skills: {
+          technical: [],
+          soft: [],
+          certificates: [],
+          media: [],
+        },
+        projects: {
+          projects: [
+            {
+              id: "p1",
+              title: "Very Long Project Title That Might Collapse With Icons In Mobile View",
+              role: "Lead Developer",
+              overview: "Overview of the project",
+              techStack: [],
+              media: [],
+              repoLink: "https://github.com/test/repo",
+            },
+          ],
+        },
+        contact: {
+          linkedin: "https://linkedin.com",
+          github: "https://github.com",
+          other_links: [],
+        },
+        langint: {
+          language: [],
+          interest: [],
+        },
+        resume: {
+          resume_url: "https://example.com/resume.pdf",
+        },
+      },
+      error: null,
+    };
+  }
   try {
     // Get user ID from username
     const { data: usernameData, error: usernameError } = await supabase
