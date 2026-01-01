@@ -151,7 +151,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, isOpen, onC
         </div>
 
         {/* Modal Content */}
-        <div className="p-6">
+        <div className="p-6 pt-16 md:p-6">
           {/* Header */}
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">

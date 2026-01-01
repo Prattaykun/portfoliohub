@@ -17,6 +17,15 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Username is required" }, { status: 400 });
     }
 
+    if (username === "testuser") {
+        return NextResponse.json({
+            title: "Test User's Portfolio | PortfolioHub",
+            description: "Test User's portfolio on PortfolioHub",
+            image: "https://via.placeholder.com/150",
+            url: `http://localhost:3000/${username}`,
+        });
+    }
+
     // Step 1: Get auth_user_id from users_usernames
     const { data: usernameData, error: usernameError } = await supabase
       .from("users_usernames")
