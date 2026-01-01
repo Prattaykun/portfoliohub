@@ -38,45 +38,20 @@ export async function generateMetadata(
     };
   }
 
-  let projectImage = project.media.find(m => m.type === 'image')?.url;
-
-  // If no direct image, try to get a YouTube thumbnail
-  if (!projectImage) {
-    const video = project.media.find(m => m.type === 'video');
-    if (video && video.url) {
-      const videoId = getYouTubeVideoId(video.url);
-      if (videoId) {
-        // Use hqdefault for a reliable high-quality thumbnail
-        projectImage = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-      }
-    }
-  }
-
-  // Fallback to profile photo if nothing else found
-  const finalImage = projectImage || data.profile.photo_url;
-
   return {
     title: `${project.title} | ${data.profile.full_name}`,
     description: project.overview,
     openGraph: {
       title: project.title,
       description: project.overview,
-      images: finalImage ? [finalImage] : [],
       url: `https://portfoliohub-pi.vercel.app/${username}/project/${projectId}`,
     },
     twitter: {
       card: 'summary_large_image',
       title: project.title,
       description: project.overview,
-      images: finalImage ? [finalImage] : [],
     },
   };
-}
-
-function getYouTubeVideoId(url: string): string | null {
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-  const match = url.match(regExp);
-  return (match && match[2].length === 11) ? match[2] : null;
 }
 
 export default async function ProjectPage({ params }: Props) {
