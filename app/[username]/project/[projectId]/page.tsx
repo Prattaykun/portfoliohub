@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const title = `${project.title} | ${data.profile.full_name}`;
+  const title = `${project.title} | ${data.profile.full_name} | PortfolioHub`;
   const description = project.overview || `Check out ${project.title} by ${data.profile.full_name}`;
 
   // Use NEXT_PUBLIC_SITE_URL or fallback to hardcoded domain
