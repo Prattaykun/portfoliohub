@@ -4,6 +4,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import Slider from "react-slick";
 import { Project } from "./portfolio";
 import "slick-carousel/slick/slick.css";
@@ -66,7 +67,19 @@ const PrevArrow = (props: any) => {
 };
 
 export const ProjectModal: React.FC<ProjectModalProps> = ({ project, isOpen, onClose }) => {
+  const params = useParams();
+  const username = params.username as string;
+  const [copied, setCopied] = React.useState(false);
+
   if (!isOpen) return null;
+
+  const handleShare = () => {
+    const url = `${window.location.origin}/${username}/project/${project.id}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
 
   const videos = project.media?.filter((m: any) => m.type === "video") || [];
   const images = project.media?.filter((m: any) => m.type === "image") || [];
@@ -100,15 +113,42 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, isOpen, onC
         className="relative bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl border border-purple-500/30 shadow-2xl shadow-purple-500/20 max-w-4xl w-full max-h-[90vh] overflow-y-auto modal-scroll"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 z-10 w-10 h-10 bg-red-500/20 hover:bg-red-500/30 border border-red-400/50 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 group"
-        >
-          <svg className="w-5 h-5 text-red-400 group-hover:text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+        {/* Actions */}
+        <div className="absolute top-4 right-4 z-10 flex space-x-2">
+          {/* Share Button */}
+          <button
+            onClick={handleShare}
+            className="w-10 h-10 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-400/50 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 group relative"
+            title="Copy link to project"
+          >
+            {copied ? (
+              <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5 text-blue-400 group-hover:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+              </svg>
+            )}
+
+            {/* Tooltip */}
+            {copied && (
+              <span className="absolute top-12 right-0 bg-black/80 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                Link Copied!
+              </span>
+            )}
+          </button>
+
+          {/* Close Button */}
+          <button
+            onClick={onClose}
+            className="w-10 h-10 bg-red-500/20 hover:bg-red-500/30 border border-red-400/50 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 group"
+          >
+            <svg className="w-5 h-5 text-red-400 group-hover:text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
 
         {/* Modal Content */}
         <div className="p-6">
