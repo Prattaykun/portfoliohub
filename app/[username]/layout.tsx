@@ -8,6 +8,10 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { username } = await params;
 
   try {
+    if (!process.env.NEXT_PUBLIC_SITE_URL) {
+      throw new Error("NEXT_PUBLIC_SITE_URL is not defined");
+    }
+
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_SITE_URL}/api/preview?username=${username}`,
       { 
