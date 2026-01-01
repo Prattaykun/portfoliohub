@@ -1,29 +1,29 @@
 
-> portfoliohub@0.1.0 dev
-> next dev
+> portfoliohub@0.1.0 start
+> next start
 
+▲ Next.js 16.1.1
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+
+✓ Starting...
 ⚠ `eslint` configuration in next.config.ts is no longer supported. See more info here: https://nextjs.org/docs/app/api-reference/cli/next#next-lint-options
 ⚠ `images.domains` is deprecated in favor of `images.remotePatterns`. Please update next.config.ts to protect your application from malicious users.
 ⚠ Invalid next.config.ts options detected:
 ⚠     Unrecognized key(s) in object: 'eslint'
 ⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
-▲ Next.js 16.1.1 (Turbopack)
-- Local:         http://localhost:3000
-- Network:       http://192.168.0.2:3000
-
-✓ Starting...
-✓ Ready in 1080ms
- GET /testuser 200 in 2.1s (compile: 1559ms, render: 496ms)
+✓ Ready in 749ms
+Metadata generation failed: Error: NEXT_PUBLIC_SITE_URL is not defined
+    at Module.c (.next/server/chunks/ssr/app_[username]_layout_tsx_8d48ae96._.js:1:156)
+⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
 ⚠ The "images.domains" configuration is deprecated. Please use "images.remotePatterns" configuration instead.
-TypeError: fetch failed
-    at ignore-listed frames {
-  [cause]: Error: getaddrinfo EAI_AGAIN via.placeholder.com
-      at ignore-listed frames {
-    errno: -3001,
-    code: 'EAI_AGAIN',
-    syscall: 'getaddrinfo',
-    hostname: 'via.placeholder.com'
-  }
-}
- GET /_next/image?url=https%3A%2F%2Fvia.placeholder.com%2F150&w=256&q=75 500 in 413ms (compile: 360ms, render: 53ms)
- GET /_next/image?url=https%3A%2F%2Fvia.placeholder.com%2F150&w=256&q=75 500 in 413ms (compile: 360ms, render: 53ms)
+Metadata generation failed: Error: NEXT_PUBLIC_SITE_URL is not defined
+    at Module.c (.next/server/chunks/ssr/app_[username]_layout_tsx_8d48ae96._.js:1:156)
+Metadata generation failed: Error: NEXT_PUBLIC_SITE_URL is not defined
+    at Module.c (.next/server/chunks/ssr/app_[username]_layout_tsx_8d48ae96._.js:1:156)
+Metadata generation failed: Error: NEXT_PUBLIC_SITE_URL is not defined
+    at Module.c (.next/server/chunks/ssr/app_[username]_layout_tsx_8d48ae96._.js:1:156)
+Metadata generation failed: Error: NEXT_PUBLIC_SITE_URL is not defined
+    at Module.c (.next/server/chunks/ssr/app_[username]_layout_tsx_8d48ae96._.js:1:156)
+Metadata generation failed: Error: NEXT_PUBLIC_SITE_URL is not defined
+    at Module.c (.next/server/chunks/ssr/app_[username]_layout_tsx_8d48ae96._.js:1:156)

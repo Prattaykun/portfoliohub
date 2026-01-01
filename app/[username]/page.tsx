@@ -13,13 +13,13 @@ import { PortfolioSections } from "./PortfolioSections";
 import { fetchUserData, UserData, Project } from "./portfolio";
 import "./portfolio.css";
 
-export default function PortfolioPage() {
+export default function PortfolioPage({ initialData }: { initialData?: UserData | null }) {
   const params = useParams();
   const username = decodeURIComponent(params.username as string);
   const projectId = params.projectId ? decodeURIComponent(params.projectId as string) : null;
-  const [userData, setUserData] = useState<UserData | null>(null);
+  const [userData, setUserData] = useState<UserData | null>(initialData || null);
   const [isMobile, setIsMobile] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initialData);
   const [error, setError] = useState<string | null>(null);
   const [expandedProject, setExpandedProject] = useState<Project | null>(null);
 
@@ -43,8 +43,10 @@ export default function PortfolioPage() {
   }, [username]);
 
   useEffect(() => {
-    loadUserData();
-  }, [loadUserData]);
+    if (!initialData) {
+      loadUserData();
+    }
+  }, [loadUserData, initialData]);
 
   useEffect(() => {
     if (userData && projectId) {

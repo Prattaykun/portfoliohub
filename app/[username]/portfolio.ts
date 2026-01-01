@@ -213,7 +213,7 @@ export async function fetchUserData(username: string): Promise<{ data: UserData 
         profile: {
           uid: "mock-uid",
           full_name: "Test User",
-          photo_url: "https://via.placeholder.com/150",
+          photo_url: "",
         },
         about: {
           bio: "This is a test bio",
