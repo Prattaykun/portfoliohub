@@ -293,14 +293,14 @@ const [countryCode, setCountryCode] = useState<CountryCode["code"]>("+91");
   }
 
   return (
-    <div className="min-h-screen flex pt-30 flex-col items-center justify-center bg-gradient-to-tr from-green-900 via-blue-900 to-purple-900 text-white px-4 py-10">
+    <div className="min-h-screen flex pt-24 md:pt-32 flex-col items-center justify-center bg-gradient-to-tr from-green-900 via-blue-900 to-purple-900 text-white px-4 py-6 md:py-10">
       <motion.div
         key={current.key}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-2xl bg-white/8 backdrop-blur-xl rounded-3xl p-8 border border-white/10 shadow-2xl"
+        className="w-full max-w-2xl bg-white/8 backdrop-blur-xl rounded-3xl p-5 md:p-8 border border-white/10 shadow-2xl"
       >
         {!done ? (
           <>
@@ -427,7 +427,12 @@ const [countryCode, setCountryCode] = useState<CountryCode["code"]>("+91");
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <label className="block text-sm font-medium text-zinc-200">Other Social Links</label>
-                    <button onClick={() => addOtherLink()} className="text-sm underline">+ Add Link</button>
+                    <button
+                      onClick={() => addOtherLink()}
+                      className="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-xs transition"
+                    >
+                      + Add Link
+                    </button>
                   </div>
 
                   {/* Quick Add Platform Input */}
@@ -473,8 +478,15 @@ const [countryCode, setCountryCode] = useState<CountryCode["code"]>("+91");
                           <h4 className="text-sm font-medium text-white">{link.name}</h4>
                           <button 
                             onClick={() => removeOtherLink(link.id)} 
-                            className="text-xs text-red-300 hover:text-red-100"
+                            className="text-xs text-red-300 hover:text-red-100 flex items-center gap-1"
                           >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="3 6 5 6 21 6"></polyline>
+                              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                              <path d="M10 11v6"></path>
+                              <path d="M14 11v6"></path>
+                              <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+                            </svg>
                             Remove
                           </button>
                         </div>
@@ -538,7 +550,7 @@ const [countryCode, setCountryCode] = useState<CountryCode["code"]>("+91");
               <button 
                 onClick={handleNext} 
                 disabled={saving}
-                className="px-6 py-2 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 font-semibold hover:scale-105 transition-transform disabled:opacity-50"
+                className="px-6 py-2 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 font-semibold hover:scale-105 transition-transform disabled:opacity-50 active:scale-95"
               >
                 {saving ? "Saving..." : (email || linkedin || github ? "Update Contact Info ✅" : "Save Contact Info 🎉")}
               </button>

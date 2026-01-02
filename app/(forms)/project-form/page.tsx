@@ -347,14 +347,14 @@ export default function ProjectForm() {
   }
 
   return (
-    <div className="min-h-screen pt-30 flex flex-col items-center justify-center bg-gradient-to-tr from-green-900 via-blue-900 to-purple-900 text-white px-4 py-10">
+    <div className="min-h-screen pt-24 md:pt-32 flex flex-col items-center justify-center bg-gradient-to-tr from-green-900 via-blue-900 to-purple-900 text-white px-4 py-6 md:py-10">
       <motion.div
         key={current.key}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-4xl bg-white/8 backdrop-blur-xl rounded-3xl p-8 border border-white/10 shadow-2xl"
+        className="w-full max-w-4xl bg-white/8 backdrop-blur-xl rounded-3xl p-5 md:p-8 border border-white/10 shadow-2xl"
       >
         {!done ? (
           <>
@@ -372,7 +372,12 @@ export default function ProjectForm() {
                     }
                   </div>
                   <div className="flex gap-2">
-                    <button onClick={() => addProject()} className="text-sm underline">+ Add Project</button>
+                    <button
+                      onClick={() => addProject()}
+                      className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-sm transition flex items-center gap-2"
+                    >
+                      + Add Project
+                    </button>
                   </div>
                 </div>
 
@@ -400,8 +405,15 @@ export default function ProjectForm() {
                         <h3 className="text-lg font-semibold text-white">{project.title}</h3>
                         <button 
                           onClick={() => removeProject(project.id)} 
-                          className="text-xs text-red-300 hover:text-red-100"
+                          className="px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs transition flex items-center gap-2"
                         >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                            <path d="M10 11v6"></path>
+                            <path d="M14 11v6"></path>
+                            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+                          </svg>
                           Remove
                         </button>
                       </div>
@@ -414,7 +426,7 @@ export default function ProjectForm() {
                             value={project.title}
                             onChange={(e) => updateProject(project.id, { title: e.target.value })}
                             placeholder="e.g., E-commerce Platform"
-                            className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none"
+                            className="w-full px-3 py-3 rounded-lg bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none"
                           />
                         </div>
 
@@ -425,7 +437,7 @@ export default function ProjectForm() {
                             value={project.overview}
                             onChange={(e) => updateProject(project.id, { overview: e.target.value })}
                             placeholder="Brief description of your project"
-                            className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none min-h-[80px]"
+                            className="w-full px-3 py-3 rounded-lg bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none min-h-[80px]"
                           />
                         </div>
 
@@ -436,7 +448,7 @@ export default function ProjectForm() {
                             value={project.role}
                             onChange={(e) => updateProject(project.id, { role: e.target.value })}
                             placeholder="e.g., Full-stack Developer"
-                            className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none"
+                            className="w-full px-3 py-3 rounded-lg bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none"
                           />
                         </div>
 
@@ -447,7 +459,7 @@ export default function ProjectForm() {
                             value={project.repoLink}
                             onChange={(e) => updateProject(project.id, { repoLink: e.target.value })}
                             placeholder="https://github.com/username/repo"
-                            className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none"
+                            className="w-full px-3 py-3 rounded-lg bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none"
                           />
                         </div>
 
@@ -466,7 +478,7 @@ export default function ProjectForm() {
                                 {tech.name}
                                 <button
                                   onClick={() => removeTechFromProject(project.id, tech.name)}
-                                  className="text-xs opacity-80 hover:opacity-100"
+                                  className="text-xs opacity-80 hover:opacity-100 p-1"
                                 >
                                   ✕
                                 </button>
@@ -487,7 +499,7 @@ export default function ProjectForm() {
                                 }
                               }}
                               placeholder="Add technology (e.g., React, Node.js)"
-                              className="flex-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none"
+                              className="flex-1 px-3 py-3 rounded-lg bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none"
                             />
                             <button
                               onClick={() => addTechToProject(project.id, input)}
@@ -557,7 +569,7 @@ export default function ProjectForm() {
                             value={project.process}
                             onChange={(e) => updateProject(project.id, { process: e.target.value })}
                             placeholder="Describe your development methodology, challenges faced, and how you overcame them"
-                            className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none min-h-[100px]"
+                            className="w-full px-3 py-3 rounded-lg bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none min-h-[100px]"
                           />
                         </div>
 
@@ -568,7 +580,7 @@ export default function ProjectForm() {
                             value={project.results}
                             onChange={(e) => updateProject(project.id, { results: e.target.value })}
                             placeholder="What were the outcomes? Any metrics, user feedback, or key achievements?"
-                            className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none min-h-[100px]"
+                            className="w-full px-3 py-3 rounded-lg bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none min-h-[100px]"
                           />
                         </div>
 
@@ -579,19 +591,19 @@ export default function ProjectForm() {
                             <div className="flex gap-2">
                               <button 
                                 onClick={() => addMedia(project.id, "image")}
-                                className="text-xs underline"
+                                className="px-3 py-1.5 rounded-md bg-white/5 hover:bg-white/10 text-xs transition"
                               >
                                 + Add Image
                               </button>
                               <button 
                                 onClick={() => addMedia(project.id, "video")}
-                                className="text-xs underline"
+                                className="px-3 py-1.5 rounded-md bg-white/5 hover:bg-white/10 text-xs transition"
                               >
                                 + Add Video
                               </button>
                               <button 
                                 onClick={() => addMedia(project.id, "deployment")}
-                                className="text-xs underline"
+                                className="px-3 py-1.5 rounded-md bg-white/5 hover:bg-white/10 text-xs transition"
                               >
                                 + Add Deployment
                               </button>
@@ -604,7 +616,7 @@ export default function ProjectForm() {
                                 <select
                                   value={media.type}
                                   onChange={(e) => updateMedia(project.id, media.id, { type: e.target.value })}
-                                  className="px-2 py-2 rounded-md bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none cursor-pointer"
+                                  className="px-2 py-3 rounded-md bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none cursor-pointer"
                                 >
                                   <option value="image" className="bg-gray-800 text-white">Image</option>
                                   <option value="video" className="bg-gray-800 text-white">Video</option>
@@ -619,7 +631,7 @@ export default function ProjectForm() {
                                     media.type === "video" ? "Video URL" :
                                     "Deployment URL"
                                   }
-                                  className="flex-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none"
+                                  className="flex-1 px-3 py-3 rounded-lg bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none"
                                 />
 
                                 {/* Upload widget for images */}
@@ -637,7 +649,7 @@ export default function ProjectForm() {
                                       <button 
                                         type="button" 
                                         onClick={() => open()} 
-                                        className="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition text-sm whitespace-nowrap"
+                                        className="px-3 py-3 rounded-lg bg-white/10 hover:bg-white/20 transition text-sm whitespace-nowrap"
                                       >
                                         Upload Image
                                       </button>
@@ -647,7 +659,7 @@ export default function ProjectForm() {
 
                                 <button
                                   onClick={() => removeMedia(project.id, media.id)}
-                                  className="px-3 py-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 transition text-sm"
+                                  className="px-3 py-3 rounded-lg bg-red-500/20 hover:bg-red-500/30 transition text-sm text-red-200"
                                 >
                                   Remove
                                 </button>
@@ -674,7 +686,7 @@ export default function ProjectForm() {
               <button 
                 onClick={handleNext} 
                 disabled={saving}
-                className="px-6 py-2 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 font-semibold hover:scale-105 transition-transform disabled:opacity-50"
+                className="px-6 py-2 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 font-semibold hover:scale-105 transition-transform disabled:opacity-50 active:scale-95"
               >
                 {saving ? "Saving..." : projects.length > 0 ? "Update Projects ✨" : "Save Projects 🎉"}
               </button>

@@ -438,7 +438,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
   }
 
   return (
-    <div className="min-h-screen flex flex-col pt-30 items-center justify-center bg-gradient-to-tr from-green-900 via-blue-900 to-purple-900 text-white px-4 py-10">
+    <div className="min-h-screen flex flex-col pt-24 md:pt-32 items-center justify-center bg-gradient-to-tr from-green-900 via-blue-900 to-purple-900 text-white px-4 py-6 md:py-10">
       {/* widened container for desktop to give experience cards more room */}
       <motion.div
         key={current.key}
@@ -446,7 +446,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-4xl bg-white/8 backdrop-blur-xl rounded-3xl p-8 border border-white/10 shadow-2xl"
+        className="w-full max-w-4xl bg-white/8 backdrop-blur-xl rounded-3xl p-5 md:p-8 border border-white/10 shadow-2xl"
       >
         {!done ? (
           <>
@@ -474,7 +474,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                       {r}
                       <button
                         onClick={() => setRoles(roles.filter((x) => x !== r))}
-                        className="text-xs opacity-80 hover:opacity-100"
+                        className="text-xs opacity-80 hover:opacity-100 p-1"
                       >
                         ✕
                       </button>
@@ -543,7 +543,12 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                     {education.length > 0 ? "Your education entries" : "Add your education entries"} — tap examples to autofill
                   </div>
                   <div className="flex gap-2">
-                    <button onClick={() => addEducation()} className="text-sm underline hover:text-white transition">+ Add</button>
+                    <button
+                      onClick={() => addEducation()}
+                      className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-sm transition flex items-center gap-2"
+                    >
+                      + Add
+                    </button>
                   </div>
                 </div>
 
@@ -561,7 +566,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
 
                 <div className="mt-3 space-y-3">
                   {education.map((e) => (
-                    <motion.div key={e.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="p-4 bg-white/6 rounded-xl border border-white/8">
+                    <motion.div key={e.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="p-5 bg-white/6 rounded-xl border border-white/8">
                       <div className="flex justify-between items-start">
                         <div className="flex items-center gap-2">
                           {e.logo && (
@@ -570,7 +575,19 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                           <strong className="text-sm break-words">{e.level} — {e.degree}</strong>
                         </div>
                         <div className="flex gap-2">
-                          <button onClick={() => removeEducation(e.id)} className="text-xs hover:text-red-300 transition">Remove</button>
+                          <button
+                            onClick={() => removeEducation(e.id)}
+                            className="px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs transition flex items-center gap-2"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="3 6 5 6 21 6"></polyline>
+                              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                              <path d="M10 11v6"></path>
+                              <path d="M14 11v6"></path>
+                              <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+                            </svg>
+                            Remove
+                          </button>
                         </div>
                       </div>
 
@@ -707,7 +724,12 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                     {experience.length > 0 ? "Your work experiences" : "Add your work / project experiences"} — optional, tap examples to autofill
                   </div>
                   <div className="flex gap-2">
-                    <button onClick={() => addExperience()} className="text-sm underline hover:text-white transition">+ Add Company</button>
+                    <button
+                      onClick={() => addExperience()}
+                      className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-sm transition flex items-center gap-2"
+                    >
+                      + Add Company
+                    </button>
                   </div>
                 </div>
 
@@ -721,7 +743,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
 
                 <div className="mt-3 space-y-3">
                   {experience.map((ex) => (
-                    <motion.div key={ex.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="p-4 bg-white/6 rounded-xl border border-white/8">
+                    <motion.div key={ex.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="p-5 bg-white/6 rounded-xl border border-white/8">
                       <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-3">
                         <div className="flex items-start gap-3 min-w-0">
                           {ex.logo && <Image src={ex.logo} alt="Logo" width={40} height={40} className="w-10 h-10 rounded object-cover flex-shrink-0" />}
@@ -752,20 +774,20 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                             }}
                           >
                             {({ open }) => (
-                              <button type="button" onClick={() => open()} className="px-3 py-1 rounded-full bg-white/10 text-sm hover:bg-white/20 transition whitespace-normal">
+                              <button type="button" onClick={() => open()} className="px-3 py-1.5 rounded-full bg-white/10 text-sm hover:bg-white/20 transition whitespace-normal">
                                 {ex.logo ? "Change Logo" : "Upload Logo"}
                               </button>
                             )}
                           </CldUploadWidget>
 
-                          <button onClick={() => updateFaviconFromDomain(ex.companyUrl, ex.id, false)} disabled={!ex.companyUrl} className="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 transition text-sm whitespace-normal">
+                          <button onClick={() => updateFaviconFromDomain(ex.companyUrl, ex.id, false)} disabled={!ex.companyUrl} className="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 transition text-sm whitespace-normal">
                             Fetch Logo
                           </button>
 
                           {/* Company remove button — more visible/destructive */}
                           <button
                             onClick={() => removeExperience(ex.id)}
-                            className="flex items-center gap-2 text-sm text-red-400 hover:text-white bg-red-600/10 px-3 py-1 rounded-md transition"
+                            className="flex items-center gap-2 text-sm text-red-300 hover:text-red-200 bg-red-600/10 hover:bg-red-600/20 px-3 py-1.5 rounded-md transition"
                             title="Remove company and all roles"
                           >
                             {/* simple SVG trash icon */}
@@ -784,7 +806,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                       <div className="mt-4 space-y-3">
                         {/* Roles list - each role is a responsive grid */}
                         {ex.roles.map((role) => (
-                          <div key={role.id} className="p-3 bg-white/5 rounded-md border border-white/8">
+                          <div key={role.id} className="p-4 bg-white/5 rounded-md border border-white/8">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                               {/* left: details (span 2 on md) */}
                               <div className="md:col-span-2 min-w-0">
@@ -792,7 +814,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                                   value={role.title}
                                   onChange={(ev) => updateRole(ex.id, role.id, { title: ev.target.value })}
                                   placeholder="Role / Title"
-                                  className="w-full px-2 py-1 rounded-md bg-transparent border-b border-white/10 outline-none truncate"
+                                  className="w-full px-2 py-2 rounded-md bg-transparent border-b border-white/10 outline-none truncate"
                                 />
 
                                 <div className="mt-2 flex flex-wrap gap-2 items-center">
@@ -837,10 +859,10 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                                   {/* Role remove button — more visible/destructive */}
                                   <button
                                     onClick={() => removeRole(ex.id, role.id)}
-                                    className="flex items-center gap-2 text-sm text-red-400 hover:text-white bg-red-600/10 px-3 py-1 rounded-md transition"
+                                    className="flex items-center gap-2 text-sm text-red-300 hover:text-red-200 bg-red-600/10 hover:bg-red-600/20 px-3 py-1.5 rounded-md transition"
                                     title="Remove this role"
                                   >
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                                       <polyline points="3 6 5 6 21 6"></polyline>
                                       <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
                                       <path d="M10 11v6"></path>
@@ -864,7 +886,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                                   }}
                                 >
                                   {({ open }) => (
-                                    <button type="button" onClick={() => open()} className="w-full px-3 py-1 rounded-full bg-white/10 text-sm whitespace-normal hover:bg-white/20 transition">
+                                    <button type="button" onClick={() => open()} className="w-full px-3 py-1.5 rounded-full bg-white/10 text-sm whitespace-normal hover:bg-white/20 transition">
                                       Upload
                                     </button>
                                   )}
@@ -893,7 +915,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                         ))}
 
                         <div className="mt-2">
-                          <button onClick={() => addRoleToCompany(ex.id)} className="px-3 py-1 rounded-full bg-white/10 text-sm hover:bg-white/20 transition whitespace-normal">+ Add Role</button>
+                          <button onClick={() => addRoleToCompany(ex.id)} className="px-3 py-2 rounded-full bg-white/10 text-sm hover:bg-white/20 transition whitespace-normal">+ Add Role</button>
                         </div>
                       </div>
                     </motion.div>
@@ -919,7 +941,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                 <button 
                   onClick={handleNext} 
                   disabled={saving}
-                  className="px-6 py-2 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 font-semibold hover:scale-105 transition-transform disabled:opacity-50"
+                  className="px-6 py-2 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 font-semibold hover:scale-105 transition-transform disabled:opacity-50 active:scale-95"
                 >
                   {saving ? "Saving..." : isLast ? "Finish 🎉" : "Next →"}
                 </button>

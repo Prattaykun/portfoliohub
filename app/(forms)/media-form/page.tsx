@@ -195,15 +195,15 @@ export default function MediaForm() {
       <p className="text-sm text-zinc-200 mb-4">Achievements will always be included as the first section. Choose between 1 and 5 sections total.</p>
 
       <div className="flex items-center gap-3">
-        <button onClick={() => { const n = clampSectionsCount(sectionsCount - 1); applySectionsCount(n); }} className="px-3 py-1 rounded bg-white/10">-</button>
+        <button onClick={() => { const n = clampSectionsCount(sectionsCount - 1); applySectionsCount(n); }} className="px-3 py-1 rounded bg-white/10 hover:bg-white/20 transition">-</button>
         <div className="px-4 py-2 rounded bg-white/5 text-white font-medium">{sectionsCount}</div>
-        <button onClick={() => { const n = clampSectionsCount(sectionsCount + 1); applySectionsCount(n); }} className="px-3 py-1 rounded bg-white/10">+</button>
+        <button onClick={() => { const n = clampSectionsCount(sectionsCount + 1); applySectionsCount(n); }} className="px-3 py-1 rounded bg-white/10 hover:bg-white/20 transition">+</button>
       </div>
 
       <div className="mt-6 flex justify-between">
         <div />
         <div>
-          <button onClick={() => { setStep(1); }} className="px-5 py-2 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 font-semibold">Next →</button>
+          <button onClick={() => { setStep(1); }} className="px-5 py-2 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 font-semibold hover:scale-105 transition-transform active:scale-95">Next →</button>
         </div>
       </div>
     </motion.div>
@@ -221,17 +221,37 @@ export default function MediaForm() {
         </div>
 
         <div className="mb-4">
-          <input value={section.name} onChange={(e) => updateSectionName(section.id, e.target.value)} placeholder="Section name (e.g. Achievements)" className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white outline-none" />
+          <input value={section.name} onChange={(e) => updateSectionName(section.id, e.target.value)} placeholder="Section name (e.g. Achievements)" className="w-full px-3 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/50 outline-none focus:ring-2 focus:ring-blue-400" />
         </div>
 
         <div className="mb-4">
           <div className="flex items-center justify-between">
             <div className="text-xs text-zinc-200 mb-1">Cards (media, videos, links)</div>
             <div className="flex gap-2">
-              <button onClick={() => addCardToSection(section.id, { type: "image" })} className="text-sm underline">+ Image</button>
-              <button onClick={() => addCardToSection(section.id, { type: "video" })} className="text-sm underline">+ Video</button>
-              <button onClick={() => addCardToSection(section.id, { type: "link" })} className="text-sm underline">+ Link</button>
-              <button onClick={() => addCardToSection(section.id, { type: "text" })} className="text-sm underline">+ Text</button>
+              <button
+                onClick={() => addCardToSection(section.id, { type: "image" })}
+                className="px-3 py-1.5 rounded-md bg-white/5 hover:bg-white/10 text-xs transition"
+              >
+                + Image
+              </button>
+              <button
+                onClick={() => addCardToSection(section.id, { type: "video" })}
+                className="px-3 py-1.5 rounded-md bg-white/5 hover:bg-white/10 text-xs transition"
+              >
+                + Video
+              </button>
+              <button
+                onClick={() => addCardToSection(section.id, { type: "link" })}
+                className="px-3 py-1.5 rounded-md bg-white/5 hover:bg-white/10 text-xs transition"
+              >
+                + Link
+              </button>
+              <button
+                onClick={() => addCardToSection(section.id, { type: "text" })}
+                className="px-3 py-1.5 rounded-md bg-white/5 hover:bg-white/10 text-xs transition"
+              >
+                + Text
+              </button>
             </div>
           </div>
 
@@ -241,13 +261,23 @@ export default function MediaForm() {
                 <div className="flex justify-between items-start mb-2">
                   <div className="text-sm font-medium">{item.type.toUpperCase()}</div>
                   <div className="flex gap-2">
-                    <button onClick={() => removeCard(section.id, item.id)} className="text-xs text-red-400">Remove</button>
+                    <button
+                      onClick={() => removeCard(section.id, item.id)}
+                      className="text-xs text-red-300 hover:text-red-200 bg-red-600/10 px-2 py-1 rounded transition"
+                    >
+                      Remove
+                    </button>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
                   <div className="lg:col-span-2">
-                    <input value={item.url} onChange={(e) => updateCard(section.id, item.id, { url: e.target.value })} placeholder={item.type === "image" ? "Image URL" : item.type === "video" ? "Video URL (YouTube/Vimeo/etc)" :item.type==="link" ? "Link URL" : "Text Preview Appears On Card"} className="w-full px-3 py-2 rounded bg-white/5 border border-white/10 text-white placeholder-white outline-none" />
+                    <input
+                      value={item.url}
+                      onChange={(e) => updateCard(section.id, item.id, { url: e.target.value })}
+                      placeholder={item.type === "image" ? "Image URL" : item.type === "video" ? "Video URL (YouTube/Vimeo/etc)" :item.type==="link" ? "Link URL" : "Text Preview Appears On Card"}
+                      className="w-full px-3 py-2 rounded bg-white/5 border border-white/10 text-white placeholder-white/50 outline-none focus:ring-2 focus:ring-blue-400"
+                    />
                   </div>
 
                   <div className="flex items-end gap-2">
@@ -258,16 +288,26 @@ export default function MediaForm() {
                         }
                       }}>
                         {({ open }) => (
-                          <button type="button" onClick={() => open()} className="px-3 py-2 rounded bg-white/10 text-white">Upload</button>
+                          <button type="button" onClick={() => open()} className="px-3 py-2 rounded bg-white/10 hover:bg-white/20 text-white text-sm transition">Upload</button>
                         )}
                       </CldUploadWidget>
                     )}
                   </div>
 
                   <div className="lg:col-span-3">
-                    <input value={item.title} onChange={(e) => updateCard(section.id, item.id, { title: e.target.value })} placeholder="Card title" className="w-full px-3 py-2 rounded bg-white/5 border border-white/10 text-white placeholder-white outline-none" />
+                    <input
+                      value={item.title}
+                      onChange={(e) => updateCard(section.id, item.id, { title: e.target.value })}
+                      placeholder="Card title"
+                      className="w-full px-3 py-2 rounded bg-white/5 border border-white/10 text-white placeholder-white/50 outline-none focus:ring-2 focus:ring-blue-400"
+                    />
 
-                    <textarea value={item.description} onChange={(e) => updateCard(section.id, item.id, { description: e.target.value })} placeholder="Short description" className="w-full px-3 py-2 rounded bg-white/5 border border-white/10 text-white placeholder-white outline-none mt-2" />
+                    <textarea
+                      value={item.description}
+                      onChange={(e) => updateCard(section.id, item.id, { description: e.target.value })}
+                      placeholder="Short description"
+                      className="w-full px-3 py-2 rounded bg-white/5 border border-white/10 text-white placeholder-white/50 outline-none focus:ring-2 focus:ring-blue-400 mt-2 min-h-[80px]"
+                    />
                   </div>
                 </div>
               </div>
@@ -281,21 +321,21 @@ export default function MediaForm() {
 
         <div className="flex justify-between mt-6">
           <div>
-            <button onClick={() => setStep((s) => Math.max(0, s - 1))} className="px-4 py-2 rounded-full bg-white/10">← Back</button>
+            <button onClick={() => setStep((s) => Math.max(0, s - 1))} className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 transition">← Back</button>
           </div>
 
           <div className="flex gap-2">
             {index < sectionsCount ? (
-              <button onClick={() => setStep(index + 1)} className="px-4 py-2 rounded-full bg-white/10">Skip →</button>
+              <button onClick={() => setStep(index + 1)} className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 transition">Skip →</button>
             ) : (
-              <button onClick={() => setStep(sectionsCount + 1)} className="px-4 py-2 rounded-full bg-white/10">Review →</button>
+              <button onClick={() => setStep(sectionsCount + 1)} className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 transition">Review →</button>
             )}
 
             <button onClick={async () => {
               // quick save current section and continue to next
               if (index < sectionsCount) setStep(index + 1);
               else setStep(sectionsCount + 1);
-            }} className="px-5 py-2 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 font-semibold">Save & Continue</button>
+            }} className="px-5 py-2 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 font-semibold hover:scale-105 transition-transform active:scale-95">Save & Continue</button>
           </div>
         </div>
       </motion.div>
@@ -325,10 +365,10 @@ export default function MediaForm() {
       </div>
 
       <div className="flex justify-between mt-6">
-        <button onClick={() => setStep(sectionsCount)} className="px-4 py-2 rounded-full bg-white/10">← Back</button>
+        <button onClick={() => setStep(sectionsCount)} className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 transition">← Back</button>
         <div className="flex gap-2">
-          <button onClick={() => { applySectionsCount(sectionsCount); setStep(0); }} className="px-4 py-2 rounded-full bg-white/10">Edit sections</button>
-          <button onClick={handleSubmit} disabled={saving} className="px-6 py-2 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 font-semibold">{saving ? 'Saving...' : 'Save to profile'}</button>
+          <button onClick={() => { applySectionsCount(sectionsCount); setStep(0); }} className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 transition">Edit sections</button>
+          <button onClick={handleSubmit} disabled={saving} className="px-6 py-2 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 font-semibold hover:scale-105 transition-transform active:scale-95">{saving ? 'Saving...' : 'Save to profile'}</button>
         </div>
       </div>
     </motion.div>
@@ -339,15 +379,15 @@ export default function MediaForm() {
       <h3 className="text-2xl font-semibold mb-2">Saved!</h3>
       <p className="text-sm text-zinc-200">Your media sections have been saved to your profile.</p>
       <div className="mt-4">
-        <button onClick={() => setDone(false)} className="px-4 py-2 rounded-full bg-white/10">Continue Editing</button>
-        <button onClick={() => window.location.href = "/dashboard"} className="ml-3 px-4 py-2 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 font-semibold">Go to Dashboard</button>
+        <button onClick={() => setDone(false)} className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 transition">Continue Editing</button>
+        <button onClick={() => window.location.href = "/dashboard"} className="ml-3 px-4 py-2 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 font-semibold hover:scale-105 transition-transform active:scale-95">Go to Dashboard</button>
       </div>
     </motion.div>
   );
 
   return (
     // Fullscreen gradient background, content centered but not boxed in white
-    <div className="min-h-screen pt-30 bg-gradient-to-tr from-green-900 via-blue-900 to-purple-900 text-white flex items-start justify-center py-12 px-6">
+    <div className="min-h-screen pt-24 md:pt-32 bg-gradient-to-tr from-green-900 via-blue-900 to-purple-900 text-white flex items-start justify-center py-6 px-4 md:py-12 md:px-6">
       <div className="w-full max-w-6xl">
         {!done ? (
           <div className="w-full">
