@@ -197,7 +197,7 @@ export default function ProfileChatForm() {
   }
 
   return (
-    <div className="min-h-screen pt-30 flex flex-col items-center justify-center bg-gradient-to-tr from-green-900 via-blue-900 to-purple-900 text-white px-4">
+    <div className="min-h-screen pt-24 md:pt-32 flex flex-col items-center justify-center bg-gradient-to-tr from-green-900 via-blue-900 to-purple-900 text-white px-4">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -283,7 +283,7 @@ export default function ProfileChatForm() {
                     {({ open }) => (
                       <button
                         onClick={() => open()}
-                        className="bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 px-5 py-2 rounded-full font-semibold hover:scale-105 transition-transform"
+                        className="bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 px-5 py-2 rounded-full font-semibold cursor-pointer hover:scale-105 active:scale-95 transition-transform"
                       >
                         {answers.photo_url ? "Change Photo" : "Upload Profile Photo"}
                       </button>
@@ -294,7 +294,7 @@ export default function ProfileChatForm() {
                     {answers.photo_url && (
                       <button
                         onClick={() => handleNext(answers.photo_url)}
-                        className="px-4 py-2 bg-green-500/20 text-green-300 rounded-full hover:bg-green-500/30 transition-colors text-sm"
+                        className="px-4 py-2 bg-green-500/20 text-green-300 rounded-full cursor-pointer hover:bg-green-500/30 active:scale-95 transition-transform text-sm"
                       >
                         Keep Current →
                       </button>
@@ -302,7 +302,7 @@ export default function ProfileChatForm() {
                     {isEditing && (
                       <button
                         onClick={handleSkip}
-                        className="px-4 py-2 bg-blue-500/20 text-blue-300 rounded-full hover:bg-blue-500/30 transition-colors text-sm"
+                        className="px-4 py-2 bg-blue-500/20 text-blue-300 rounded-full cursor-pointer hover:bg-blue-500/30 active:scale-95 transition-transform text-sm"
                       >
                         Skip
                       </button>
@@ -334,7 +334,7 @@ export default function ProfileChatForm() {
                   {isEditing && answers.date_of_birth && (
                     <button
                       onClick={handleSkip}
-                      className="text-sm text-blue-300 underline hover:text-blue-200"
+                      className="text-sm text-blue-300 underline cursor-pointer hover:text-blue-200"
                     >
                       Keep current date
                     </button>
@@ -349,7 +349,7 @@ export default function ProfileChatForm() {
                           key={opt}
                           type="button"
                           onClick={() => handleNext(opt)}
-                          className={`bg-white/20 border px-4 py-2 rounded-full hover:bg-white/30 transition text-sm ${
+                          className={`bg-white/20 border px-4 py-2 rounded-full cursor-pointer hover:bg-white/30 active:scale-95 transition-transform text-sm ${
                             answers[current.key] === opt 
                               ? 'border-green-400 bg-green-500/20' 
                               : 'border-white/30'
@@ -373,7 +373,7 @@ export default function ProfileChatForm() {
                     <div className="flex gap-2">
                       <button
                         onClick={() => input.trim() && handleNext(input)}
-                        className="px-5 py-2 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 hover:scale-105 transition-transform font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-5 py-2 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 cursor-pointer hover:scale-105 active:scale-95 transition-transform font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={!input.trim() && !answers[current.key]}
                       >
                         {isLast ? "Save" : "Next"}
@@ -381,7 +381,7 @@ export default function ProfileChatForm() {
                       {isEditing && answers[current.key] && (
                         <button
                           onClick={handleSkip}
-                          className="px-4 py-2 rounded-full bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 transition-colors text-sm"
+                          className="px-4 py-2 rounded-full bg-blue-500/20 text-blue-300 cursor-pointer hover:bg-blue-500/30 active:scale-95 transition-transform text-sm"
                         >
                           Skip
                         </button>
@@ -395,7 +395,7 @@ export default function ProfileChatForm() {
               {step > 0 && (
                 <button
                   onClick={handleBack}
-                  className="mt-2 text-sm text-zinc-300 underline hover:text-white self-start"
+                  className="mt-2 text-sm text-zinc-300 underline cursor-pointer hover:text-white self-start"
                 >
                   ← Back
                 </button>

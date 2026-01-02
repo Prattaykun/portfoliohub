@@ -438,7 +438,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
   }
 
   return (
-    <div className="min-h-screen flex flex-col pt-30 items-center justify-center bg-gradient-to-tr from-green-900 via-blue-900 to-purple-900 text-white px-4 py-10">
+    <div className="min-h-screen flex flex-col pt-24 md:pt-32 items-center justify-center bg-gradient-to-tr from-green-900 via-blue-900 to-purple-900 text-white px-4 py-10">
       {/* widened container for desktop to give experience cards more room */}
       <motion.div
         key={current.key}
@@ -446,7 +446,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-4xl bg-white/8 backdrop-blur-xl rounded-3xl p-8 border border-white/10 shadow-2xl"
+        className="w-full max-w-4xl bg-white/8 backdrop-blur-xl rounded-3xl p-4 md:p-8 border border-white/10 shadow-2xl"
       >
         {!done ? (
           <>
@@ -474,7 +474,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                       {r}
                       <button
                         onClick={() => setRoles(roles.filter((x) => x !== r))}
-                        className="text-xs opacity-80 hover:opacity-100"
+                        className="text-xs opacity-80 hover:opacity-100 cursor-pointer"
                       >
                         ✕
                       </button>
@@ -488,11 +488,11 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && addRole(input)}
                     placeholder="Add a role (e.g. Full-stack Engineer)"
-                    className="flex-1 text-center px-4 py-3 rounded-full bg-white/10 border border-white/20 focus:ring-2 focus:ring-blue-400 outline-none"
+                    className="flex-1 text-center px-4 py-3 rounded-full bg-white/10 border border-white/20 focus:ring-2 focus:ring-blue-400 outline-none w-full"
                   />
                   <button
                     onClick={() => addRole(input)}
-                    className="px-4 py-3 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 font-semibold hover:scale-105 transition-transform whitespace-normal"
+                    className="px-4 py-3 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 font-semibold cursor-pointer active:scale-95 hover:scale-105 transition-transform whitespace-normal"
                   >
                     Add
                   </button>
@@ -504,7 +504,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                     <button
                       key={ex}
                       onClick={() => addRole(ex)}
-                      className="bg-white/10 px-3 py-1 rounded-full text-sm hover:bg-white/20 transition whitespace-normal"
+                      className="bg-white/10 px-3 py-1 rounded-full text-sm hover:bg-white/20 cursor-pointer active:scale-95 transition-transform whitespace-normal"
                     >
                       {ex}
                     </button>
@@ -543,7 +543,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                     {education.length > 0 ? "Your education entries" : "Add your education entries"} — tap examples to autofill
                   </div>
                   <div className="flex gap-2">
-                    <button onClick={() => addEducation()} className="text-sm underline hover:text-white transition">+ Add</button>
+                    <button onClick={() => addEducation()} className="text-sm underline hover:text-white transition cursor-pointer">+ Add</button>
                   </div>
                 </div>
 
@@ -552,7 +552,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                     <button
                       key={i}
                       onClick={() => addEducation(ex)}
-                      className="bg-white/8 px-3 py-1 rounded-full text-sm hover:bg-white/20 transition"
+                      className="bg-white/8 px-3 py-1 rounded-full text-sm hover:bg-white/20 cursor-pointer active:scale-95 transition-transform"
                     >
                       {ex.degree} • {ex.institution}
                     </button>
@@ -570,7 +570,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                           <strong className="text-sm break-words">{e.level} — {e.degree}</strong>
                         </div>
                         <div className="flex gap-2">
-                          <button onClick={() => removeEducation(e.id)} className="text-xs hover:text-red-300 transition">Remove</button>
+                          <button onClick={() => removeEducation(e.id)} className="text-xs hover:text-red-300 transition cursor-pointer">Remove</button>
                         </div>
                       </div>
 
@@ -619,11 +619,11 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                           )}
                         </div>
 
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
                           <select 
                             value={e.startYear} 
                             onChange={(ev) => updateEducation(e.id, { startYear: ev.target.value })}
-                            className="px-2 py-2 rounded-md bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none cursor-pointer"
+                            className="flex-1 min-w-[100px] px-2 py-2 rounded-md bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none cursor-pointer"
                           >
                             <option value="" className="bg-gray-800 text-white">Start year</option>
                             {years.map((y) => (<option key={y} value={y} className="bg-gray-800 text-white">{y}</option>))}
@@ -632,7 +632,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                           <select
                             value={e.endYear}
                             onChange={(ev) => updateEducation(e.id, { endYear: ev.target.value })}
-                            className="px-2 py-2 rounded-md bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none cursor-pointer"
+                            className="flex-1 min-w-[100px] px-2 py-2 rounded-md bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none cursor-pointer"
                           >
                             <option value="" className="bg-gray-800 text-white">End year</option>
                             {(
@@ -649,7 +649,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                         </div>
 
                         <div className="flex gap-2 col-span-full">
-                          <input value={e.grade} onChange={(ev) => updateEducation(e.id, { grade: ev.target.value })} placeholder="Grade (e.g. 84.6 or 7.39)" className="px-2 py-2 rounded-md bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none" />
+                          <input value={e.grade} onChange={(ev) => updateEducation(e.id, { grade: ev.target.value })} placeholder="Grade (e.g. 84.6 or 7.39)" className="w-full px-2 py-2 rounded-md bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none" />
                           <select 
                             value={e.gradeScale} 
                             onChange={(ev) => updateEducation(e.id, { gradeScale: ev.target.value })}
@@ -660,21 +660,21 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                           </select>
                         </div>
 
-                        <div className="col-span-full flex gap-2 items-center">
+                        <div className="col-span-full flex flex-col md:flex-row gap-2 md:items-center">
                           <input 
                             value={e.domain} 
                             onChange={(ev) => updateEducation(e.id, { domain: ev.target.value })}
                             placeholder="Institute domain (e.g. mit.edu)"
-                            className="flex-1 px-2 py-2 rounded-md bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none" 
+                            className="flex-1 px-2 py-2 rounded-md bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none w-full"
                           />
-                          <button
-                            onClick={() => updateFaviconFromDomain(e.domain, e.id, true)}
-                            className="px-3 py-2 rounded-md bg-white/10 hover:bg-white/20 transition text-sm"
-                            disabled={!e.domain}
-                          >
-                            Fetch Logo
-                          </button>
-                          <div className="flex gap-2 items-center">
+                          <div className="flex gap-2 items-center flex-wrap">
+                            <button
+                                onClick={() => updateFaviconFromDomain(e.domain, e.id, true)}
+                                className="px-3 py-2 rounded-md bg-white/10 hover:bg-white/20 cursor-pointer active:scale-95 transition-transform text-sm"
+                                disabled={!e.domain}
+                            >
+                                Fetch Logo
+                            </button>
                             {e.logo && (
                               <Image src={e.logo} alt="Logo" width={24} height={24} className="w-6 h-6 rounded" />
                             )}
@@ -686,7 +686,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                               }}
                             >
                               {({ open }) => (
-                                <button type="button" onClick={() => open()} className="px-3 py-2 rounded-full bg-white/10 text-sm hover:bg-white/20 transition whitespace-normal">
+                                <button type="button" onClick={() => open()} className="px-3 py-2 rounded-full bg-white/10 text-sm hover:bg-white/20 cursor-pointer active:scale-95 transition-transform whitespace-normal">
                                   {e.logo ? "Change Logo" : "Upload Logo"}
                                 </button>
                               )}
@@ -707,13 +707,13 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                     {experience.length > 0 ? "Your work experiences" : "Add your work / project experiences"} — optional, tap examples to autofill
                   </div>
                   <div className="flex gap-2">
-                    <button onClick={() => addExperience()} className="text-sm underline hover:text-white transition">+ Add Company</button>
+                    <button onClick={() => addExperience()} className="text-sm underline hover:text-white transition cursor-pointer">+ Add Company</button>
                   </div>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
                   {expExamples.map((ex, i) => (
-                    <button key={i} onClick={() => addExperience(ex)} className="bg-white/8 px-3 py-1 rounded-full text-sm hover:bg-white/20 transition whitespace-normal">
+                    <button key={i} onClick={() => addExperience(ex)} className="bg-white/8 px-3 py-1 rounded-full text-sm hover:bg-white/20 cursor-pointer active:scale-95 transition-transform whitespace-normal">
                       {ex.roles?.[0]?.title ?? "Role"} • {ex.company}
                     </button>
                   ))}
@@ -743,7 +743,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
                           <CldUploadWidget
                             uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!}
                             options={{ multiple: false, folder: "company_logos" }}
@@ -752,20 +752,20 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                             }}
                           >
                             {({ open }) => (
-                              <button type="button" onClick={() => open()} className="px-3 py-1 rounded-full bg-white/10 text-sm hover:bg-white/20 transition whitespace-normal">
+                              <button type="button" onClick={() => open()} className="px-3 py-1 rounded-full bg-white/10 text-sm hover:bg-white/20 cursor-pointer active:scale-95 transition-transform whitespace-normal">
                                 {ex.logo ? "Change Logo" : "Upload Logo"}
                               </button>
                             )}
                           </CldUploadWidget>
 
-                          <button onClick={() => updateFaviconFromDomain(ex.companyUrl, ex.id, false)} disabled={!ex.companyUrl} className="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 transition text-sm whitespace-normal">
+                          <button onClick={() => updateFaviconFromDomain(ex.companyUrl, ex.id, false)} disabled={!ex.companyUrl} className="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 cursor-pointer active:scale-95 transition-transform text-sm whitespace-normal">
                             Fetch Logo
                           </button>
 
                           {/* Company remove button — more visible/destructive */}
                           <button
                             onClick={() => removeExperience(ex.id)}
-                            className="flex items-center gap-2 text-sm text-red-400 hover:text-white bg-red-600/10 px-3 py-1 rounded-md transition"
+                            className="flex items-center gap-2 text-sm text-red-400 hover:text-white bg-red-600/10 px-3 py-1 rounded-md cursor-pointer active:scale-95 transition-transform"
                             title="Remove company and all roles"
                           >
                             {/* simple SVG trash icon */}
@@ -837,7 +837,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                                   {/* Role remove button — more visible/destructive */}
                                   <button
                                     onClick={() => removeRole(ex.id, role.id)}
-                                    className="flex items-center gap-2 text-sm text-red-400 hover:text-white bg-red-600/10 px-3 py-1 rounded-md transition"
+                                    className="flex items-center gap-2 text-sm text-red-400 hover:text-white bg-red-600/10 px-3 py-1 rounded-md cursor-pointer active:scale-95 transition-transform"
                                     title="Remove this role"
                                   >
                                     <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -864,7 +864,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                                   }}
                                 >
                                   {({ open }) => (
-                                    <button type="button" onClick={() => open()} className="w-full px-3 py-1 rounded-full bg-white/10 text-sm whitespace-normal hover:bg-white/20 transition">
+                                    <button type="button" onClick={() => open()} className="w-full px-3 py-1 rounded-full bg-white/10 text-sm whitespace-normal hover:bg-white/20 cursor-pointer active:scale-95 transition-transform">
                                       Upload
                                     </button>
                                   )}
@@ -879,7 +879,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                                           const filtered = (role.attachments || []).filter((a) => a !== att);
                                           updateRole(ex.id, role.id, { attachments: filtered });
                                         }}
-                                        className="absolute -top-1 -right-1 text-xs bg-red-500 rounded-full w-5 h-5 flex items-center justify-center"
+                                        className="absolute -top-1 -right-1 text-xs bg-red-500 rounded-full w-5 h-5 flex items-center justify-center cursor-pointer"
                                         title="Remove attachment"
                                       >
                                         ×
@@ -893,7 +893,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                         ))}
 
                         <div className="mt-2">
-                          <button onClick={() => addRoleToCompany(ex.id)} className="px-3 py-1 rounded-full bg-white/10 text-sm hover:bg-white/20 transition whitespace-normal">+ Add Role</button>
+                          <button onClick={() => addRoleToCompany(ex.id)} className="px-3 py-1 rounded-full bg-white/10 text-sm hover:bg-white/20 cursor-pointer active:scale-95 transition-transform whitespace-normal">+ Add Role</button>
                         </div>
                       </div>
                     </motion.div>
@@ -904,7 +904,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
 
             <div className="flex justify-between mt-8">
               {step > 0 ? (
-                <button onClick={handleBack} className="px-5 py-2 rounded-full bg-white/10 hover:bg-white/20 transition">← Back</button>
+                <button onClick={handleBack} className="px-5 py-2 rounded-full bg-white/10 hover:bg-white/20 cursor-pointer active:scale-95 transition-transform">← Back</button>
               ) : (
                 <div />
               )}
@@ -912,14 +912,14 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
               <div className="flex gap-3">
                 <button 
                   onClick={() => { setStep(questions.length - 1); }} 
-                  className="px-4 py-2 rounded-full bg-white/6 hover:bg-white/10 transition"
+                  className="px-4 py-2 rounded-full bg-white/6 hover:bg-white/10 cursor-pointer active:scale-95 transition-transform"
                 >
                   Jump to End
                 </button>
                 <button 
                   onClick={handleNext} 
                   disabled={saving}
-                  className="px-6 py-2 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 font-semibold hover:scale-105 transition-transform disabled:opacity-50"
+                  className="px-6 py-2 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 font-semibold cursor-pointer active:scale-95 hover:scale-105 transition-transform disabled:opacity-50"
                 >
                   {saving ? "Saving..." : isLast ? "Finish 🎉" : "Next →"}
                 </button>
@@ -939,7 +939,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                     setDone(false);
                     fetchExistingData();
                   }}
-                  className="px-6 py-2 rounded-full bg-white/10 hover:bg-white/20 transition"
+                  className="px-6 py-2 rounded-full bg-white/10 hover:bg-white/20 cursor-pointer active:scale-95 transition-transform"
                 >
                   Edit Again
                 </button>
