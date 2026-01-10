@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Fragment } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '../../lib/supabaseClient'
 
@@ -13,7 +13,12 @@ export default function ProjectsSection({ user }: ProjectsSectionProps) {
   const [editingProject, setEditingProject] = useState<string | null>(null)
   const [formData, setFormData] = useState<any>({})
   const [message, setMessage] = useState('')
+  const [copiedProjectId, setCopiedProjectId] = useState<string | null>(null)
   const [username, setUsername] = useState<string | null>(null)
+  const [draggingProjectId, setDraggingProjectId] = useState<string | null>(null)
+  const [dragOverProjectId, setDragOverProjectId] = useState<string | null>(null)
+  const [savingOrder, setSavingOrder] = useState<boolean>(false)
+  const [dragInsertIndex, setDragInsertIndex] = useState<number | null>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -67,6 +72,174 @@ export default function ProjectsSection({ user }: ProjectsSectionProps) {
     } finally {
       setLoading(false)
     }
+  }
+
+  const reorderProjectsArray = (arr: any[], fromId: string, toId: string) => {
+    const fromIndex = arr.findIndex((p) => p.id === fromId)
+    const toIndex = arr.findIndex((p) => p.id === toId)
+    if (fromIndex === -1 || toIndex === -1 || fromIndex === toIndex) return arr
+    const next = [...arr]
+    const [moved] = next.splice(fromIndex, 1)
+    next.splice(toIndex, 0, moved)
+    return next
+  }
+
+  const reorderProjectsToIndex = (arr: any[], fromId: string, toIndex: number) => {
+    const fromIndex = arr.findIndex((p) => p.id === fromId)
+    if (fromIndex === -1 || toIndex < 0 || toIndex > arr.length) return arr
+    const next = [...arr]
+    const [moved] = next.splice(fromIndex, 1)
+    next.splice(toIndex, 0, moved)
+    return next
+  }
+
+  const handleDragStart = (projectId: string) => {
+    setDraggingProjectId(projectId)
+  }
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>, projectId: string) => {
+    e.preventDefault()
+    setDragOverProjectId(projectId)
+    // Auto-scroll when near viewport edges
+    const threshold = 100
+    const y = e.clientY
+    const h = window.innerHeight
+    if (y < threshold) {
+      window.scrollBy({ top: -20, behavior: 'auto' })
+    } else if (y > h - threshold) {
+      window.scrollBy({ top: 20, behavior: 'auto' })
+    }
+  }
+
+  const handleDragEnd = () => {
+    setDraggingProjectId(null)
+    setDragOverProjectId(null)
+    setDragInsertIndex(null)
+  }
+
+  const persistOrder = async (updatedProjects: any[]) => {
+    try {
+      setSavingOrder(true)
+      const { error } = await supabase
+        .from('project')
+        .update({
+          projects: updatedProjects,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', user.id)
+
+      if (error) {
+        console.error('Error saving order:', error)
+        setMessage('Error saving new order')
+        return false
+      } else {
+        setMessage('Projects order updated!')
+        return true
+      }
+    } catch (err) {
+      console.error('Error saving order:', err)
+      setMessage('Error saving new order')
+      return false
+    } finally {
+      setSavingOrder(false)
+      setTimeout(() => setMessage(''), 3000)
+    }
+  }
+
+  const handleDrop = async (targetProjectId: string) => {
+    if (!draggingProjectId || draggingProjectId === targetProjectId) {
+      handleDragEnd()
+      return
+    }
+
+    // Safely get current projects array
+    let currentProjects: any[] = []
+    if (projectsData && projectsData.projects) {
+      currentProjects =
+        typeof projectsData.projects === 'string'
+          ? JSON.parse(projectsData.projects)
+          : projectsData.projects
+    }
+
+    const updatedProjects = reorderProjectsArray(currentProjects, draggingProjectId, targetProjectId)
+
+    // Update local state for immediate UI feedback
+    setProjectsData({ ...projectsData, projects: updatedProjects })
+
+    // Persist to DB
+    await persistOrder(updatedProjects)
+
+    handleDragEnd()
+  }
+
+  const handleSeparatorDragOver = (e: React.DragEvent<HTMLDivElement>, insertIndex: number) => {
+    e.preventDefault()
+    setDragInsertIndex(insertIndex)
+    // Auto-scroll near edges
+    const threshold = 100
+    const y = e.clientY
+    const h = window.innerHeight
+    if (y < threshold) {
+      window.scrollBy({ top: -20, behavior: 'auto' })
+    } else if (y > h - threshold) {
+      window.scrollBy({ top: 20, behavior: 'auto' })
+    }
+  }
+
+  const handleSeparatorDrop = async (insertIndex: number) => {
+    if (!draggingProjectId) {
+      handleDragEnd()
+      return
+    }
+
+    // Safely get current projects array
+    let currentProjects: any[] = []
+    if (projectsData && projectsData.projects) {
+      currentProjects =
+        typeof projectsData.projects === 'string'
+          ? JSON.parse(projectsData.projects)
+          : projectsData.projects
+    }
+
+    const updatedProjects = reorderProjectsToIndex(currentProjects, draggingProjectId, insertIndex)
+
+    // Update local state
+    setProjectsData({ ...projectsData, projects: updatedProjects })
+
+    // Persist new order
+    await persistOrder(updatedProjects)
+
+    handleDragEnd()
+  }
+
+  const moveProjectByDelta = async (projectId: string, delta: number) => {
+    // Safely get current projects array
+    let currentProjects: any[] = []
+    if (projectsData && projectsData.projects) {
+      currentProjects =
+        typeof projectsData.projects === 'string'
+          ? JSON.parse(projectsData.projects)
+          : projectsData.projects
+    }
+
+    const fromIndex = currentProjects.findIndex((p) => p.id === projectId)
+    if (fromIndex === -1) return
+    const toIndex = Math.max(0, Math.min(currentProjects.length - 1, fromIndex + delta))
+    if (toIndex === fromIndex) return
+
+    const updatedProjects = reorderProjectsToIndex(currentProjects, projectId, toIndex)
+    setProjectsData({ ...projectsData, projects: updatedProjects })
+    await persistOrder(updatedProjects)
+  }
+
+  const handleMoveUp = async (projectId: string) => {
+    if (savingOrder) return
+    await moveProjectByDelta(projectId, -1)
+  }
+
+  const handleMoveDown = async (projectId: string) => {
+    if (savingOrder) return
+    await moveProjectByDelta(projectId, 1)
   }
 
   const handleUpdate = async (projectId: string) => {
@@ -139,6 +312,10 @@ export default function ProjectsSection({ user }: ProjectsSectionProps) {
         </button>
       </div>
 
+      {projects.length > 0 && (
+        <p className="text-sm text-gray-500 mb-3">{savingOrder ? 'Saving order…' : 'Drag cards to reorder; drop between gaps'}</p>
+      )}
+
       {message && (
         <div className={`mb-4 p-3 rounded-lg ${
           message.includes('Error') 
@@ -160,9 +337,28 @@ export default function ProjectsSection({ user }: ProjectsSectionProps) {
           </button>
         </div>
       ) : (
-        <div className="space-y-6">
-          {projects.map((project: any) => (
-            <div key={project.id} className="border rounded-lg p-6 hover:shadow-md transition-shadow">
+        <div className="space-y-3">
+          {/* Top separator for inserting at index 0 */}
+          <div
+            className={`h-3 rounded transition-colors ${
+              dragInsertIndex === 0 ? 'bg-blue-300' : 'bg-transparent'
+            }`}
+            onDragOver={(e) => handleSeparatorDragOver(e, 0)}
+            onDrop={() => handleSeparatorDrop(0)}
+          />
+
+          {projects.map((project: any, idx: number) => (
+            <Fragment key={project.id}>
+              <div
+                className={`border rounded-lg p-6 transition-shadow ${
+                  dragOverProjectId === project.id ? 'ring-2 ring-blue-400 shadow-md' : 'hover:shadow-md'
+                } ${editingProject !== null ? 'cursor-default' : 'cursor-grab'}`}
+                draggable={editingProject === null}
+                onDragStart={() => handleDragStart(project.id)}
+                onDragOver={(e) => handleDragOver(e, project.id)}
+                onDrop={() => handleDrop(project.id)}
+                onDragEnd={handleDragEnd}
+              >
               {editingProject === project.id ? (
                 // Edit Mode
                 <div className="space-y-4">
@@ -247,22 +443,65 @@ export default function ProjectsSection({ user }: ProjectsSectionProps) {
                       <h3 className="text-xl font-semibold text-gray-800">{project.title}</h3>
                       <p className="text-gray-600 mt-1">{project.role}</p>
                     </div>
-                    {username && (
+                    <div className="flex items-center gap-2">
+                      {/* Reorder controls (non-drag) */}
                       <button
-                        onClick={() => {
-                          const url = `${window.location.origin}/${username}/project/${project.id}`;
-                          navigator.clipboard.writeText(url);
-                          setMessage('Project link copied to clipboard!');
-                          setTimeout(() => setMessage(''), 3000);
-                        }}
-                        className="text-gray-500 hover:text-blue-600 p-2 rounded-full hover:bg-blue-50 transition-colors"
-                        title="Copy Share Link"
+                        type="button"
+                        onClick={() => handleMoveUp(project.id)}
+                        disabled={savingOrder || idx === 0}
+                        className={`p-2 rounded-full transition-colors ${
+                          savingOrder || idx === 0
+                            ? 'text-gray-300 cursor-not-allowed'
+                            : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+                        }`}
+                        title="Move Up"
                       >
-                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
                         </svg>
                       </button>
-                    )}
+                      <button
+                        type="button"
+                        onClick={() => handleMoveDown(project.id)}
+                        disabled={savingOrder || idx === projects.length - 1}
+                        className={`p-2 rounded-full transition-colors ${
+                          savingOrder || idx === projects.length - 1
+                            ? 'text-gray-300 cursor-not-allowed'
+                            : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+                        }`}
+                        title="Move Down"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </button>
+                      {username && (
+                        <button
+                          onClick={() => {
+                            const url = `${window.location.origin}/${username}/project/${project.id}`;
+                            navigator.clipboard.writeText(url);
+                            setCopiedProjectId(project.id);
+                            setMessage('Project link copied to clipboard!');
+                            setTimeout(() => {
+                              setMessage('');
+                              setCopiedProjectId(null);
+                            }, 3000);
+                          }}
+                          className="text-gray-500 hover:text-blue-600 p-2 rounded-full hover:bg-blue-50 transition-colors"
+                          title="Copy Share Link"
+                        >
+                          {copiedProjectId === project.id ? (
+                            <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                          ) : (
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                            </svg>
+                          )}
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -340,7 +579,16 @@ export default function ProjectsSection({ user }: ProjectsSectionProps) {
                   </div>
                 </>
               )}
-            </div>
+              </div>
+              {/* Separator after each card for inserting at index idx+1 */}
+              <div
+                className={`h-3 rounded transition-colors ${
+                  dragInsertIndex === idx + 1 ? 'bg-blue-300' : 'bg-transparent'
+                }`}
+                onDragOver={(e) => handleSeparatorDragOver(e, idx + 1)}
+                onDrop={() => handleSeparatorDrop(idx + 1)}
+              />
+            </Fragment>
           ))}
         </div>
       )}
