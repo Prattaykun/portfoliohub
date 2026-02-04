@@ -83,14 +83,14 @@ export default function Home() {
     {user ? (
       <button
         onClick={() => router.push("/dashboard")}
-        className="px-8 py-3 text-lg font-semibold rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 hover:scale-105 transition-transform shadow-lg"
+        className="px-8 py-3 text-lg font-semibold cursor-pointer rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 hover:scale-105 transition-transform shadow-lg"
       >
         Visit Your Dashboard
       </button>
     ) : (
-      <button
+      <button 
         onClick={() => router.push("/auth")}
-        className="px-8 py-3 text-lg font-semibold rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 hover:scale-105 transition-transform shadow-lg"
+        className="px-8 py-3 text-lg font-semibold cursor-pointer  rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 hover:scale-105 transition-transform shadow-lg"
       >
         Create Your Portfolio
       </button>

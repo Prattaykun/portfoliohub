@@ -46,7 +46,14 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       },
     };
   } catch (error) {
-    console.error("Metadata generation failed:", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    
+    // Suppress stack trace for expected 404s (user not found) to avoid console noise
+    if (errorMessage.includes("404")) {
+       console.warn(`[Metadata] User not found: ${username} (404)`);
+    } else {
+       console.error("Metadata generation failed:", error);
+    }
 
     // Fallback metadata (still no OG image generation)
     const fallbackTitle = `${username}'s Portfolio | PortfolioHub`;
