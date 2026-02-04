@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Slider from "react-slick";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   UserData,
   Education,
@@ -38,6 +39,17 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
   const { profile, about, skills, projects, contact, langint, resume } = userData;
 
   const [expandedMedia, setExpandedMedia] = useState<{ item: MediaItem; sectionName?: string } | null>(null);
+  
+  // State for expand/collapse functionality
+  const [showAllProjects, setShowAllProjects] = useState(false);
+  const [expandedMediaSections, setExpandedMediaSections] = useState<Record<string, boolean>>({});
+
+  const toggleMediaSection = (sectionKey: string) => {
+    setExpandedMediaSections((prev) => ({
+      ...prev,
+      [sectionKey]: !prev[sectionKey],
+    }));
+  };
 
   const isYouTube = (url?: string) => {
     if (!url) return false;
@@ -92,7 +104,6 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
           <div className="text-center pt-10 mb-6">
             <h3 className="text-2xl font-bold text-white">{title}</h3>
             {sectionName && <div className="text-sm text-gray-300 mt-1">{sectionName}</div>}
-            {/* <div className="text-xs text-gray-400 mt-2 uppercase">{type}</div> */}
           </div>
 
           <div className="mb-6">
@@ -148,7 +159,7 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
     );
   };
 
-  // ---------- Education (kept same as your version) ----------
+  // ---------- Education  ----------
   const renderEducation = () => {
     if (!about?.education || about.education.length === 0) return null;
     return (
@@ -268,7 +279,6 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
                   <div className="md:w-36 flex-shrink-0 flex items-center md:items-start gap-4">
                     {company.logo ? (
                       <div className="w-20 h-20 rounded-lg overflow-hidden flex items-center justify-center">
-                        {/* plain img to avoid external domain config issues */}
                         <img src={company.logo} alt={company.company} className="w-full h-full object-contain" onError={(e) => ((e.target as HTMLImageElement).style.display = "none")} />
                       </div>
                     ) : (
@@ -294,7 +304,6 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
                     <div className="space-y-6">
                       {company.roles?.map((role: any, rIdx: number) => (
                         <div key={role.id || rIdx} className="md:flex md:items-start md:gap-6">
-                          {/* dot + connector (desktop) */}
                           <div className="hidden md:flex flex-col items-center w-12">
                             <div className="w-3 h-3 rounded-full bg-purple-400 shadow-lg" />
                             {rIdx < company.roles.length - 1 && <div className="flex-1 w-px bg-white/6 mt-2" />}
@@ -327,7 +336,6 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
                               <p className="text-gray-300 mt-3 leading-relaxed">{role.description}</p>
                             )}
 
-                            {/* skills */}
                             {role.skills && role.skills.length > 0 && (
                               <div className="mt-3 flex flex-wrap gap-2">
                                 {role.skills.map((s: string, si: number) => (
@@ -338,14 +346,12 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
                               </div>
                             )}
 
-                            {/* attachments: moved to bottom of role and made larger */}
                             {role.attachments && role.attachments.length > 0 && (
                               <div className="mt-4">
                                 <div className="text-sm text-gray-400 mb-2">Attachments</div>
                                 <div className="flex items-center gap-3 flex-wrap">
                                   {role.attachments.map((att: string, ai: number) => (
                                     <a key={ai} href={att} target="_blank" rel="noopener noreferrer" className="w-32 h-20 rounded overflow-hidden border border-white/8 block transition-transform hover:scale-105">
-                                      {/* eslint-disable-next-line @next/next/no-img-element */}
                                       <img src={att} alt={`attachment-${ai}`} className="w-full h-full object-cover" onError={(e) => ((e.target as HTMLImageElement).style.display = "none")} />
                                     </a>
                                   ))}
@@ -356,7 +362,6 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
                         </div>
                       ))}
 
-                      {/* mobile footer showing company + website */}
                       <div className="md:hidden mt-3 flex items-center justify-between gap-3">
                         <div className="text-sm text-gray-400">{company.company}</div>
                         {company.companyUrl ? (
@@ -369,7 +374,6 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
                   </div>
                 </div>
 
-                {/* subtle hover overlay */}
                 <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-tr from-transparent to-white/2 opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
               </div>
             ))}
@@ -443,36 +447,61 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
     );
   };
 
-  // ---------- Projects (unchanged) ----------
+  // Ref for projects section to scroll to on collapse
+  const projectsRef = React.useRef<HTMLElement>(null);
+
+  // ---------- Projects (Using Framer Motion) ----------
   const renderProjects = () => {
     if (!projects?.projects || projects.projects.length === 0) return null;
+
+    const visibleProjects = showAllProjects 
+      ? projects.projects 
+      : projects.projects.slice(0, 4);
+
+    const hasMore = projects.projects.length > 4;
+
+    const handleToggleProjects = () => {
+      if (showAllProjects) {
+        setShowAllProjects(false);
+        // Scroll back to top of projects section smoothly
+        setTimeout(() => {
+          projectsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 100); // slight delay to ensure state update processes, though layout shift is animated
+      } else {
+        setShowAllProjects(true);
+      }
+    };
+
     return (
-      <section className="py-20 px-4 bg-white/5">
+      <section ref={projectsRef} className="py-20 px-4 bg-white/5 scroll-mt-20">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-4xl font-bold text-center mb-16 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Projects</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 auto-rows-fr">
-            {projects.projects.map((project: Project, index: number) => {
-              const video = project.media?.find((m: any) => m.type === "video");
-              const images = project.media?.filter((m: any) => m.type === "image") || [];
-              const deployment = project.media?.find((m: any) => m.type === "deployment");
-              return (
-                <div key={project.id} className="bg-white/10 backdrop-blur-sm rounded-xl border border-white/10 hover:border-purple-400/30 transition-all duration-300 group hover:scale-105 animate-fade-in-up flex flex-col" style={{ animationDelay: `${index * 100}ms` }}>
-                  {/* <div className="relative h-48 overflow-hidden rounded-t-xl">
-                    {video ? (() => {
-                      const isYT = isYouTube(String(video.url || ""));
-                      if (isYT) {
-                        const embedUrl = toYouTubeEmbed(String(video.url || ""));
-                        return <div className="relative w-full h-0 pb-[56.25%]"><iframe src={embedUrl} title={project.title} allowFullScreen className="absolute top-0 left-0 w-full h-full rounded-t-xl" /></div>;
-                      }
-                      return <div className="relative w-full h-full bg-black flex items-center justify-center"><div className="absolute inset-0 bg-gradient-to-br from-purple-900/50 to-pink-900/50"></div><div className="relative z-10 text-center"><div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-2 mx-auto"><span className="text-2xl">🎬</span></div><p className="text-white text-sm">Video Available</p></div></div>;
-                    })() : images.length > 0 ? (images.length === 1 ? <Image src={images[0].url} alt={project.title} fill className="object-cover group-hover:scale-110 transition-transform duration-300" /> : <Slider dots infinite speed={500} slidesToShow={1} slidesToScroll={1} arrows={false} autoplay autoplaySpeed={4000}>{images.map((img: any, i: number) => <div key={i} className="relative h-48"><Image src={img.url} alt={`${project.title} - image ${i + 1}`} fill className="object-cover rounded-t-xl" /></div>)}</Slider>) : <div className="w-full h-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center"><span className="text-4xl">🚀</span></div>}
-                  </div> */}
-                  <div
-                    className="relative h-48 overflow-hidden rounded-t-xl cursor-pointer"
-                    onClick={() => onExpandProject(project)}
+          
+          <motion.div 
+            layout 
+            className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 auto-rows-fr"
+          >
+            <AnimatePresence>
+              {visibleProjects.map((project: Project, index: number) => {
+                const video = project.media?.find((m: any) => m.type === "video");
+                const images = project.media?.filter((m: any) => m.type === "image") || [];
+                const deployment = project.media?.find((m: any) => m.type === "deployment");
+
+                return (
+                  <motion.div
+                    layout
+                    key={project.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.3 }}
+                    className="bg-white/10 backdrop-blur-sm rounded-xl border border-white/10 hover:border-purple-400/30 transition-colors duration-300 group hover:scale-[1.01] flex flex-col will-change-transform"
                   >
-                    {video
-                      ? (() => {
+                    <div
+                      className="relative h-48 overflow-hidden rounded-t-xl cursor-pointer"
+                      onClick={() => onExpandProject(project)}
+                    >
+                      {video ? (() => {
                           const isYT = isYouTube(String(video.url || ""));
                           if (isYT) {
                             const embedUrl = toYouTubeEmbed(String(video.url || ""));
@@ -528,39 +557,53 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
                           <span className="text-4xl">🚀</span>
                         </div>
                         )}
-                  </div>
-
-
-                  <div className="p-6 flex-1 flex flex-col">
-                    <h3 className="text-xl font-semibold mb-2 text-white group-hover:text-purple-300 transition-colors">{project.title}</h3>
-                    <p className="text-purple-300 text-sm mb-3">Role: {project.role}</p>
-                    <p className="text-gray-300 text-sm mb-4 flex-1">{project.overview}</p>
-
-                    <div className="space-y-3 mb-4">
-                      {project.process && <div><h4 className="text-white text-sm font-semibold mb-1">Process:</h4><p className="text-gray-300 text-xs line-clamp-2">{project.process}</p></div>}
-                      {project.results && <div><h4 className="text-white text-sm font-semibold mb-1">Results:</h4><p className="text-gray-300 text-xs line-clamp-2">{project.results}</p></div>}
                     </div>
 
-                    {project.techStack && project.techStack.length > 0 && <div className="mb-4"><h4 className="text-white text-sm font-semibold mb-2">Tech Stack:</h4><div className="flex flex-wrap gap-2">{project.techStack.slice(0, 6).map((tech: any, techIndex: number) => <div key={techIndex} className="flex items-center space-x-1 bg-purple-900/50 text-purple-300 px-2 py-1 rounded text-xs border border-purple-700/50">{tech.logo_url && <Image src={tech.logo_url} alt={tech.name} width={12} height={12} className="rounded-sm" />}<span>{tech.name}</span></div>)}{project.techStack.length > 6 && <span className="bg-purple-900/50 text-purple-300 px-2 py-1 rounded text-xs border border-purple-700/50">+{project.techStack.length - 6} more</span>}</div></div>}
+                    <div className="p-6 flex-1 flex flex-col">
+                      <h3 className="text-xl font-semibold mb-2 text-white group-hover:text-purple-300 transition-colors">{project.title}</h3>
+                      <p className="text-purple-300 text-sm mb-3">Role: {project.role}</p>
+                      <p className="text-gray-300 text-sm mb-4 flex-1">{project.overview}</p>
 
-                    <div className="mt-auto pt-4 border-t border-white/10 flex flex-col gap-3">
-                      {(project.repoLink || deployment) && <div className="flex flex-col gap-2">{project.repoLink && <Link href={project.repoLink} target="_blank" className="inline-flex items-center justify-between w-full text-purple-400 hover:text-purple-300 transition-colors text-sm group/link"><span>View Repository</span><span className="transform group-hover/link:translate-x-1 transition-transform">→</span></Link>}{deployment && <Link href={deployment.url} target="_blank" className="inline-flex items-center justify-between w-full text-green-400 hover:text-green-300 transition-colors text-sm group/link"><span>Live Demo</span><span className="transform group-hover/link:translate-x-1 transition-transform">🚀</span></Link>}{video && !String(video.url || "").includes("youtube.com") && !String(video.url || "").includes("youtu.be") && <Link href={String(video.url)} target="_blank" className="inline-flex items-center justify-between w-full text-red-400 hover:text-red-300 transition-colors text-sm group/link"><span>Watch Video</span><span className="transform group-hover/link:translate-x-1 transition-transform">🎬</span></Link>}</div>}
-                      <button onClick={() => onExpandProject(project)} className="w-full py-2 px-4 bg-gradient-to-r from-purple-600/20 to-pink-600/20 hover:from-purple-600/30 hover:to-pink-600/30 border border-purple-500/30 hover:border-purple-400/50 rounded-lg text-purple-300 hover:text-purple-200 transition-all duration-300 hover:scale-[1.02] group/expand flex items-center justify-center gap-2 mt-2">
-                        <span>Expand Details</span>
-                        <svg className="w-4 h-4 group-hover/expand:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" /></svg>
-                      </button>
+                      <div className="space-y-3 mb-4">
+                        {project.process && <div><h4 className="text-white text-sm font-semibold mb-1">Process:</h4><p className="text-gray-300 text-xs line-clamp-2">{project.process}</p></div>}
+                        {project.results && <div><h4 className="text-white text-sm font-semibold mb-1">Results:</h4><p className="text-gray-300 text-xs line-clamp-2">{project.results}</p></div>}
+                      </div>
+
+                      {project.techStack && project.techStack.length > 0 && <div className="mb-4"><h4 className="text-white text-sm font-semibold mb-2">Tech Stack:</h4><div className="flex flex-wrap gap-2">{project.techStack.slice(0, 6).map((tech: any, techIndex: number) => <div key={techIndex} className="flex items-center space-x-1 bg-purple-900/50 text-purple-300 px-2 py-1 rounded text-xs border border-purple-700/50">{tech.logo_url && <Image src={tech.logo_url} alt={tech.name} width={12} height={12} className="rounded-sm" />}<span>{tech.name}</span></div>)}{project.techStack.length > 6 && <span className="bg-purple-900/50 text-purple-300 px-2 py-1 rounded text-xs border border-purple-700/50">+{project.techStack.length - 6} more</span>}</div></div>}
+
+                      <div className="mt-auto pt-4 border-t border-white/10 flex flex-col gap-3">
+                        {(project.repoLink || deployment) && <div className="flex flex-col gap-2">{project.repoLink && <Link href={project.repoLink} target="_blank" className="inline-flex items-center justify-between w-full text-purple-400 hover:text-purple-300 transition-colors text-sm group/link"><span>View Repository</span><span className="transform group-hover/link:translate-x-1 transition-transform">→</span></Link>}{deployment && <Link href={deployment.url} target="_blank" className="inline-flex items-center justify-between w-full text-green-400 hover:text-green-300 transition-colors text-sm group/link"><span>Live Demo</span><span className="transform group-hover/link:translate-x-1 transition-transform">🚀</span></Link>}{video && !String(video.url || "").includes("youtube.com") && !String(video.url || "").includes("youtu.be") && <Link href={String(video.url)} target="_blank" className="inline-flex items-center justify-between w-full text-red-400 hover:text-red-300 transition-colors text-sm group/link"><span>Watch Video</span><span className="transform group-hover/link:translate-x-1 transition-transform">🎬</span></Link>}</div>}
+                        <button onClick={() => onExpandProject(project)} className="w-full py-2 px-4 bg-gradient-to-r from-purple-600/20 to-pink-600/20 hover:from-purple-600/30 hover:to-pink-600/30 border border-purple-500/30 hover:border-purple-400/50 rounded-lg text-purple-300 hover:text-purple-200 transition-all duration-300 hover:scale-[1.02] group/expand flex items-center justify-center gap-2 mt-2">
+                          <span>Expand Details</span>
+                          <svg className="w-4 h-4 group-hover/expand:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" /></svg>
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+          </motion.div>
+
+          {hasMore && (
+            <div className="flex justify-center mt-10">
+              <motion.button
+                layout
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleToggleProjects}
+                className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full text-white font-semibold shadow-lg hover:shadow-purple-500/30 transition-shadow cursor-pointer"
+              >
+                {showAllProjects ? "Show Less" : "View All Projects"}
+              </motion.button>
+            </div>
+          )}
         </div>
       </section>
     );
   };
 
-  // ---------- Media / Portfolio Sections (card grid) ----------
+  // ---------- Media / Portfolio Sections (Using Framer Motion) ----------
   const renderMediaSections = () => {
     const mediaSections: MediaSection[] = (skills?.media as MediaSection[]) || [];
 
@@ -576,29 +619,58 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
         <div className="max-w-6xl mx-auto">
           <div className="space-y-10">
             {visibleSections.map((section: MediaSection, sIdx: number) => {
-              const items: MediaItem[] = Array.isArray(section.items) ? section.items : [];
+              const fullItems: MediaItem[] = Array.isArray(section.items) ? section.items : [];
+              const sectionId = section.id || String(sIdx);
+              const isExpanded = expandedMediaSections[sectionId] || false;
+              const displayedItems = isExpanded ? fullItems : fullItems.slice(0, 4);
+              const hasMore = fullItems.length > 4;
+
               return (
                 <div
-                  key={section.id || sIdx}
+                  key={sectionId}
                   className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-purple-400/30 transition-all duration-300"
                 >
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-2xl font-semibold text-white">{section.name || "Section"}</h3>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    {items.map((item) => (
-                      <div key={item.id || item.title} className="p-0">
-                        <MediaCard
-                          item={item}
-                          sectionName={section.name}
-                          onExpand={(it: any) =>
-                            setExpandedMedia({ item: it, sectionName: section.name })
-                          }
-                        />
-                      </div>
-                    ))}
-                  </div>
+                  <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                    <AnimatePresence>
+                      {displayedItems.map((item) => (
+                        <motion.div
+                          layout
+                          key={item.id || item.title}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.95 }}
+                          transition={{ duration: 0.3 }}
+                          className="p-0"
+                        >
+                          <MediaCard
+                            item={item}
+                            sectionName={section.name}
+                            onExpand={(it: any) =>
+                              setExpandedMedia({ item: it, sectionName: section.name })
+                            }
+                          />
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
+                  </motion.div>
+
+                  {hasMore && (
+                    <div className="flex justify-center mt-6">
+                       <motion.button
+                        layout
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => toggleMediaSection(sectionId)}
+                        className="px-6 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-white font-medium transition-colors"
+                      >
+                         {isExpanded ? "Show Less" : "View All"}
+                       </motion.button>
+                    </div>
+                  )}
                 </div>
               );
             })}
