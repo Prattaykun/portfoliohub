@@ -4,13 +4,18 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 import { User } from "@supabase/supabase-js";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function Navbar() {
   const [user, setUser] = useState<User | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [username, setUsername] = useState<string | null>(null);
+
   const router = useRouter();
+  const pathname = usePathname();
+
+
+
   
   useEffect(() => {
     const fetchUser = async () => {
@@ -45,6 +50,11 @@ export default function Navbar() {
     await supabase.auth.signOut();
     router.refresh();
   };
+
+  // Hide navbar on chatbot pages to allow full-screen UI
+  if (pathname?.endsWith('/chatbot')) {
+    return null;
+  }
 
   return (
     <nav className="fixed top-0 w-full flex items-center justify-between px-6 py-4 z-50 backdrop-blur-md bg-black/30 border-b border-white/10">

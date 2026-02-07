@@ -13,8 +13,11 @@ interface UserProfileSectionProps {
 
 export default function UserProfileSection({ user, userProfile }: UserProfileSectionProps) {
   const [username, setUsername] = useState('')
+  const [chatbotInfo, setChatbotInfo] = useState('')
   const [message, setMessage] = useState('')
+  const [infoMessage, setInfoMessage] = useState('')
   const [loading, setLoading] = useState(false)
+  const [infoLoading, setInfoLoading] = useState(false)
   const [fetchedUsername, setFetchedUsername] = useState<string | null>(null)
   const [signatureUrl, setSignatureUrl] = useState<string | null>(userProfile?.signature ?? null)
   const [sigMessage, setSigMessage] = useState<string>('')
@@ -22,24 +25,25 @@ export default function UserProfileSection({ user, userProfile }: UserProfileSec
   const currentUsername = userProfile?.username ?? user?.email?.split('@')[0] ?? 'Not set'
 
   useEffect(() => {
-    const loadUsername = async () => {
+    const loadUserData = async () => {
       try {
         if (!user?.id) return
         const { data } = await supabase
           .from('users_usernames')
-          .select('username')
+          .select('username, chatbot_info')
           .eq('auth_user_id', user.id)
           .limit(1)
 
-        const found = Array.isArray(data) ? data[0]?.username : null
-        setFetchedUsername(found ?? null)
+        const found = Array.isArray(data) ? data[0] : null
+        setFetchedUsername(found?.username ?? null)
+        setChatbotInfo(found?.chatbot_info ?? '')
       } catch (err) {
-        console.error('Failed to fetch username:', err)
+        console.error('Failed to fetch user data:', err)
         setFetchedUsername(null)
       }
     }
 
-    loadUsername()
+    loadUserData()
   }, [user?.id])
 
   const checkUsername = async (username: string) => {
@@ -63,6 +67,12 @@ export default function UserProfileSection({ user, userProfile }: UserProfileSec
       return
     }
 
+    if (username.includes('#')) {
+      setMessage('Username cannot contain "#" character')
+      setLoading(false)
+      return
+    }
+
     const { exists } = await checkUsername(username)
     if (exists) {
       setMessage('Username already taken')
@@ -76,15 +86,75 @@ export default function UserProfileSection({ user, userProfile }: UserProfileSec
         auth_user_id: user.id,
         username: username,
         updated_at: new Date().toISOString()
-      })
+      }, { onConflict: 'auth_user_id' })
 
     if (error) {
       setMessage('Error updating username')
     } else {
       setMessage('Username updated successfully!')
+      setFetchedUsername(username)
       setUsername('')
     }
     setLoading(false)
+  }
+
+  const handleChatbotInfoUpdate = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setInfoLoading(true)
+    setInfoMessage('')
+
+    const wordCount = chatbotInfo.trim().split(/\s+/).length
+    if (wordCount > 200) {
+      setInfoMessage(`Text exceeds 200 words (currently ${wordCount})`)
+      setInfoLoading(false)
+      return
+    }
+
+    // Upsert needs to handle preserving existing username if we are only updating info
+    // However, users_usernames is keyed by auth_user_id.
+    // If we rely on upsert, we need to make sure we don't accidentally clear the username if it's not provided.
+    // Ideally we should use UPDATE if the record exists.
+    
+    // First check if record exists to decide Update vs Upsert, or just use upsert with all fields if possible.
+    // Safer: Update only. If row doesn't exist, we must create it (but that implies setting username).
+    // Assuming row exists because profile section loads. If not, user should set username first usually.
+    // But let's attempt an UPSERT with auth_user_id. Supabase upsert merges if we don't specify fields to ignore?
+    // Actually, to be safe, let's just update the specific field for the user.
+    
+    const { error } = await supabase
+      .from('users_usernames')
+      .update({
+        chatbot_info: chatbotInfo,
+        updated_at: new Date().toISOString()
+      })
+      .eq('auth_user_id', user.id)
+
+    if (error) {
+       // If update fails (e.g. no row), we might need upsert, but we need a username for that constraint usually?
+       // Let's assume the user has a record if they are seeing this, or logic elsewhere handles creation.
+       // Actually, users_usernames availability is key. 
+       // If no username set, this table might be empty.
+       // We can try UPSERT with just auth_user_id and chatbot_info?
+       // Constraints: username is unique but nullable in schema provided? "username text null"
+       // Primary key is auth_user_id. So upsert on auth_user_id works.
+       const { error: upsertError } = await supabase
+        .from('users_usernames')
+        .upsert({
+            auth_user_id: user.id,
+            chatbot_info: chatbotInfo,
+            updated_at: new Date().toISOString()
+        }, { onConflict: 'auth_user_id' })
+        
+       if (upsertError) {
+         setInfoMessage('Error updating info')
+         console.error(upsertError)
+       } else {
+         setInfoMessage('Chatbot info updated successfully!')
+       }
+    } else {
+      setInfoMessage('Chatbot info updated successfully!')
+    }
+    setInfoLoading(false)
   }
 
   // ✅ Handle Cloudinary upload result
@@ -116,12 +186,20 @@ export default function UserProfileSection({ user, userProfile }: UserProfileSec
     <div className="bg-white rounded-lg shadow-lg p-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-gray-800">Profile Information</h2>
-        <Link
-          href="/profile-form"
-          className="px-4 py-2 bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 text-white rounded-lg hover:scale-105 transition"
-        >
-          Edit Profile
-        </Link>
+        <div className="flex gap-3">
+            <Link
+                href={`/${fetchedUsername || currentUsername}/chatbot`}
+                className="px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-lg hover:scale-105 transition shadow-md flex items-center gap-2"
+            >
+                <span>Ask PortAI About Me</span>
+            </Link>
+            <Link
+            href="/profile-form"
+            className="px-4 py-2 bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 text-white rounded-lg hover:scale-105 transition shadow-md"
+            >
+            Edit Profile
+            </Link>
+        </div>
       </div>
 
       {/* Profile Info */}
@@ -199,10 +277,49 @@ export default function UserProfileSection({ user, userProfile }: UserProfileSec
         {message && (
           <p
             className={`mt-2 text-sm ${
-              message.includes('Error') ? 'text-red-600' : 'text-green-600'
+              message.includes('Error') || message.includes('taken') || message.includes('cannot') ? 'text-red-600' : 'text-green-600'
             }`}
           >
             {message}
+          </p>
+        )}
+      </div>
+
+      {/* Chatbot Info Update */}
+      <div className="border-t pt-6 mb-8">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">Chatbot Context Info</h3>
+        <p className="text-sm text-gray-600 mb-4">
+          Provide additional information (max 200 words) that the chatbot should know about you. 
+          This will be used to personalize responses.
+        </p>
+        <form onSubmit={handleChatbotInfoUpdate}>
+          <div className="mb-4">
+            <textarea
+              value={chatbotInfo}
+              onChange={(e) => setChatbotInfo(e.target.value)}
+              placeholder="e.g. I prefer Python over Java, my favorite project is PortfolioHub..."
+              rows={4}
+              className="w-full text-black px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
+            />
+             <div className="text-right text-xs text-gray-500 mt-1">
+               {chatbotInfo.trim() ? chatbotInfo.trim().split(/\s+/).length : 0} / 200 words
+             </div>
+          </div>
+          <button
+            type="submit"
+            disabled={infoLoading}
+            className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
+          >
+            {infoLoading ? 'Saving...' : 'Save Info'}
+          </button>
+        </form>
+        {infoMessage && (
+          <p
+            className={`mt-2 text-sm ${
+              infoMessage.includes('Error') || infoMessage.includes('exceeds') ? 'text-red-600' : 'text-green-600'
+            }`}
+          >
+            {infoMessage}
           </p>
         )}
       </div>

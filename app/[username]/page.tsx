@@ -55,6 +55,17 @@ export default function PortfolioPage({ initialData }: { initialData?: UserData 
         setExpandedProject(project);
       }
     }
+    
+    // Handle hash scrolling after data load
+    if (userData && window.location.hash) {
+      const id = window.location.hash.replace('#', '');
+      setTimeout(() => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 500); // Slight delay to ensure DOM is ready
+    }
   }, [userData, projectId]);
 
   // detect mobile viewport on client and update state so we can conditionally avoid heavy visuals
@@ -159,33 +170,51 @@ export default function PortfolioPage({ initialData }: { initialData?: UserData 
               </p>
             )}
 
-            {/* Resume Download */}
-            {resume?.resume_url && (
-              <div className="flex justify-center mb-10 animate-slide-up-delay">
-                <button
-                  onClick={handleDownloadResume}
-                  className="group relative bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-6 sm:py-4 sm:px-8 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25 border border-purple-400/30 text-sm sm:text-base"
-                >
-                  <div className="flex items-center space-x-2 sm:space-x-3 justify-center">
-                    <svg
-                      className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+            {/* Action Buttons */}
+            <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-10 animate-slide-up-delay px-4">
+                {/* Resume Download */}
+                {resume?.resume_url && (
+                    <button
+                      onClick={handleDownloadResume}
+                      className="group relative bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-6 sm:py-4 sm:px-8 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25 border border-purple-400/30 text-sm sm:text-base w-full md:w-auto"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                      />
+                      <div className="flex items-center space-x-2 sm:space-x-3 justify-center">
+                        <svg
+                          className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                          />
+                        </svg>
+                        <span>Download Resume</span>
+                      </div>
+                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-400 to-pink-400 opacity-0 group-hover:opacity-20 blur-md transition-opacity duration-300 -z-10"></div>
+                    </button>
+                )}
+
+                {/* Ask PortAI Button */}
+                <Link
+                  href={`/${username}/chatbot`}
+                  className="group relative bg-white/10 hover:bg-white/20 text-white font-semibold py-3 px-6 sm:py-4 sm:px-8 rounded-xl transition-all duration-300 transform hover:scale-105 border border-white/10 hover:border-white/30 text-sm sm:text-base flex items-center justify-center gap-2 w-full md:w-auto backdrop-blur-md"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:rotate-12 transition-transform text-purple-300">
+                        <path d="M12 8V4H8"/>
+                        <rect width="16" height="12" x="4" y="8" rx="2"/>
+                        <path d="M2 14h2"/>
+                        <path d="M20 14h2"/>
+                        <path d="M15 13v2"/>
+                        <path d="M9 13v2"/>
                     </svg>
-                    <span>Download Resume</span>
-                  </div>
-                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-400 to-pink-400 opacity-0 group-hover:opacity-20 blur-md transition-opacity duration-300 -z-10"></div>
-                </button>
-              </div>
-            )}
+                    <span>Ask PortAI About Me</span>
+                    <div className="absolute inset-0 rounded-xl bg-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+                </Link>
+            </div>
 
             {/* Social Links */}
             {(contact?.linkedin || contact?.github || contact?.other_links?.length) && (

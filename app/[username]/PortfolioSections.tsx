@@ -31,6 +31,75 @@ type MediaSection = {
   items?: MediaItem[];
 };
 
+const SectionHeading = ({ 
+  title, 
+  id, 
+  level = "h2", 
+  align = "center", 
+  colorClass 
+}: { 
+  title: string; 
+  id: string; 
+  level?: "h2" | "h3"; 
+  align?: "center" | "left"; 
+  colorClass?: string 
+}) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    const url = `${window.location.origin}${window.location.pathname}#${id}`;
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div 
+      id={id} 
+      className={`flex items-center ${align === 'center' ? 'justify-center' : 'justify-start'} gap-3 ${level === 'h2' ? 'mb-16' : 'mb-4'} scroll-mt-28 group relative rounded-lg p-2 transition-colors hover:bg-white/5`}
+    >
+      {level === "h2" ? (
+        <h2 
+          className={`text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent cursor-pointer select-none ${colorClass || ''}`} 
+          onClick={handleCopy}
+        >
+          {title}
+        </h2>
+      ) : (
+        <h3 
+          className={`text-2xl font-semibold cursor-pointer select-none ${colorClass || 'text-white'}`} 
+          onClick={handleCopy}
+        >
+          {title}
+        </h3>
+      )}
+      
+      <div className="relative">
+        <button
+          onClick={(e) => { e.stopPropagation(); handleCopy(); }}
+          className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-2 rounded-full bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white cursor-pointer"
+          aria-label="Copy section link"
+        >
+          {copied ? (
+            <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          ) : (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+            </svg>
+          )}
+        </button>
+        {copied && (
+          <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 px-2 py-1 bg-black/80 backdrop-blur-sm text-white text-xs rounded shadow-lg pointer-events-none whitespace-nowrap animate-fade-in">
+            Copied!
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
   userData,
   onExpandProject,
@@ -165,11 +234,7 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
     return (
       <section className="py-20 px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="flex justify-between items-center mb-16">
-            <h2 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-              Education
-            </h2>
-          </div>
+          <SectionHeading title="Education" id="education" />
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {about.education.map((edu: Education, index: number) => (
               <div key={edu.id} className="bg-white/10 backdrop-blur-sm rounded-xl p-6 hover:bg-white/20 transition-all duration-300 border border-white/10 hover:border-purple-400/30 group animate-fade-in-up" style={{ animationDelay: `${index * 100}ms` }}>
@@ -269,7 +334,7 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
     return (
       <section className="py-20 px-4 bg-gradient-to-b from-transparent to-white/2">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Experience</h2>
+          <SectionHeading title="Experience" id="experience" />
 
           <div className="space-y-8">
             {normalized.map((company: any, cIdx: number) => (
@@ -389,7 +454,7 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
     return (
       <section className="py-20 px-4">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold text-center mb-16 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Skills</h2>
+          <SectionHeading title="Skills" id="skills" />
           <div className="grid lg:grid-cols-2 gap-12">
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-8 border border-white/10 hover:border-purple-400/30 transition-all duration-300 animate-fade-in-left">
               <h3 className="text-2xl font-semibold mb-6 text-center text-purple-300">Technical Skills</h3>
@@ -425,7 +490,7 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
     return (
       <section className="py-20 px-4 bg-white/5">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold text-center mb-16 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Certificates</h2>
+          <SectionHeading title="Certificates" id="certificates" />
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
             {certificates.map((cert: any, idx: number) => (
               <div key={`${cert.name}-${idx}`} className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-purple-400/30 transition-all duration-300 animate-fade-in-up flex flex-col" style={{ animationDelay: `${idx * 80}ms` }}>
@@ -475,7 +540,7 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
     return (
       <section ref={projectsRef} className="py-20 px-4 bg-white/5 scroll-mt-20">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl font-bold text-center mb-16 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Projects</h2>
+          <SectionHeading title="Projects" id="projects" />
           
           <motion.div 
             layout 
@@ -630,9 +695,12 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
                   key={sectionId}
                   className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-purple-400/30 transition-all duration-300"
                 >
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-2xl font-semibold text-white">{section.name || "Section"}</h3>
-                  </div>
+                  <SectionHeading 
+                    title={section.name || "Section"} 
+                    id={section.name ? section.name.toLowerCase().replace(/\s+/g, '-') : sectionId} 
+                    level="h3" 
+                    align="left" 
+                  />
 
                   <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     <AnimatePresence>
@@ -697,7 +765,7 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
           <div className="grid lg:grid-cols-2 gap-12">
             {langint?.language && langint.language.length > 0 && (
               <div className="bg-white/10 backdrop-blur-sm rounded-xl p-8 border border-white/10 hover:border-purple-400/30 transition-all duration-300 animate-fade-in-left">
-                <h3 className="text-2xl font-semibold mb-6 text-center text-purple-300">Languages</h3>
+                <SectionHeading title="Languages" id="languages" level="h3" align="center" colorClass="text-purple-300" />
                 <div className="space-y-4">
                   {langint.language.map((lang) => {
                     const proficiencyLevels = ["Beginner", "Elementary", "Intermediate", "Advanced", "Fluent", "Native"];
@@ -722,7 +790,7 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
 
             {langint?.interest && langint.interest.length > 0 && (
               <div className="bg-white/10 backdrop-blur-sm rounded-xl p-8 border border-white/10 hover:border-purple-400/30 transition-all duration-300 animate-fade-in-right">
-                <h3 className="text-2xl font-semibold mb-6 text-center text-pink-300">Interests</h3>
+                <SectionHeading title="Interests" id="interests" level="h3" align="center" colorClass="text-pink-300" />
                 <div className="space-y-3">
                   {langint.interest.map((interest: string, index: number) => (
                     <div key={index} className="flex items-center space-x-3 group">
