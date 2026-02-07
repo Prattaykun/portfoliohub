@@ -19,7 +19,11 @@ The application provides a user-friendly dashboard for managing portfolio conten
     -   **Language & Interests**: Add spoken languages and personal interests.
 -   **AI Chatbot Assistant**: A fully integrated, context-aware AI assistant ("PortAI") that:
     -   **Answers Visitor Queries**: Uses your portfolio data (bio, projects, skills) to answer questions about you.
-    -   **Voice Interaction**: Supports real-time voice conversations using **Gemini 2.5 Flash** for native audio processing.
+    -   **Voice Interaction**: Supports real-time voice conversations.
+    -   **Robust AI Logic**:
+        -   **Primary (Audio)**: Uses **Gemini 2.5 Flash** for native multimodal audio understanding.
+        -   **Fallback (Audio)**: Automatically switches to **Groq** (Distil-Whisper Large V3 for transcription + Llama 3.3 70B for response) if Gemini fails or hits rate limits.
+        -   **Text Chat**: Powered by **Groq Llama 3.3 70B** for lightning-fast text responses.
     -   **Deep Linking**: Intelligently links users to specific sections of your portfolio (e.g., "Show me his projects" -> scrolls to #projects).
     -   **Responsive Design**: Features a custom mobile interface with a story-style profile header and a desktop sidebar for easy navigation.
     -   **Shareable**: Easily share the chatbot via a dedicated link or QR code.
@@ -36,8 +40,10 @@ The application provides a user-friendly dashboard for managing portfolio conten
 -   **Framework**: [Next.js](https://nextjs.org/) (App Router)
 -   **Language**: [TypeScript](https://www.typescriptlang.org/)
 -   **AI & LLMs**:
-    -   [Groq SDK](https://groq.com/) (Llama 3.3 for ultra-fast text inference)
-    -   [Google Generative AI](https://ai.google.dev/) (Gemini 2.5 Flash for multimodal audio/text)
+    -   [Groq SDK](https://groq.com/):
+        -   **Llama 3.3 70B Versatile**: For high-speed text inference and rationale.
+        -   **Distil-Whisper Large V3**: For audio transcription during fallback.
+    -   [Google Generative AI](https://ai.google.dev/) (Gemini 2.5 Flash): Primary model for native multimodal (audio) understanding.
 -   **Backend & Database**: [Supabase](https://supabase.io/) (Authentication, Postgres DB, Storage)
 -   **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 -   **Animations**: [Framer Motion](https://www.framer.com/motion/)

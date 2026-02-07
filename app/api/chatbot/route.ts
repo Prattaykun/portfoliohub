@@ -120,17 +120,63 @@ ${JSON.stringify(history?.slice(-5) || [])}
 
         if (audio) {
             // --- Gemini (Native Audio) ---
-            const model = genAI.getGenerativeModel({
-                model: "gemini-2.5-flash",
-                systemInstruction: systemPrompt
-            });
+            try {
+                const model = genAI.getGenerativeModel({
+                    model: "gemini-2.5-flash",
+                    systemInstruction: systemPrompt
+                });
 
-            const result = await model.generateContent([
-                { inlineData: { data: audio, mimeType: "audio/webm" } },
-                { text: "Listen to the audio and answer the user's question." }
-            ]);
+                const result = await model.generateContent([
+                    { inlineData: { data: audio, mimeType: "audio/webm" } },
+                    { text: "Listen to the audio and answer the user's question." }
+                ]);
 
-            answer = result.response.text();
+                answer = result.response.text();
+            } catch (geminiError) {
+                console.error("Gemini failed, switching to Groq:", geminiError);
+
+                try {
+                    // Fallback: Transcribe audio with Groq (Whisper) -> Text Response with Groq (Llama)
+
+                    // Convert base64 audio to a File-like object for Groq
+                    const audioBuffer = Buffer.from(audio, "base64");
+                    // Create a File object (supported in Node 20+ and Next.js Edge/Node runtimes)
+                    const audioFile = new File([audioBuffer], "audio.webm", { type: "audio/webm" });
+
+                    const transcriptionCompletion = await groq.audio.transcriptions.create({
+                        file: audioFile,
+                        model: "distil-whisper-large-v3-en",
+                        response_format: "json",
+                        language: "en",
+                        temperature: 0.0,
+                    });
+
+                    const transcribedText = transcriptionCompletion.text;
+                    console.log("Transcribed text (fallback):", transcribedText);
+
+                    if (!transcribedText) {
+                        throw new Error("Empty transcription from Groq");
+                    }
+
+                    // Generate response using transcribed text
+                    const completion = await groq.chat.completions.create({
+                        messages: [
+                            { role: "system", content: systemPrompt },
+                            { role: "user", content: transcribedText } // Use transcribed text
+                        ],
+                        model: "llama-3.3-70b-versatile",
+                        temperature: 0.7,
+                        max_tokens: 2048,
+                    });
+
+                    answer = completion.choices[0]?.message?.content || "I'm sorry, I couldn't generate a response (fallback).";
+
+                } catch (groqError) {
+                    console.error("Groq fallback failed:", groqError);
+                    // Return the original Gemini error if fallback also fails, or a generic error
+                    throw geminiError; // Propagate the original error or handle gracefully
+                }
+            }
 
         } else if (message) {
             // --- Groq (Text Only) ---
