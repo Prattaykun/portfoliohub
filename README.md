@@ -16,7 +16,16 @@ The application provides a user-friendly dashboard for managing portfolio conten
     -   **Projects**: Showcase your work with titles, descriptions, tech stacks, media (images/videos), and repository links.
     -   **Dynamic Media Sections**: Add multiple sections for Achievements, Services, Testimonials, extracurriculars, and more.
     -   **Contact**: Share your email, phone, and social links (LinkedIn, GitHub, etc.).
-    -   **Languages & Interests**: Add spoken languages and personal interests.
+    -   **Language & Interests**: Add spoken languages and personal interests.
+-   **AI Chatbot Assistant**: A fully integrated, context-aware AI assistant ("PortAI") that:
+    -   **Answers Visitor Queries**: Uses your portfolio data (bio, projects, skills) to answer questions about you.
+    -   **Voice Interaction**: Supports real-time voice conversations using **Gemini 2.5 Flash** for native audio processing.
+    -   **Deep Linking**: Intelligently links users to specific sections of your portfolio (e.g., "Show me his projects" -> scrolls to #projects).
+    -   **Responsive Design**: Features a custom mobile interface with a story-style profile header and a desktop sidebar for easy navigation.
+    -   **Shareable**: Easily share the chatbot via a dedicated link or QR code.
+
+![AI Chatbot Preview](public/chatbot.png)
+
 -   **Secure Authentication**: Secure sign-up and login with email/password or via OAuth providers (Google, GitHub, LinkedIn).
 -   **Automated Resume Generation**: Generate and download a professional PDF resume directly from your portfolio data using Puppeteer.
 -   **Media Management**: Easily upload profile photos, project media, and resumes using a Cloudinary widget.
@@ -26,6 +35,9 @@ The application provides a user-friendly dashboard for managing portfolio conten
 
 -   **Framework**: [Next.js](https://nextjs.org/) (App Router)
 -   **Language**: [TypeScript](https://www.typescriptlang.org/)
+-   **AI & LLMs**:
+    -   [Groq SDK](https://groq.com/) (Llama 3.3 for ultra-fast text inference)
+    -   [Google Generative AI](https://ai.google.dev/) (Gemini 2.5 Flash for multimodal audio/text)
 -   **Backend & Database**: [Supabase](https://supabase.io/) (Authentication, Postgres DB, Storage)
 -   **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 -   **Animations**: [Framer Motion](https://www.framer.com/motion/)
