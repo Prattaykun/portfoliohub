@@ -3,10 +3,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Mic, Send, StopCircle, Bot, Loader2, ArrowLeft, ExternalLink, User, Share2 } from "lucide-react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import { Mic, Send, StopCircle, Bot, Loader2, ArrowLeft, Share2 } from "lucide-react";
+
 import { createClient } from "@supabase/supabase-js";
+import ChatMessage from "@/components/ChatMessage";
 
 // Initialize Supabase client
 const supabase = createClient(
@@ -207,30 +207,7 @@ export default function ChatbotPage() {
     }
   };
 
-  // Custom Link Component for Markdown
-  const MarkdownLink = ({ href, children }: any) => {
-    const isProjectOrSection = href?.includes("/project/") || href?.includes("#");
-    
-    if (isProjectOrSection) {
-        return (
-            <a 
-                href={href} 
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 px-3 py-1 my-1 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-sm font-medium transition-colors no-underline shadow-md"
-            >
-                {children}
-                <ExternalLink size={14} />
-            </a>
-        );
-    }
 
-    return (
-        <a href={href} target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:text-purple-300 underline">
-            {children}
-        </a>
-    );
-  };
 
   // Helper for Mobile Menu Actions
   const handleLogout = async () => {
@@ -383,40 +360,7 @@ export default function ChatbotPage() {
         {/* Messages (Same as before) */}
         <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
           {messages.map((msg, idx) => (
-            <div
-              key={idx}
-              className={`flex w-full ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-            >
-              <div className={`flex max-w-[85%] md:max-w-[70%] gap-3 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}>
-                
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-                    msg.role === "user" ? "bg-purple-600" : "bg-gradient-to-tr from-blue-500 to-cyan-500"
-                }`}>
-                    {msg.role === "user" ? <User size={16} /> : <Bot size={16} />}
-                </div>
-
-                <div
-                  className={`rounded-2xl px-5 py-4 text-sm md:text-base leading-relaxed shadow-sm ${
-                    msg.role === "user"
-                      ? "bg-purple-600/90 text-white rounded-tr-none"
-                      : "bg-[#1e232e] text-gray-100 rounded-tl-none border border-white/5"
-                  }`}
-                >
-                  {msg.role === "model" ? (
-                    <div className="prose prose-invert prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-black/30 prose-pre:p-0">
-                        <ReactMarkdown 
-                            remarkPlugins={[remarkGfm as any]}
-                            components={{ a: MarkdownLink }}
-                        >
-                            {msg.content}
-                        </ReactMarkdown>
-                    </div>
-                  ) : (
-                    msg.content
-                  )}
-                </div>
-              </div>
-            </div>
+            <ChatMessage key={idx} message={msg} />
           ))}
           
           {isLoading && (
