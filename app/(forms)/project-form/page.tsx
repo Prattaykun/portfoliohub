@@ -347,14 +347,14 @@ export default function ProjectForm() {
   }
 
   return (
-    <div className="min-h-screen pt-30 flex flex-col items-center justify-center bg-gradient-to-tr from-green-900 via-blue-900 to-purple-900 text-white px-4 py-10">
+    <div className="min-h-screen pt-24 md:pt-32 flex flex-col items-center justify-center bg-gradient-to-tr from-green-900 via-blue-900 to-purple-900 text-white px-4 py-10">
       <motion.div
         key={current.key}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-4xl bg-white/8 backdrop-blur-xl rounded-3xl p-8 border border-white/10 shadow-2xl"
+        className="w-full max-w-4xl bg-white/8 backdrop-blur-xl rounded-3xl p-4 md:p-8 border border-white/10 shadow-2xl"
       >
         {!done ? (
           <>
@@ -372,7 +372,7 @@ export default function ProjectForm() {
                     }
                   </div>
                   <div className="flex gap-2">
-                    <button onClick={() => addProject()} className="text-sm underline">+ Add Project</button>
+                    <button onClick={() => addProject()} className="text-sm underline cursor-pointer hover:text-white transition">+ Add Project</button>
                   </div>
                 </div>
 
@@ -381,7 +381,7 @@ export default function ProjectForm() {
                     <button
                       key={i}
                       onClick={() => addProject(ex)}
-                      className="bg-white/8 px-3 py-1 rounded-full text-sm hover:bg-white/20 transition"
+                      className="bg-white/8 px-3 py-1 rounded-full text-sm hover:bg-white/20 cursor-pointer active:scale-95 transition-transform"
                     >
                       {ex.title}
                     </button>
@@ -400,7 +400,7 @@ export default function ProjectForm() {
                         <h3 className="text-lg font-semibold text-white">{project.title}</h3>
                         <button 
                           onClick={() => removeProject(project.id)} 
-                          className="text-xs text-red-300 hover:text-red-100"
+                          className="text-xs text-red-300 hover:text-red-100 cursor-pointer"
                         >
                           Remove
                         </button>
@@ -466,7 +466,7 @@ export default function ProjectForm() {
                                 {tech.name}
                                 <button
                                   onClick={() => removeTechFromProject(project.id, tech.name)}
-                                  className="text-xs opacity-80 hover:opacity-100"
+                                  className="text-xs opacity-80 hover:opacity-100 cursor-pointer"
                                 >
                                   ✕
                                 </button>
@@ -487,11 +487,11 @@ export default function ProjectForm() {
                                 }
                               }}
                               placeholder="Add technology (e.g., React, Node.js)"
-                              className="flex-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none"
+                              className="flex-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none w-full"
                             />
                             <button
                               onClick={() => addTechToProject(project.id, input)}
-                              className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition"
+                              className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 cursor-pointer active:scale-95 transition-transform"
                             >
                               Add
                             </button>
@@ -521,7 +521,7 @@ export default function ProjectForm() {
                                       setTechSearchResults([]);
                                       setActiveTechSearchId(null);
                                     }}
-                                    className="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-full text-sm flex items-center gap-2 transition"
+                                    className="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-full text-sm flex items-center gap-2 cursor-pointer active:scale-95 transition-transform"
                                   >
                                     {skill.logo_url && (
                                       <img src={skill.logo_url} alt={skill.name} className="w-4 h-4 rounded" />
@@ -541,7 +541,7 @@ export default function ProjectForm() {
                                 <button
                                   key={tech}
                                   onClick={() => addTechToProject(project.id, tech)}
-                                  className="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-full text-sm transition"
+                                  className="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-full text-sm cursor-pointer active:scale-95 transition-transform"
                                 >
                                   {tech}
                                 </button>
@@ -579,19 +579,19 @@ export default function ProjectForm() {
                             <div className="flex gap-2">
                               <button 
                                 onClick={() => addMedia(project.id, "image")}
-                                className="text-xs underline"
+                                className="text-xs underline cursor-pointer hover:text-white"
                               >
                                 + Add Image
                               </button>
                               <button 
                                 onClick={() => addMedia(project.id, "video")}
-                                className="text-xs underline"
+                                className="text-xs underline cursor-pointer hover:text-white"
                               >
                                 + Add Video
                               </button>
                               <button 
                                 onClick={() => addMedia(project.id, "deployment")}
-                                className="text-xs underline"
+                                className="text-xs underline cursor-pointer hover:text-white"
                               >
                                 + Add Deployment
                               </button>
@@ -600,7 +600,7 @@ export default function ProjectForm() {
 
                           <div className="space-y-3">
                             {project.media.map((media: any) => (
-                              <div key={media.id} className="flex gap-3 items-start">
+                              <div key={media.id} className="flex flex-col md:flex-row gap-3 items-stretch md:items-start">
                                 <select
                                   value={media.type}
                                   onChange={(e) => updateMedia(project.id, media.id, { type: e.target.value })}
@@ -619,38 +619,40 @@ export default function ProjectForm() {
                                     media.type === "video" ? "Video URL" :
                                     "Deployment URL"
                                   }
-                                  className="flex-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none"
+                                  className="flex-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none w-full"
                                 />
 
-                                {/* Upload widget for images */}
-                                {media.type === "image" && (
-                                  <CldUploadWidget
-                                    uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!}
-                                    options={{ multiple: false, folder: "project_media" }}
-                                    onSuccess={(res: any) => {
-                                      if (res?.info?.secure_url) {
-                                        updateMedia(project.id, media.id, { url: res.info.secure_url });
-                                      }
-                                    }}
-                                  >
-                                    {({ open }) => (
-                                      <button 
-                                        type="button" 
-                                        onClick={() => open()} 
-                                        className="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition text-sm whitespace-nowrap"
-                                      >
-                                        Upload Image
-                                      </button>
-                                    )}
-                                  </CldUploadWidget>
-                                )}
+                                <div className="flex gap-2">
+                                  {/* Upload widget for images */}
+                                  {media.type === "image" && (
+                                    <CldUploadWidget
+                                      uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!}
+                                      options={{ multiple: false, folder: "project_media" }}
+                                      onSuccess={(res: any) => {
+                                        if (res?.info?.secure_url) {
+                                          updateMedia(project.id, media.id, { url: res.info.secure_url });
+                                        }
+                                      }}
+                                    >
+                                      {({ open }) => (
+                                        <button
+                                          type="button"
+                                          onClick={() => open()}
+                                          className="flex-1 md:flex-none px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 cursor-pointer active:scale-95 transition-transform text-sm whitespace-nowrap"
+                                        >
+                                          Upload
+                                        </button>
+                                      )}
+                                    </CldUploadWidget>
+                                  )}
 
-                                <button
-                                  onClick={() => removeMedia(project.id, media.id)}
-                                  className="px-3 py-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 transition text-sm"
-                                >
-                                  Remove
-                                </button>
+                                  <button
+                                    onClick={() => removeMedia(project.id, media.id)}
+                                    className="flex-1 md:flex-none px-3 py-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 cursor-pointer active:scale-95 transition-transform text-sm"
+                                  >
+                                    Remove
+                                  </button>
+                                </div>
                               </div>
                             ))}
                           </div>
@@ -664,7 +666,7 @@ export default function ProjectForm() {
 
             <div className="flex justify-between mt-8">
               {step > 0 ? (
-                <button onClick={handleBack} className="px-5 py-2 rounded-full bg-white/10 hover:bg-white/20 transition">
+                <button onClick={handleBack} className="px-5 py-2 rounded-full bg-white/10 hover:bg-white/20 cursor-pointer active:scale-95 transition-transform">
                   ← Back
                 </button>
               ) : (
@@ -674,7 +676,7 @@ export default function ProjectForm() {
               <button 
                 onClick={handleNext} 
                 disabled={saving}
-                className="px-6 py-2 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 font-semibold hover:scale-105 transition-transform disabled:opacity-50"
+                className="px-6 py-2 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 font-semibold cursor-pointer active:scale-95 hover:scale-105 transition-transform disabled:opacity-50"
               >
                 {saving ? "Saving..." : projects.length > 0 ? "Update Projects ✨" : "Save Projects 🎉"}
               </button>
@@ -691,7 +693,7 @@ export default function ProjectForm() {
               <div className="flex justify-center gap-4">
                 <Link 
                   href="/dashboard" 
-                  className="px-6 py-2 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 font-semibold hover:scale-105 transition-transform"
+                  className="px-6 py-2 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 font-semibold cursor-pointer active:scale-95 hover:scale-105 transition-transform"
                 >
                   Go to Dashboard
                 </Link>
@@ -700,7 +702,7 @@ export default function ProjectForm() {
                     setDone(false);
                     // Don't clear projects, let them continue editing
                   }}
-                  className="px-6 py-2 rounded-full bg-white/10 hover:bg-white/20 transition"
+                  className="px-6 py-2 rounded-full bg-white/10 hover:bg-white/20 cursor-pointer active:scale-95 transition-transform"
                 >
                   Continue Editing
                 </button>

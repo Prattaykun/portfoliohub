@@ -1,0 +1,37 @@
+
+> portfoliohub@0.1.0 dev
+> next dev
+
+⚠ `eslint` configuration in next.config.ts is no longer supported. See more info here: https://nextjs.org/docs/app/api-reference/cli/next#next-lint-options
+⚠ `images.domains` is deprecated in favor of `images.remotePatterns`. Please update next.config.ts to protect your application from malicious users.
+⚠ Invalid next.config.ts options detected:
+⚠     Unrecognized key(s) in object: 'eslint'
+⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+▲ Next.js 16.1.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+
+✓ Starting...
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+✓ Ready in 1140ms
+○ Compiling /about-form ...
+ GET /about-form 200 in 6.2s (compile: 5.5s, render: 623ms)
+ GET /project-form 200 in 1279ms (compile: 1132ms, render: 147ms)
+ GET /contact-form 200 in 920ms (compile: 783ms, render: 137ms)
+ GET /media-form 200 in 1053ms (compile: 961ms, render: 92ms)
+ GET /profile-form 200 in 2.4s (compile: 2.1s, render: 241ms)
+Metadata generation failed: Error: NEXT_PUBLIC_SITE_URL is not defined
+    at Module.generateMetadata (app/[username]/layout.tsx:12:13)
+  10 |   try {
+  11 |     if (!process.env.NEXT_PUBLIC_SITE_URL) {
+> 12 |       throw new Error("NEXT_PUBLIC_SITE_URL is not defined");
+     |             ^
+  13 |     }
+  14 |
+  15 |     const res = await fetch(
+ GET /login 200 in 2.4s (compile: 2.3s, render: 68ms)
+ GET /skill-form 200 in 1085ms (compile: 851ms, render: 234ms)

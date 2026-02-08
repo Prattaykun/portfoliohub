@@ -429,14 +429,14 @@ export default function SkillsForm() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-tr from-green-900 via-blue-900 to-purple-900 text-white px-4 py-10">
+    <div className="min-h-screen pt-24 md:pt-32 flex flex-col items-center justify-center bg-gradient-to-tr from-green-900 via-blue-900 to-purple-900 text-white px-4 py-10">
       <motion.div
         key={current.key}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-2xl bg-white/8 backdrop-blur-xl rounded-3xl p-8 border border-white/10 shadow-2xl"
+        className="w-full max-w-2xl bg-white/8 backdrop-blur-xl rounded-3xl p-4 md:p-8 border border-white/10 shadow-2xl"
       >
         {!done ? (
           <>
@@ -468,7 +468,7 @@ export default function SkillsForm() {
                       {skill}
                       <button
                         onClick={() => removeSoftSkill(skill)}
-                        className="text-xs opacity-80 hover:opacity-100"
+                        className="text-xs opacity-80 hover:opacity-100 cursor-pointer"
                       >
                         ✕
                       </button>
@@ -512,7 +512,7 @@ export default function SkillsForm() {
                     <button
                       key={skill}
                       onClick={() => addSoftSkill(skill)}
-                      className="bg-white/10 px-3 py-1 rounded-full text-sm hover:bg-white/20 transition"
+                      className="bg-white/10 px-3 py-1 rounded-full text-sm hover:bg-white/20 cursor-pointer active:scale-95 transition-transform"
                     >
                       {skill}
                     </button>
@@ -529,7 +529,7 @@ export default function SkillsForm() {
                     {existingSkillsId ? "Update your technical skills" : "Add your technical skills"} — tap examples to autofill
                   </div>
                   <div className="flex gap-2">
-                    <button onClick={() => addTechnicalSkill()} className="text-sm underline hover:text-blue-300">
+                    <button onClick={() => addTechnicalSkill()} className="text-sm underline cursor-pointer hover:text-blue-300 transition">
                       + Add Skill
                     </button>
                   </div>
@@ -540,7 +540,7 @@ export default function SkillsForm() {
                     <button
                       key={i}
                       onClick={() => addTechnicalSkill(skill)}
-                      className="bg-white/8 px-3 py-1 rounded-full text-sm hover:bg-white/15 transition"
+                      className="bg-white/8 px-3 py-1 rounded-full text-sm hover:bg-white/15 cursor-pointer active:scale-95 transition-transform"
                     >
                       {skill.name} • {skill.category}
                     </button>
@@ -563,7 +563,7 @@ export default function SkillsForm() {
                         <div className="flex gap-2">
                           <button
                             onClick={() => removeTechnicalSkill(skill.id)}
-                            className="text-xs text-red-300 hover:text-red-400"
+                            className="text-xs text-red-300 hover:text-red-400 cursor-pointer"
                           >
                             Remove
                           </button>
@@ -622,12 +622,12 @@ export default function SkillsForm() {
                         />
 
                         {/* Logo URL + Upload */}
-                        <div className="col-span-full flex gap-2 items-center">
+                        <div className="col-span-full flex flex-col md:flex-row gap-2 md:items-center">
                           <input
                             value={skill.logo_url}
                             onChange={(ev) => updateTechnicalSkill(skill.id, { logo_url: ev.target.value })}
                             placeholder="Logo URL (optional)"
-                            className="flex-1 px-2 py-2 rounded-md bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none"
+                            className="flex-1 px-2 py-2 rounded-md bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none w-full"
                           />
                           <div className="flex gap-2 items-center">
                             {skill.logo_url && <img src={skill.logo_url} alt="Logo" className="w-6 h-6 rounded" />}
@@ -642,7 +642,7 @@ export default function SkillsForm() {
                                 <button
                                   type="button"
                                   onClick={() => open()}
-                                  className="px-3 py-2 rounded-full bg-white/10 text-sm whitespace-nowrap hover:bg-white/15 transition"
+                                  className="px-3 py-2 rounded-full bg-white/10 text-sm whitespace-nowrap hover:bg-white/15 cursor-pointer active:scale-95 transition-transform"
                                 >
                                   {skill.logo_url ? "Change Logo" : "Upload Logo"}
                                 </button>
@@ -664,14 +664,14 @@ export default function SkillsForm() {
                   <div className="text-sm text-zinc-300">
                     Add certifications. Attach images/PDFs, tag related skills, and include verification links.
                   </div>
-                  <button onClick={() => addCertificate()} className="text-sm underline hover:text-blue-300">
+                  <button onClick={() => addCertificate()} className="text-sm underline cursor-pointer hover:text-blue-300 transition">
                     + Add Certificate
                   </button>
                 </div>
 
                 {certificates.length === 0 && (
                   <div className="text-sm text-zinc-300">
-                    No certificates yet. Click <span className="underline">+ Add Certificate</span> to start.
+                    No certificates yet. Click <span className="underline cursor-pointer" onClick={() => addCertificate()}>+ Add Certificate</span> to start.
                   </div>
                 )}
 
@@ -690,7 +690,7 @@ export default function SkillsForm() {
                         </div>
                         <button
                           onClick={() => removeCertificate(cert.id)}
-                          className="text-xs text-red-300 hover:text-red-400"
+                          className="text-xs text-red-300 hover:text-red-400 cursor-pointer"
                         >
                           Remove
                         </button>
@@ -753,7 +753,7 @@ export default function SkillsForm() {
                                 <button
                                   type="button"
                                   onClick={() => open()}
-                                  className="px-3 py-2 rounded-full bg-white/10 text-sm whitespace-nowrap hover:bg-white/15 transition"
+                                  className="px-3 py-2 rounded-full bg-white/10 text-sm whitespace-nowrap hover:bg-white/15 cursor-pointer active:scale-95 transition-transform"
                                 >
                                   Upload Files
                                 </button>
@@ -775,7 +775,7 @@ export default function SkillsForm() {
                                   )}
                                   <div className="mt-1 text-right">
                                     <button
-                                      className="text-xs text-red-300 hover:text-red-400"
+                                      className="text-xs text-red-300 hover:text-red-400 cursor-pointer"
                                       onClick={() =>
                                         updateCertificate(cert.id, {
                                           media: cert.media.filter((_, i) => i !== idx),
@@ -805,7 +805,7 @@ export default function SkillsForm() {
                                 <span>{s.name}</span>
                                 <span className="text-[10px] opacity-70 px-1 py-0.5 rounded bg-white/10">{s.source}</span>
                                 <button
-                                  className="text-xs opacity-80 hover:opacity-100"
+                                  className="text-xs opacity-80 hover:opacity-100 cursor-pointer"
                                   onClick={() => removeSkillFromCertificate(cert.id, idx)}
                                 >
                                   ✕
@@ -866,7 +866,7 @@ export default function SkillsForm() {
             {/* ─────────── Footer nav ─────────── */}
             <div className="flex justify-between mt-8">
               {step > 0 ? (
-                <button onClick={handleBack} className="px-5 py-2 rounded-full bg-white/10 hover:bg-white/20 transition">
+                <button onClick={handleBack} className="px-5 py-2 rounded-full bg-white/10 hover:bg-white/20 cursor-pointer active:scale-95 transition-transform">
                   ← Back
                 </button>
               ) : (
@@ -876,14 +876,14 @@ export default function SkillsForm() {
               <div className="flex gap-3">
                 <button
                   onClick={() => setStep(questions.length - 1)}
-                  className="px-4 py-2 rounded-full bg-white/6 hover:bg-white/10 transition"
+                  className="px-4 py-2 rounded-full bg-white/6 hover:bg-white/10 cursor-pointer active:scale-95 transition-transform"
                 >
                   Jump to End
                 </button>
                 <button
                   onClick={handleNext}
                   disabled={saving}
-                  className="px-6 py-2 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 font-semibold hover:scale-105 transition-transform disabled:opacity-50"
+                  className="px-6 py-2 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 font-semibold cursor-pointer active:scale-95 hover:scale-105 transition-transform disabled:opacity-50"
                 >
                   {saving ? "Saving..." : isLast ? (existingSkillsId ? "Update ✅" : "Finish 🎉") : "Next →"}
                 </button>

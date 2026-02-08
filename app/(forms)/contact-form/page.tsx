@@ -293,14 +293,14 @@ const [countryCode, setCountryCode] = useState<CountryCode["code"]>("+91");
   }
 
   return (
-    <div className="min-h-screen flex pt-30 flex-col items-center justify-center bg-gradient-to-tr from-green-900 via-blue-900 to-purple-900 text-white px-4 py-10">
+    <div className="min-h-screen flex pt-24 md:pt-32 flex-col items-center justify-center bg-gradient-to-tr from-green-900 via-blue-900 to-purple-900 text-white px-4 py-10">
       <motion.div
         key={current.key}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-2xl bg-white/8 backdrop-blur-xl rounded-3xl p-8 border border-white/10 shadow-2xl"
+        className="w-full max-w-2xl bg-white/8 backdrop-blur-xl rounded-3xl p-4 md:p-8 border border-white/10 shadow-2xl"
       >
         {!done ? (
           <>
@@ -310,7 +310,7 @@ const [countryCode, setCountryCode] = useState<CountryCode["code"]>("+91");
               </h1>
               <button
                 onClick={resetForm}
-                className="px-4 py-2 rounded-full bg-red-500/20 hover:bg-red-500/30 text-red-200 text-sm transition"
+                className="px-4 py-2 rounded-full bg-red-500/20 hover:bg-red-500/30 text-red-200 text-sm cursor-pointer active:scale-95 transition-transform"
               >
                 Reset Form
               </button>
@@ -339,13 +339,13 @@ const [countryCode, setCountryCode] = useState<CountryCode["code"]>("+91");
                 {/* Phone Number */}
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-zinc-200">Phone Number</label>
-                  <div className="flex gap-3">
+                  <div className="flex flex-col md:flex-row gap-3">
                     {/* Country Code Selector */}
-                    <div className="relative flex-1 max-w-[140px]">
+                    <div className="relative flex-1 md:max-w-[140px]">
                       <select
                         value={countryCode}
                         onChange={(e) => setCountryCode(e.target.value)}
-                        className="w-full px-3 py-3 rounded-xl  border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none appearance-none cursor-pointer"
+                        className="w-full px-3 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none appearance-none cursor-pointer"
                       >
                         {countryCodes.map((country) => (
                           <option key={country.code} value={country.code} className="bg-gray-800">
@@ -366,7 +366,7 @@ const [countryCode, setCountryCode] = useState<CountryCode["code"]>("+91");
                       value={phone}
                       onChange={handlePhoneChange}
                       placeholder="123-456-7890"
-                      className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none"
+                      className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none w-full"
                     />
                   </div>
                 </div>
@@ -427,7 +427,7 @@ const [countryCode, setCountryCode] = useState<CountryCode["code"]>("+91");
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <label className="block text-sm font-medium text-zinc-200">Other Social Links</label>
-                    <button onClick={() => addOtherLink()} className="text-sm underline">+ Add Link</button>
+                    <button onClick={() => addOtherLink()} className="text-sm underline cursor-pointer hover:text-white transition">+ Add Link</button>
                   </div>
 
                   {/* Quick Add Platform Input */}
@@ -437,11 +437,11 @@ const [countryCode, setCountryCode] = useState<CountryCode["code"]>("+91");
                       onChange={(e) => setInput(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && addPlatform(input)}
                       placeholder="Add platform (e.g., Twitter, Portfolio)"
-                      className="flex-1 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none"
+                      className="flex-1 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none w-full"
                     />
                     <button
                       onClick={() => addPlatform(input)}
-                      className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition"
+                      className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 cursor-pointer active:scale-95 transition-transform"
                     >
                       Add
                     </button>
@@ -453,7 +453,7 @@ const [countryCode, setCountryCode] = useState<CountryCode["code"]>("+91");
                       <button
                         key={platform}
                         onClick={() => addPlatform(platform)}
-                        className="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-full text-sm transition"
+                        className="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-full text-sm cursor-pointer active:scale-95 transition-transform"
                       >
                         {platform}
                       </button>
@@ -473,7 +473,7 @@ const [countryCode, setCountryCode] = useState<CountryCode["code"]>("+91");
                           <h4 className="text-sm font-medium text-white">{link.name}</h4>
                           <button 
                             onClick={() => removeOtherLink(link.id)} 
-                            className="text-xs text-red-300 hover:text-red-100"
+                            className="text-xs text-red-300 hover:text-red-100 cursor-pointer"
                           >
                             Remove
                           </button>
@@ -528,7 +528,7 @@ const [countryCode, setCountryCode] = useState<CountryCode["code"]>("+91");
 
             <div className="flex justify-between mt-8">
               {step > 0 ? (
-                <button onClick={handleBack} className="px-5 py-2 rounded-full bg-white/10 hover:bg-white/20 transition">
+                <button onClick={handleBack} className="px-5 py-2 rounded-full bg-white/10 hover:bg-white/20 cursor-pointer active:scale-95 transition-transform">
                   ← Back
                 </button>
               ) : (
@@ -538,7 +538,7 @@ const [countryCode, setCountryCode] = useState<CountryCode["code"]>("+91");
               <button 
                 onClick={handleNext} 
                 disabled={saving}
-                className="px-6 py-2 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 font-semibold hover:scale-105 transition-transform disabled:opacity-50"
+                className="px-6 py-2 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 font-semibold cursor-pointer active:scale-95 hover:scale-105 transition-transform disabled:opacity-50"
               >
                 {saving ? "Saving..." : (email || linkedin || github ? "Update Contact Info ✅" : "Save Contact Info 🎉")}
               </button>
@@ -555,7 +555,7 @@ const [countryCode, setCountryCode] = useState<CountryCode["code"]>("+91");
               <div className="flex justify-center gap-4">
                 <Link 
                   href="/dashboard" 
-                  className="px-6 py-2 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 font-semibold hover:scale-105 transition-transform"
+                  className="px-6 py-2 rounded-full bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 font-semibold cursor-pointer active:scale-95 hover:scale-105 transition-transform"
                 >
                   Go to Dashboard
                 </Link>
@@ -564,7 +564,7 @@ const [countryCode, setCountryCode] = useState<CountryCode["code"]>("+91");
                     setDone(false);
                     loadContactData(); // Reload data when editing again
                   }}
-                  className="px-6 py-2 rounded-full bg-white/10 hover:bg-white/20 transition"
+                  className="px-6 py-2 rounded-full bg-white/10 hover:bg-white/20 cursor-pointer active:scale-95 transition-transform"
                 >
                   Edit Again
                 </button>
