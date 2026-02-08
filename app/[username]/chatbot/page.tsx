@@ -41,9 +41,33 @@ export default function ChatbotPage() {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [showMobileMenu, setShowMobileMenu] = useState(false); // Mobile menu state
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null); // Ref for textarea
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Track Supabase auth session (logged-in vs logged-out)
+  useEffect(() => {
+    let isMounted = true;
+
+    const initSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (!isMounted) return;
+      setIsLoggedIn(!!data.session);
+    };
+
+    initSession();
+
+    const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!isMounted) return;
+      setIsLoggedIn(!!session);
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.subscription.unsubscribe();
+    };
+  }, []);
 
   // Fetch User Profile for Sidebar (Same as before)
   useEffect(() => {
@@ -333,19 +357,24 @@ export default function ChatbotPage() {
                 {/* Dropdown */}
                 {showMobileMenu && (
                     <div className="absolute right-0 mt-2 w-48 bg-[#1e232e] border border-white/10 rounded-lg shadow-xl backdrop-blur-md py-1 z-30">
-                        <Link href="/auth" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white" onClick={() => setShowMobileMenu(false)}>
-                            Login
-                        </Link>
-                         <Link href="/dashboard" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white" onClick={() => setShowMobileMenu(false)}>
-                            Dashboard
-                        </Link>
+                    {!isLoggedIn ? (
+                      <Link href="/auth" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white" onClick={() => setShowMobileMenu(false)}>
+                        Login
+                      </Link>
+                    ) : (
+                      <Link href="/dashboard" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white" onClick={() => setShowMobileMenu(false)}>
+                        Dashboard
+                      </Link>
+                    )}
                         <button onClick={handleShare} className="block w-full text-left px-4 py-2 text-sm text-blue-400 hover:bg-white/5 flex items-center gap-2">
                             <Share2 size={14} />
                             Share PortAI
                         </button>
-                         <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-white/5">
-                            Logout
-                        </button>
+                    {isLoggedIn && (
+                      <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-white/5">
+                        Logout
+                      </button>
+                    )}
                     </div>
                 )}
              </div>
