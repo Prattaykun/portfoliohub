@@ -638,7 +638,7 @@ export default function ProjectForm() {
                                         <button
                                           type="button"
                                           onClick={() => open()}
-                                          className="flex-1 md:flex-none px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 cursor-pointer active:scale-95 transition-transform text-sm whitespace-nowrap"
+                                          className={`flex-1 md:flex-none px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 cursor-pointer active:scale-95 transition-transform text-sm whitespace-nowrap ${media.url ? "hidden md:block" : ""}`}
                                         >
                                           Upload
                                         </button>
