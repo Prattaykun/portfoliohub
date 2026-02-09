@@ -427,7 +427,7 @@ const [countryCode, setCountryCode] = useState<CountryCode["code"]>("+91");
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <label className="block text-sm font-medium text-zinc-200">Other Social Links</label>
-                    <button onClick={() => addOtherLink()} className="text-sm underline cursor-pointer hover:text-white transition">+ Add Link</button>
+                    <button onClick={() => addOtherLink()} className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 flex items-center gap-2 text-sm transition-all active:scale-95 cursor-pointer">+ Add Link</button>
                   </div>
 
                   {/* Quick Add Platform Input */}
@@ -473,7 +473,7 @@ const [countryCode, setCountryCode] = useState<CountryCode["code"]>("+91");
                           <h4 className="text-sm font-medium text-white">{link.name}</h4>
                           <button 
                             onClick={() => removeOtherLink(link.id)} 
-                            className="text-xs text-red-300 hover:text-red-100 cursor-pointer"
+                            className="px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs transition-all active:scale-95 cursor-pointer"
                           >
                             Remove
                           </button>

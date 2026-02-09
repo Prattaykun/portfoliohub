@@ -543,7 +543,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                     {education.length > 0 ? "Your education entries" : "Add your education entries"} — tap examples to autofill
                   </div>
                   <div className="flex gap-2">
-                    <button onClick={() => addEducation()} className="text-sm underline hover:text-white transition cursor-pointer">+ Add</button>
+                    <button onClick={() => addEducation()} className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 flex items-center gap-2 text-sm transition-all active:scale-95 cursor-pointer">+ Add</button>
                   </div>
                 </div>
 
@@ -570,7 +570,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                           <strong className="text-sm break-words">{e.level} — {e.degree}</strong>
                         </div>
                         <div className="flex gap-2">
-                          <button onClick={() => removeEducation(e.id)} className="text-xs hover:text-red-300 transition cursor-pointer">Remove</button>
+                          <button onClick={() => removeEducation(e.id)} className="px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs transition-all active:scale-95 cursor-pointer">Remove</button>
                         </div>
                       </div>
 
@@ -707,7 +707,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                     {experience.length > 0 ? "Your work experiences" : "Add your work / project experiences"} — optional, tap examples to autofill
                   </div>
                   <div className="flex gap-2">
-                    <button onClick={() => addExperience()} className="text-sm underline hover:text-white transition cursor-pointer">+ Add Company</button>
+                    <button onClick={() => addExperience()} className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 flex items-center gap-2 text-sm transition-all active:scale-95 cursor-pointer">+ Add Company</button>
                   </div>
                 </div>
 

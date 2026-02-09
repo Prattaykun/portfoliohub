@@ -28,12 +28,55 @@ export default function SharePortfolio({ user }: { user: any }) {
   // ✅ Strictly use environment variable
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL
   const portfolioUrl = baseUrl ? `${baseUrl.replace(/\/$/, '')}/${username}` : ''
+  const chatbotUrl = portfolioUrl ? `${portfolioUrl}/chatbot` : ''
 
-  const copyToClipboard = async () => {
-    if (!portfolioUrl) return
-    await navigator.clipboard.writeText(portfolioUrl)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+  // const copyToClipboard = async (text: string, type: 'portfolio' | 'chatbot') => {
+  //   if (!text) return
+  //   await navigator.clipboard.writeText(text)
+  //   if (type === 'portfolio') {
+  //     setCopied(true)
+  //     setTimeout(() => setCopied(false), 2000)
+  //   } else {
+
+  //   }
+  // }
+
+  // Managing separate copy states for clarity
+  const [portfolioCopied, setPortfolioCopied] = useState(false)
+  const [chatbotCopied, setChatbotCopied] = useState(false)
+
+  const handleCopy = async (text: string, isChatbot: boolean) => {
+    if (!text) return
+    try {
+      await navigator.clipboard.writeText(text)
+      if (isChatbot) {
+        setChatbotCopied(true)
+        setTimeout(() => setChatbotCopied(false), 2000)
+      } else {
+        setPortfolioCopied(true)
+        setTimeout(() => setPortfolioCopied(false), 2000)
+      }
+    } catch (err) {
+      console.error('Failed to copy:', err)
+    }
+  }
+
+  const handleShare = async (title: string, text: string, url: string) => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title,
+          text,
+          url,
+        })
+      } catch (err) {
+        console.error('Error sharing:', err)
+      }
+    } else {
+      // Fallback: just copy the link
+      handleCopy(url, title.includes("Chatbot"))
+      alert('Sharing is not supported on this device/browser. Link copied to clipboard!')
+    }
   }
 
   const handleIframeLoad = () => {
@@ -85,21 +128,73 @@ export default function SharePortfolio({ user }: { user: any }) {
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
         <h3 className="text-lg font-semibold text-blue-800 mb-3">Your Portfolio Link</h3>
         
-        <div className="flex items-center space-x-4 mb-4">
-          <div className="flex-1 bg-white border border-gray-300 rounded-lg px-4 py-3">
-            <p className="text-gray-800 font-mono break-all">{portfolioUrl}</p>
+        <div className="flex flex-col md:flex-row gap-4 mb-4">
+          <div className="flex-1 bg-white border border-gray-300 rounded-lg px-4 py-3 flex items-center">
+            <p className="text-gray-800 font-mono text-sm break-all line-clamp-1">{portfolioUrl}</p>
           </div>
-          <button
-            onClick={copyToClipboard}
-            disabled={!portfolioUrl}
-            className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 whitespace-nowrap transition-colors"
-          >
-            {copied ? 'Copied!' : 'Copy Link'}
-          </button>
+          <div className="flex gap-2 shrink-0">
+            <button
+              onClick={() => handleCopy(portfolioUrl, false)}
+              disabled={!portfolioUrl}
+              className="px-4 py-2.5 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 disabled:opacity-50 whitespace-nowrap transition-colors flex items-center gap-2"
+            >
+               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                </svg>
+              {portfolioCopied ? 'Copied!' : 'Copy'}
+            </button>
+            <button
+              onClick={() => handleShare('Check out my portfolio!', `Take a look at my portfolio: ${portfolioUrl}`, portfolioUrl)}
+              disabled={!portfolioUrl}
+              className="px-4 py-2.5 bg-indigo-600 text-white rounded-lg cursor-pointer hover:bg-indigo-700 disabled:opacity-50 whitespace-nowrap transition-colors flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+              </svg>
+              Share
+            </button>
+          </div>
         </div>
 
         <p className="text-sm text-blue-700">
           Share this link with employers, clients, or anyone you want to showcase your portfolio to.
+        </p>
+      </div>
+
+       {/* Chatbot Link Section */}
+       <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 mb-8">
+        <h3 className="text-lg font-semibold text-purple-800 mb-3">Your Chatbot Link</h3>
+        
+        <div className="flex flex-col md:flex-row gap-4 mb-4">
+          <div className="flex-1 bg-white border border-gray-300 rounded-lg px-4 py-3 flex items-center">
+            <p className="text-gray-800 font-mono text-sm break-all line-clamp-1">{chatbotUrl}</p>
+          </div>
+          <div className="flex gap-2 shrink-0">
+            <button
+              onClick={() => handleCopy(chatbotUrl, true)}
+              disabled={!chatbotUrl}
+              className="px-4 py-2.5 bg-purple-600 cursor-pointer text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 whitespace-nowrap transition-colors flex items-center gap-2"
+            >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                </svg>
+              {chatbotCopied ? 'Copied!' : 'Copy'}
+            </button>
+            <button
+              onClick={() => handleShare('Chat with my AI Assistant!', `Talk to my portfolio chatbot here: ${chatbotUrl}`, chatbotUrl)}
+              disabled={!chatbotUrl}
+              className="px-4 py-2.5 bg-indigo-600 cursor-pointer text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 whitespace-nowrap transition-colors flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+              </svg>
+              Share
+            </button>
+          </div>
+        </div>
+
+        <p className="text-sm text-purple-700">
+          Share this link to let people interact directly with your portfolio's AI chatbot.
         </p>
       </div>
 

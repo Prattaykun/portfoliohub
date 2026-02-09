@@ -227,12 +227,12 @@ export default function MediaForm() {
         <div className="mb-4">
           <div className="flex items-center justify-between">
             <div className="text-xs text-zinc-200 mb-1">Cards (media, videos, links)</div>
-            <div className="flex gap-2 flex-wrap">
-              <button onClick={() => addCardToSection(section.id, { type: "image" })} className="text-sm underline cursor-pointer hover:text-white transition">+ Image</button>
-              <button onClick={() => addCardToSection(section.id, { type: "video" })} className="text-sm underline cursor-pointer hover:text-white transition">+ Video</button>
-              <button onClick={() => addCardToSection(section.id, { type: "link" })} className="text-sm underline cursor-pointer hover:text-white transition">+ Link</button>
-              <button onClick={() => addCardToSection(section.id, { type: "text" })} className="text-sm underline cursor-pointer hover:text-white transition">+ Text</button>
-            </div>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <button onClick={() => addCardToSection(section.id, { type: "image" })} className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs transition-all active:scale-95 cursor-pointer">+ Image</button>
+                  <button onClick={() => addCardToSection(section.id, { type: "video" })} className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs transition-all active:scale-95 cursor-pointer">+ Video</button>
+                  <button onClick={() => addCardToSection(section.id, { type: "link" })} className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs transition-all active:scale-95 cursor-pointer">+ Link</button>
+                  <button onClick={() => addCardToSection(section.id, { type: "text" })} className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs transition-all active:scale-95 cursor-pointer">+ Text</button>
+                </div>
           </div>
 
           <div className="space-y-3 mt-3">
@@ -241,8 +241,8 @@ export default function MediaForm() {
                 <div className="flex justify-between items-start mb-2">
                   <div className="text-sm font-medium">{item.type.toUpperCase()}</div>
                   <div className="flex gap-2">
-                    <button onClick={() => removeCard(section.id, item.id)} className="text-xs text-red-400 cursor-pointer">Remove</button>
-                  </div>
+                      <button onClick={() => removeCard(section.id, item.id)} className="px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs transition-all active:scale-95 cursor-pointer">Remove</button>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">

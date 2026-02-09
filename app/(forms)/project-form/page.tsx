@@ -22,6 +22,7 @@ export default function ProjectForm() {
   const [projects, setProjects] = useState<ProjectItem[]>([]);
   const [input, setInput] = useState("");
   const [done, setDone] = useState(false);
+  const [projectSearch, setProjectSearch] = useState("");
 
   // Search states for tech stack
   const [techSearchResults, setTechSearchResults] = useState<TechItem[]>([]);
@@ -226,6 +227,7 @@ export default function ProjectForm() {
     }
     
     setProjects((s) => [...s, newProject]);
+    setProjectSearch(""); // Clear search to show the new project
   };
 
   const updateProject = (id: string, patch: any) =>
@@ -346,6 +348,10 @@ export default function ProjectForm() {
     );
   }
 
+  const filteredProjects = projects.filter(p => 
+    p.title.toLowerCase().includes(projectSearch.toLowerCase())
+  );
+
   return (
     <div className="min-h-screen pt-24 md:pt-32 flex flex-col items-center justify-center bg-gradient-to-tr from-green-900 via-blue-900 to-purple-900 text-white px-4 py-10">
       <motion.div
@@ -371,8 +377,37 @@ export default function ProjectForm() {
                       : "Add your projects — tap examples to autofill"
                     }
                   </div>
+                  
+                  {/* Search Bar */}
+                  {projects.length > 0 && (
+                    <div className="w-full md:w-auto relative group">
+                      <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-zinc-400 group-focus-within:text-blue-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                      </div>
+                      <input
+                        type="text"
+                        value={projectSearch}
+                        onChange={(e) => setProjectSearch(e.target.value)}
+                        placeholder="Search projects by name..."
+                        className="w-full md:w-64 pl-9 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent transition-all"
+                      />
+                      {projectSearch && (
+                        <button 
+                          onClick={() => setProjectSearch("")}
+                          className="absolute inset-y-0 right-3 flex items-center text-zinc-400 hover:text-white"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
+                  )}
+
                   <div className="flex gap-2">
-                    <button onClick={() => addProject()} className="text-sm underline cursor-pointer hover:text-white transition">+ Add Project</button>
+                    <button onClick={() => addProject()} className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 flex items-center gap-2 text-sm transition-all active:scale-95 cursor-pointer">+ Add Project</button>
                   </div>
                 </div>
 
@@ -389,7 +424,18 @@ export default function ProjectForm() {
                 </div>
 
                 <div className="mt-4 space-y-6">
-                  {projects.map((project) => (
+                  {filteredProjects.length === 0 && projectSearch && (
+                    <div className="text-center py-8 bg-white/5 rounded-xl border border-white/10">
+                      <p className="text-zinc-400">No projects found matching "{projectSearch}"</p>
+                      <button 
+                        onClick={() => setProjectSearch("")}
+                        className="mt-2 text-sm text-blue-300 hover:text-blue-200 underline"
+                      >
+                        Clear search
+                      </button>
+                    </div>
+                  )}
+                  {filteredProjects.map((project) => (
                     <motion.div 
                       key={project.id} 
                       initial={{ opacity: 0, y: 8 }} 
@@ -400,7 +446,7 @@ export default function ProjectForm() {
                         <h3 className="text-lg font-semibold text-white">{project.title}</h3>
                         <button 
                           onClick={() => removeProject(project.id)} 
-                          className="text-xs text-red-300 hover:text-red-100 cursor-pointer"
+                          className="px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs transition-all active:scale-95 cursor-pointer"
                         >
                           Remove
                         </button>
@@ -579,19 +625,19 @@ export default function ProjectForm() {
                             <div className="flex gap-2">
                               <button 
                                 onClick={() => addMedia(project.id, "image")}
-                                className="text-xs underline cursor-pointer hover:text-white"
+                                className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs transition-all active:scale-95 cursor-pointer"
                               >
                                 + Add Image
                               </button>
                               <button 
                                 onClick={() => addMedia(project.id, "video")}
-                                className="text-xs underline cursor-pointer hover:text-white"
+                                className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs transition-all active:scale-95 cursor-pointer"
                               >
                                 + Add Video
                               </button>
                               <button 
                                 onClick={() => addMedia(project.id, "deployment")}
-                                className="text-xs underline cursor-pointer hover:text-white"
+                                className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs transition-all active:scale-95 cursor-pointer"
                               >
                                 + Add Deployment
                               </button>

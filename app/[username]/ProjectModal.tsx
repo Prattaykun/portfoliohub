@@ -269,7 +269,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, isOpen, onC
             <h3 className="text-xl font-semibold text-white mb-4 border-b border-purple-500/30 pb-2">
               Overview
             </h3>
-            <p className="text-gray-300 leading-relaxed">{project.overview}</p>
+            <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">{project.overview}</p>
           </div>
 
           {/* Process */}
@@ -278,7 +278,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, isOpen, onC
               <h3 className="text-xl font-semibold text-white mb-4 border-b border-purple-500/30 pb-2">
                 Development Process
               </h3>
-              <p className="text-gray-300 leading-relaxed">{project.process}</p>
+              <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">{project.process}</p>
             </div>
           )}
 
@@ -288,7 +288,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, isOpen, onC
               <h3 className="text-xl font-semibold text-white mb-4 border-b border-purple-500/30 pb-2">
                 Results & Impact
               </h3>
-              <p className="text-gray-300 leading-relaxed">{project.results}</p>
+              <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">{project.results}</p>
             </div>
           )}
 
