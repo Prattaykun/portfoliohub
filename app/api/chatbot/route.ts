@@ -114,6 +114,13 @@ ${JSON.stringify(userData, null, 2)}
 
 ### Conversation History
 ${JSON.stringify(history?.slice(-5) || [])}
+
+###details about this platform
+- **Platform Name**: PortfolioHub
+- **Platform Description**: PortfolioHub is a platform for creating and managing personal portfolios.
+- **Platform Version**: 2.3.0
+- **Platform Author**: Prattay Roy Chowdhury(${process.env.NEXT_PUBLIC_APP_URL}/Prattay)
+
 `;
 
         let answer = "";
