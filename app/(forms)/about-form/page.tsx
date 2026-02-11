@@ -36,6 +36,8 @@ export default function AboutForm() {
   const [companySearchResults, setCompanySearchResults] = useState<CompanySearchResult[]>([]);
   const [activeSchoolSearchId, setActiveSchoolSearchId] = useState<string | null>(null);
   const [activeCompanySearchId, setActiveCompanySearchId] = useState<string | null>(null);
+  const [expPage, setExpPage] = useState(1);
+  const ITEMS_PER_PAGE = 3;
 
   const questions = [
     { key: "roles", title: "✨ What roles describe you best?", type: "roles" },
@@ -297,7 +299,7 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
     gradeScale: seed?.gradeScale ?? "100",
   });
 
-  const addEducation = (seed?: Partial<EducationEntry>): void => setEducation((s) => [...s, makeEducation(seed)]);
+  const addEducation = (seed?: Partial<EducationEntry>): void => setEducation((s) => [makeEducation(seed), ...s]);
   const updateEducation = (id: string, patch: Partial<EducationEntry>): void =>
     setEducation((s) => s.map((e) => (e.id === id ? { ...e, ...patch } : e)));
   const removeEducation = (id: string): void => setEducation((s) => s.filter((e) => e.id !== id));
@@ -325,7 +327,10 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
     })) : [ makeRole(seed?.roles ?? undefined) ],
   });
 
-  const addExperience = (seed?: Partial<ExperienceEntry>): void => setExperience((s) => [...s, makeExperience(seed)]);
+  const addExperience = (seed?: Partial<ExperienceEntry>): void => {
+    setExperience((s) => [makeExperience(seed), ...s]);
+    setExpPage(1);
+  };
   const updateExperience = (id: string, patch: Partial<ExperienceEntry>): void =>
     setExperience((s) => s.map((e) => (e.id === id ? { ...e, ...patch } : e)));
   const removeExperience = (id: string): void => setExperience((s) => s.filter((e) => e.id !== id));
@@ -720,7 +725,9 @@ const updateFaviconFromDomain = useCallback((domain?: string | null, id?: string
                 </div>
 
                 <div className="mt-3 space-y-3">
-                  {experience.map((ex) => (
+                  {experience
+                    .slice((expPage - 1) * ITEMS_PER_PAGE, expPage * ITEMS_PER_PAGE)
+                    .map((ex) => (
                     <motion.div key={ex.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="p-4 bg-white/6 rounded-xl border border-white/8">
                       <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-3">
                         <div className="flex items-start gap-3 min-w-0">

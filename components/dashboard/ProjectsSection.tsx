@@ -19,6 +19,9 @@ export default function ProjectsSection({ user }: ProjectsSectionProps) {
   const [dragOverProjectId, setDragOverProjectId] = useState<string | null>(null)
   const [savingOrder, setSavingOrder] = useState<boolean>(false)
   const [dragInsertIndex, setDragInsertIndex] = useState<number | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const ITEMS_PER_PAGE = 3
   const router = useRouter()
 
   useEffect(() => {
@@ -229,6 +232,13 @@ export default function ProjectsSection({ user }: ProjectsSectionProps) {
 
     const updatedProjects = reorderProjectsToIndex(currentProjects, projectId, toIndex)
     setProjectsData({ ...projectsData, projects: updatedProjects })
+    
+    // Switch page if the moved item is no longer on the current page
+    const newPage = Math.ceil((toIndex + 1) / ITEMS_PER_PAGE)
+    if (newPage !== currentPage) {
+      setCurrentPage(newPage)
+    }
+
     await persistOrder(updatedProjects)
   }
 
@@ -312,6 +322,22 @@ export default function ProjectsSection({ user }: ProjectsSectionProps) {
         </button>
       </div>
 
+      {/* Search Bar */}
+      {projects.length > 0 && (
+        <div className="mb-6 text-black">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value)
+              setCurrentPage(1)
+            }}
+            placeholder="Search projects..."
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none placeholder-gray-500"
+          />
+        </div>
+      )}
+
       {projects.length > 0 && (
         <p className="text-sm text-gray-500 mb-3">{savingOrder ? 'Saving order…' : 'Drag cards to reorder; drop between gaps'}</p>
       )}
@@ -347,13 +373,20 @@ export default function ProjectsSection({ user }: ProjectsSectionProps) {
             onDrop={() => handleSeparatorDrop(0)}
           />
 
-          {projects.map((project: any, idx: number) => (
+          {projects
+            .filter((p: any) => p.title.toLowerCase().includes(searchQuery.toLowerCase()))
+            .slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE)
+            .map((project: any, idx: number) => {
+              // Calculate absolute index for reordering logic
+              const absoluteIndex = projects.findIndex(p => p.id === project.id);
+              
+              return (
             <Fragment key={project.id}>
               <div
                 className={`border rounded-lg p-6 transition-shadow ${
                   dragOverProjectId === project.id ? 'ring-2 ring-blue-400 shadow-md' : 'hover:shadow-md'
                 } ${editingProject !== null ? 'cursor-default' : 'cursor-grab'}`}
-                draggable={editingProject === null}
+                draggable={editingProject === null && !searchQuery}
                 onDragStart={() => handleDragStart(project.id)}
                 onDragOver={(e) => handleDragOver(e, project.id)}
                 onDrop={() => handleDrop(project.id)}
@@ -445,36 +478,40 @@ export default function ProjectsSection({ user }: ProjectsSectionProps) {
                     </div>
                     <div className="flex items-center gap-2">
                       {/* Reorder controls (non-drag) */}
-                      <button
-                        type="button"
-                        onClick={() => handleMoveUp(project.id)}
-                        disabled={savingOrder || idx === 0}
-                        className={`p-2 rounded-full transition-colors ${
-                          savingOrder || idx === 0
-                            ? 'text-gray-300 cursor-not-allowed'
-                            : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
-                        }`}
-                        title="Move Up"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                        </svg>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleMoveDown(project.id)}
-                        disabled={savingOrder || idx === projects.length - 1}
-                        className={`p-2 rounded-full transition-colors ${
-                          savingOrder || idx === projects.length - 1
-                            ? 'text-gray-300 cursor-not-allowed'
-                            : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
-                        }`}
-                        title="Move Down"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </button>
+                      {!searchQuery && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => handleMoveUp(project.id)}
+                            disabled={savingOrder || absoluteIndex === 0}
+                            className={`p-2 rounded-full transition-colors ${
+                              savingOrder || absoluteIndex === 0
+                                ? 'text-gray-300 cursor-not-allowed'
+                                : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+                            }`}
+                            title="Move Up"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                            </svg>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleMoveDown(project.id)}
+                            disabled={savingOrder || absoluteIndex === projects.length - 1}
+                            className={`p-2 rounded-full transition-colors ${
+                              savingOrder || absoluteIndex === projects.length - 1
+                                ? 'text-gray-300 cursor-not-allowed'
+                                : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+                            }`}
+                            title="Move Down"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </button>
+                        </>
+                      )}
                       {username && (
                         <button
                           onClick={() => {
@@ -589,7 +626,33 @@ export default function ProjectsSection({ user }: ProjectsSectionProps) {
                 onDrop={() => handleSeparatorDrop(idx + 1)}
               />
             </Fragment>
-          ))}
+              )
+            })}
+
+        </div>
+      )}
+
+
+      {/* Pagination Controls */}
+      {projects.length > 0 && (
+        <div className="flex justify-center items-center gap-4 mt-6">
+          <button
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm text-gray-700 transition-all"
+          >
+            Previous
+          </button>
+          <span className="text-sm text-gray-600">
+            Page {currentPage} of {Math.ceil(projects.filter((p: any) => p.title.toLowerCase().includes(searchQuery.toLowerCase())).length / ITEMS_PER_PAGE)}
+          </span>
+          <button
+            onClick={() => setCurrentPage((p) => Math.min(Math.ceil(projects.filter((p: any) => p.title.toLowerCase().includes(searchQuery.toLowerCase())).length / ITEMS_PER_PAGE), p + 1))}
+            disabled={currentPage === Math.ceil(projects.filter((p: any) => p.title.toLowerCase().includes(searchQuery.toLowerCase())).length / ITEMS_PER_PAGE)}
+            className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm text-gray-700 transition-all"
+          >
+            Next
+          </button>
         </div>
       )}
     </div>

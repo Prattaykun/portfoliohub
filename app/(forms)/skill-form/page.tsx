@@ -62,6 +62,9 @@ export default function SkillsForm() {
 
   const current = questions[step];
   const isLast = step === questions.length - 1;
+  const [certPage, setCertPage] = useState(1);
+  const [techPage, setTechPage] = useState(1);
+  const ITEMS_PER_PAGE = 3;
 
   const softSkillExamples = [
     "Communication","Teamwork","Problem Solving","Leadership","Time Management",
@@ -278,7 +281,10 @@ export default function SkillsForm() {
     searchResults: [] as TechnicalSkill[],
     activeSearch: false,
   });
-  const addTechnicalSkill = (seed?: any) => setTechnicalSkills(s => [...s, makeTechnicalSkill(seed)]);
+  const addTechnicalSkill = (seed?: any) => {
+    setTechnicalSkills(s => [makeTechnicalSkill(seed), ...s]);
+    setTechPage(1);
+  };
   const updateTechnicalSkill = (id: string, patch: any) =>
     setTechnicalSkills(s => s.map(skill => (skill.id === id ? { ...skill, ...patch } : skill)));
   const removeTechnicalSkill = (id: string) =>
@@ -292,7 +298,7 @@ export default function SkillsForm() {
   /** ───────────────────── Helpers: soft ───────────────────── */
   const addSoftSkill = (skill: string) => {
     if (!skill || softSkills.includes(skill)) return;
-    setSoftSkills(prev => [...prev, skill]);
+    setSoftSkills(prev => [skill, ...prev]);
     setInput("");
     setActiveSoftSearch(false);
   };
@@ -315,8 +321,10 @@ export default function SkillsForm() {
     activeSearch: false,
   });
 
-  const addCertificate = (seed?: Partial<Certificate>) =>
-    setCertificates(prev => [...prev, makeCertificate(seed)]);
+  const addCertificate = (seed?: Partial<Certificate>) => {
+    setCertificates(prev => [makeCertificate(seed), ...prev]);
+    setCertPage(1); // Go to first page
+  };
 
   const updateCertificate = (id: string, patch: Partial<Certificate>) =>
     setCertificates(prev => prev.map(c => (c.id === id ? { ...c, ...patch } : c)));
@@ -518,6 +526,8 @@ export default function SkillsForm() {
                     </button>
                   ))}
                 </div>
+
+
               </div>
             )}
 
@@ -546,7 +556,9 @@ export default function SkillsForm() {
                 </div>
 
                 <div className="mt-3 space-y-3">
-                  {technicalSkills.map((skill) => (
+                  {technicalSkills
+                    .slice((techPage - 1) * ITEMS_PER_PAGE, techPage * ITEMS_PER_PAGE)
+                    .map((skill) => (
                     <motion.div
                       key={skill.id}
                       initial={{ opacity: 0, y: 8 }}
@@ -647,6 +659,29 @@ export default function SkillsForm() {
                     </motion.div>
                   ))}
                 </div>
+
+                {/* Technical Skills Pagination */}
+                {Math.ceil(technicalSkills.length / ITEMS_PER_PAGE) > 1 && (
+                  <div className="flex justify-center items-center gap-4 mt-6">
+                    <button
+                      onClick={() => setTechPage(p => Math.max(1, p - 1))}
+                      disabled={techPage === 1}
+                      className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed text-sm transition-all"
+                    >
+                      Previous
+                    </button>
+                    <span className="text-xs text-zinc-300">
+                      Page {techPage} of {Math.ceil(technicalSkills.length / ITEMS_PER_PAGE)}
+                    </span>
+                    <button
+                      onClick={() => setTechPage(p => Math.min(Math.ceil(technicalSkills.length / ITEMS_PER_PAGE), p + 1))}
+                      disabled={techPage === Math.ceil(technicalSkills.length / ITEMS_PER_PAGE)}
+                      className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed text-sm transition-all"
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 
@@ -669,7 +704,9 @@ export default function SkillsForm() {
                 )}
 
                 <div className="space-y-3">
-                  {certificates.map((cert) => (
+                  {certificates
+                    .slice((certPage - 1) * ITEMS_PER_PAGE, certPage * ITEMS_PER_PAGE)
+                    .map((cert) => (
                     <motion.div
                       key={cert.id}
                       initial={{ opacity: 0, y: 8 }}
@@ -848,6 +885,29 @@ export default function SkillsForm() {
                     </motion.div>
                   ))}
                 </div>
+
+                {/* Certificates Pagination */}
+                {Math.ceil(certificates.length / ITEMS_PER_PAGE) > 1 && (
+                  <div className="flex justify-center items-center gap-4 mt-6">
+                    <button
+                      onClick={() => setCertPage(p => Math.max(1, p - 1))}
+                      disabled={certPage === 1}
+                      className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed text-sm transition-all"
+                    >
+                      Previous
+                    </button>
+                    <span className="text-xs text-zinc-300">
+                      Page {certPage} of {Math.ceil(certificates.length / ITEMS_PER_PAGE)}
+                    </span>
+                    <button
+                      onClick={() => setCertPage(p => Math.min(Math.ceil(certificates.length / ITEMS_PER_PAGE), p + 1))}
+                      disabled={certPage === Math.ceil(certificates.length / ITEMS_PER_PAGE)}
+                      className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed text-sm transition-all"
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 

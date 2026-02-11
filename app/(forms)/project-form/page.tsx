@@ -22,7 +22,10 @@ export default function ProjectForm() {
   const [projects, setProjects] = useState<ProjectItem[]>([]);
   const [input, setInput] = useState("");
   const [done, setDone] = useState(false);
+
   const [projectSearch, setProjectSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 3;
 
   // Search states for tech stack
   const [techSearchResults, setTechSearchResults] = useState<TechItem[]>([]);
@@ -226,7 +229,8 @@ export default function ProjectForm() {
       newProject.techStack = techWithLogos;
     }
     
-    setProjects((s) => [...s, newProject]);
+    setProjects((s) => [newProject, ...s]);
+    setCurrentPage(1);
     setProjectSearch(""); // Clear search to show the new project
   };
 
@@ -282,9 +286,9 @@ export default function ProjectForm() {
         ? { 
             ...p, 
             techStack: Array.from(
-              new Set([...p.techStack, newTech].map(tech => tech.name))
+              new Set([newTech, ...p.techStack].map(tech => tech.name))
             ).map(name => 
-              [...p.techStack, newTech].find(tech => tech.name === name)
+              [newTech, ...p.techStack].find(tech => tech.name === name)
             )
               .filter((tech): tech is TechItem => tech !== undefined)
           }
@@ -435,7 +439,9 @@ export default function ProjectForm() {
                       </button>
                     </div>
                   )}
-                  {filteredProjects.map((project) => (
+                  {filteredProjects
+                    .slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE)
+                    .map((project) => (
                     <motion.div 
                       key={project.id} 
                       initial={{ opacity: 0, y: 8 }} 
@@ -707,6 +713,29 @@ export default function ProjectForm() {
                     </motion.div>
                   ))}
                 </div>
+
+                {/* Projects Pagination */}
+                {Math.ceil(projects.length / ITEMS_PER_PAGE) > 1 && (
+                  <div className="flex justify-center items-center gap-4 mt-6">
+                    <button
+                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                      className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed text-sm transition-all"
+                    >
+                      Previous
+                    </button>
+                    <span className="text-xs text-zinc-300">
+                      Page {currentPage} of {Math.ceil(projects.length / ITEMS_PER_PAGE)}
+                    </span>
+                    <button
+                      onClick={() => setCurrentPage(p => Math.min(Math.ceil(projects.length / ITEMS_PER_PAGE), p + 1))}
+                      disabled={currentPage === Math.ceil(projects.length / ITEMS_PER_PAGE)}
+                      className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed text-sm transition-all"
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 

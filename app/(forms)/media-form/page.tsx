@@ -134,7 +134,7 @@ export default function MediaForm() {
       title: seed?.title || "",
       description: seed?.description || "",
     };
-    setSections((s) => s.map(sec => sec.id === sectionId ? { ...sec, items: [...sec.items, newItem] } : sec));
+    setSections((s) => s.map(sec => sec.id === sectionId ? { ...sec, items: [newItem, ...sec.items] } : sec));
   }
 
   function updateCard(sectionId: string, cardId: string, patch: Partial<MediaItem>) {
