@@ -448,7 +448,7 @@ export default function SkillsForm() {
       >
         {!done ? (
           <>
-            <div className="flex justify-between items-center mb-2">
+            <div className="flex items-center gap-3 mb-2 flex-wrap">
               <h1 className="text-3xl font-bold bg-gradient-to-r from-green-300 via-blue-400 to-purple-400 text-transparent bg-clip-text">
                 {current.title}
               </h1>
