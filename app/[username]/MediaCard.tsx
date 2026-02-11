@@ -42,26 +42,38 @@ export default function MediaCard({ item, onExpand }: Props) {
   // tilt state (degrees)
   const [tilt, setTilt] = React.useState({ rx: 0, ry: 0, scale: 1 });
   const rootRef = React.useRef<HTMLDivElement | null>(null);
+  const rafRef = React.useRef<number | null>(null);
 
   const handleMouseMove = (e: React.MouseEvent) => {
+    if (rafRef.current) return;
+
     const el = rootRef.current;
     if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const px = (e.clientX - rect.left) / rect.width; // 0..1
-    const py = (e.clientY - rect.top) / rect.height; // 0..1
-    const ry = (px - 0.5) * 10; // rotateY -10deg..10deg
-    const rx = (0.5 - py) * 8;  // rotateX -8deg..8deg
-    setTilt({ rx, ry, scale: 1.02 });
+    
+    // Use rAF to throttle updates
+    rafRef.current = requestAnimationFrame(() => {
+      const rect = el.getBoundingClientRect();
+      const px = (e.clientX - rect.left) / rect.width; // 0..1
+      const py = (e.clientY - rect.top) / rect.height; // 0..1
+      const ry = (px - 0.5) * 10; // rotateY -10deg..10deg
+      const rx = (0.5 - py) * 8;  // rotateX -8deg..8deg
+      setTilt({ rx, ry, scale: 1.02 });
+      rafRef.current = null;
+    });
   };
 
   const handleMouseLeave = () => {
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
     setTilt({ rx: 0, ry: 0, scale: 1 });
   };
 
   // modern card shadow + glass + subtle border
   const cardStyle: React.CSSProperties = {
     transform: `perspective(900px) rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg) scale(${tilt.scale})`,
-    transition: "transform 180ms cubic-bezier(.2,.9,.2,1)",
+    transition: tilt.scale > 1 ? "transform 50ms linear" : "transform 300ms cubic-bezier(.2,.9,.2,1)",
     willChange: "transform",
   };
 
@@ -77,7 +89,7 @@ export default function MediaCard({ item, onExpand }: Props) {
       <button
         onClick={() => onExpand(item)}
         aria-label={`Expand ${title}`}
-        className="absolute inset-0 z-20"
+        className="absolute inset-0 z-20 cursor-pointer"
       />
 
       {/* IMAGE CARD */}

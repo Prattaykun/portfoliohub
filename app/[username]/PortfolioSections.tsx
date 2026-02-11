@@ -237,7 +237,7 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
           <SectionHeading title="Education" id="education" />
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {about.education.map((edu: Education, index: number) => (
-              <div key={edu.id} className="bg-white/10 backdrop-blur-sm rounded-xl p-6 hover:bg-white/20 transition-all duration-300 border border-white/10 hover:border-purple-400/30 group animate-fade-in-up" style={{ animationDelay: `${index * 100}ms` }}>
+              <div key={edu.id} className="bg-white/10 rounded-xl p-6 hover:bg-white/20 transition-all duration-300 border border-white/10 hover:border-purple-400/30 group animate-fade-in-up" style={{ animationDelay: `${index * 100}ms` }}>
                 <div className="flex items-center mb-4">
                   {edu.logo && <Image src={edu.logo} alt={edu.institution} width={50} height={50} className="rounded-lg mr-4 group-hover:scale-110 transition-transform" />}
                   <div>
@@ -253,7 +253,7 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
                 {edu.domain && (
                   <div className="pt-4">
                     <button onClick={() => { const domainUrl = edu.domain!.startsWith('http') ? edu.domain : `https://${edu.domain}`; window.open(domainUrl, '_blank', 'noopener,noreferrer'); }} className="w-full py-2 px-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-purple-400/50 rounded-lg text-white/80 hover:text-white transition-all duration-300 hover:scale-[1.02] group/btn">
-                      <span className="flex items-center justify-center gap-2">Visit Website<svg className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg></span>
+                      <span className="flex cursor-pointer items-center justify-center gap-2">Visit Website<svg className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg></span>
                     </button>
                   </div>
                 )}
@@ -456,7 +456,7 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
         <div className="max-w-6xl mx-auto">
           <SectionHeading title="Skills" id="skills" />
           <div className="grid lg:grid-cols-2 gap-12">
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-8 border border-white/10 hover:border-purple-400/30 transition-all duration-300 animate-fade-in-left">
+            <div className="bg-white/10 rounded-xl p-8 border border-white/10 hover:border-purple-400/30 transition-all duration-300 animate-fade-in-left">
               <h3 className="text-2xl font-semibold mb-6 text-center text-purple-300">Technical Skills</h3>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {skills.technical?.map((skill) => (
@@ -467,7 +467,7 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
                 ))}
               </div>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-8 border border-white/10 hover:border-purple-400/30 transition-all duration-300 animate-fade-in-right">
+            <div className="bg-white/10 rounded-xl p-8 border border-white/10 hover:border-purple-400/30 transition-all duration-300 animate-fade-in-right">
               <h3 className="text-2xl font-semibold mb-6 text-center text-pink-300">Soft Skills</h3>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {skills.soft?.map((skill: string) => (
@@ -493,7 +493,7 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
           <SectionHeading title="Certificates" id="certificates" />
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
             {certificates.map((cert: any, idx: number) => (
-              <div key={`${cert.name}-${idx}`} className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-purple-400/30 transition-all duration-300 animate-fade-in-up flex flex-col" style={{ animationDelay: `${idx * 80}ms` }}>
+              <div key={`${cert.name}-${idx}`} className="bg-white/10 rounded-xl p-6 border border-white/10 hover:border-purple-400/30 transition-all duration-300 animate-fade-in-up flex flex-col" style={{ animationDelay: `${idx * 80}ms` }}>
                 <div className="flex items-start justify-between gap-4 mb-3">
                   <div className="min-w-0">
                     <h3 className="text-lg font-semibold text-white">{cert.name || "Certificate"}</h3>
@@ -560,7 +560,8 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.3 }}
-                    className="bg-white/10 backdrop-blur-sm rounded-xl border border-white/10 hover:border-purple-400/30 transition-colors duration-300 group hover:scale-[1.01] flex flex-col will-change-transform"
+                    onClick={() => onExpandProject(project)}
+                    className="bg-white/10 rounded-xl border border-white/10 hover:border-purple-400/30 transition-colors duration-300 group hover:scale-[1.01] flex flex-col will-change-transform cursor-pointer"
                   >
                     <div
                       className="relative h-48 overflow-hidden rounded-t-xl cursor-pointer"
@@ -637,8 +638,8 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
                       {project.techStack && project.techStack.length > 0 && <div className="mb-4"><h4 className="text-white text-sm font-semibold mb-2">Tech Stack:</h4><div className="flex flex-wrap gap-2">{project.techStack.slice(0, 6).map((tech: any, techIndex: number) => <div key={techIndex} className="flex items-center space-x-1 bg-purple-900/50 text-purple-300 px-2 py-1 rounded text-xs border border-purple-700/50">{tech.logo_url && <Image src={tech.logo_url} alt={tech.name} width={12} height={12} className="rounded-sm" />}<span>{tech.name}</span></div>)}{project.techStack.length > 6 && <span className="bg-purple-900/50 text-purple-300 px-2 py-1 rounded text-xs border border-purple-700/50">+{project.techStack.length - 6} more</span>}</div></div>}
 
                       <div className="mt-auto pt-4 border-t border-white/10 flex flex-col gap-3">
-                        {(project.repoLink || deployment) && <div className="flex flex-col gap-2">{project.repoLink && <Link href={project.repoLink} target="_blank" className="inline-flex items-center justify-between w-full text-purple-400 hover:text-purple-300 transition-colors text-sm group/link"><span>View Repository</span><span className="transform group-hover/link:translate-x-1 transition-transform">→</span></Link>}{deployment && <Link href={deployment.url} target="_blank" className="inline-flex items-center justify-between w-full text-green-400 hover:text-green-300 transition-colors text-sm group/link"><span>Live Demo</span><span className="transform group-hover/link:translate-x-1 transition-transform">🚀</span></Link>}{video && !String(video.url || "").includes("youtube.com") && !String(video.url || "").includes("youtu.be") && <Link href={String(video.url)} target="_blank" className="inline-flex items-center justify-between w-full text-red-400 hover:text-red-300 transition-colors text-sm group/link"><span>Watch Video</span><span className="transform group-hover/link:translate-x-1 transition-transform">🎬</span></Link>}</div>}
-                        <button onClick={() => onExpandProject(project)} className="w-full py-2 px-4 bg-gradient-to-r from-purple-600/20 to-pink-600/20 hover:from-purple-600/30 hover:to-pink-600/30 border border-purple-500/30 hover:border-purple-400/50 rounded-lg text-purple-300 hover:text-purple-200 transition-all duration-300 hover:scale-[1.02] group/expand flex items-center justify-center gap-2 mt-2">
+                      {(project.repoLink || deployment) && <div className="flex flex-col gap-2">{project.repoLink && <Link href={project.repoLink} target="_blank" onClick={(e) => e.stopPropagation()} className="inline-flex items-center justify-between w-full text-purple-400 hover:text-purple-300 transition-colors text-sm group/link"><span>View Repository</span><span className="transform group-hover/link:translate-x-1 transition-transform">→</span></Link>}{deployment && <Link href={deployment.url} target="_blank" onClick={(e) => e.stopPropagation()} className="inline-flex items-center justify-between w-full text-green-400 hover:text-green-300 transition-colors text-sm group/link"><span>Live Demo</span><span className="transform group-hover/link:translate-x-1 transition-transform">🚀</span></Link>}{video && !String(video.url || "").includes("youtube.com") && !String(video.url || "").includes("youtu.be") && <Link href={String(video.url)} target="_blank" onClick={(e) => e.stopPropagation()} className="inline-flex items-center justify-between w-full text-red-400 hover:text-red-300 transition-colors text-sm group/link"><span>Watch Video</span><span className="transform group-hover/link:translate-x-1 transition-transform">🎬</span></Link>}</div>}
+                        <button onClick={() => onExpandProject(project)} className="w-full py-2 cursor-pointer px-4 bg-gradient-to-r from-purple-600/20 to-pink-600/20 hover:from-purple-600/30 hover:to-pink-600/30 border border-purple-500/30 hover:border-purple-400/50 rounded-lg text-purple-300 hover:text-purple-200 transition-all duration-300 hover:scale-[1.02] group/expand flex items-center justify-center gap-2 mt-2">
                           <span>Expand Details</span>
                           <svg className="w-4 h-4 group-hover/expand:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" /></svg>
                         </button>
@@ -693,7 +694,7 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
               return (
                 <div
                   key={sectionId}
-                  className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-purple-400/30 transition-all duration-300"
+                  className="bg-white/5 rounded-xl p-6 border border-white/10 hover:border-purple-400/30 transition-all duration-300"
                 >
                   <SectionHeading 
                     title={section.name || "Section"} 
@@ -733,7 +734,7 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => toggleMediaSection(sectionId)}
-                        className="px-6 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-white font-medium transition-colors"
+                        className="px-6 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-white font-medium transition-colors cursor-pointer"
                       >
                          {isExpanded ? "Show Less" : "View All"}
                        </motion.button>
@@ -764,7 +765,7 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12">
             {langint?.language && langint.language.length > 0 && (
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-8 border border-white/10 hover:border-purple-400/30 transition-all duration-300 animate-fade-in-left">
+              <div className="bg-white/10 rounded-xl p-8 border border-white/10 hover:border-purple-400/30 transition-all duration-300 animate-fade-in-left">
                 <SectionHeading title="Languages" id="languages" level="h3" align="center" colorClass="text-purple-300" />
                 <div className="space-y-4">
                   {langint.language.map((lang) => {
@@ -789,7 +790,7 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
             )}
 
             {langint?.interest && langint.interest.length > 0 && (
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-8 border border-white/10 hover:border-purple-400/30 transition-all duration-300 animate-fade-in-right">
+              <div className="bg-white/10 rounded-xl p-8 border border-white/10 hover:border-purple-400/30 transition-all duration-300 animate-fade-in-right">
                 <SectionHeading title="Interests" id="interests" level="h3" align="center" colorClass="text-pink-300" />
                 <div className="space-y-3">
                   {langint.interest.map((interest: string, index: number) => (

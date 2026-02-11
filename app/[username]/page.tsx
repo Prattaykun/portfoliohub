@@ -176,7 +176,7 @@ export default function PortfolioPage({ initialData }: { initialData?: UserData 
                 {resume?.resume_url && (
                     <button
                       onClick={handleDownloadResume}
-                      className="group relative bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-6 sm:py-4 sm:px-8 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25 border border-purple-400/30 text-sm sm:text-base w-full md:w-auto"
+                      className="group relative bg-gradient-to-r cursor-pointer from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-6 sm:py-4 sm:px-8 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25 border border-purple-400/30 text-sm sm:text-base w-full md:w-auto"
                     >
                       <div className="flex items-center space-x-2 sm:space-x-3 justify-center">
                         <svg

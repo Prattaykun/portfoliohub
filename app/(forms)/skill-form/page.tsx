@@ -657,7 +657,7 @@ export default function SkillsForm() {
                   <div className="text-sm text-zinc-300">
                     Add certifications. Attach images/PDFs, tag related skills, and include verification links.
                   </div>
-                  <button onClick={() => addCertificate()} className="text-sm underline cursor-pointer hover:text-blue-300 transition">
+                  <button onClick={() => addCertificate()} className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 flex items-center gap-2 text-sm transition-all active:scale-95 cursor-pointer">
                     + Add Certificate
                   </button>
                 </div>

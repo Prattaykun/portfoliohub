@@ -110,7 +110,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, isOpen, onC
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-lg animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm animate-fade-in">
       <div 
         className="relative bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl border border-purple-500/30 shadow-2xl shadow-purple-500/20 max-w-4xl w-full max-h-[90vh] overflow-y-auto modal-scroll"
         onClick={(e) => e.stopPropagation()}
@@ -316,7 +316,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, isOpen, onC
                 {project.techStack.map((tech: any, techIndex: number) => (
                   <div
                     key={techIndex}
-                    className="flex items-center space-x-3 bg-white/10 rounded-lg p-4 hover:bg-white/20 transition-all duration-300 group border border-white/10"
+                    className="flex items-center space-x-3 bg-white/10 rounded-lg p-4 hover:bg-white/20 transition-all duration-300 group border border-white/10 cursor-pointer"
                   >
                     {tech.logo_url && (
                       <Image
