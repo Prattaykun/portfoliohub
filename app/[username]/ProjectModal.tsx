@@ -9,6 +9,8 @@ import Slider from "react-slick";
 import { Project } from "./portfolio";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface ProjectModalProps {
   project: Project;
@@ -269,7 +271,11 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, isOpen, onC
             <h3 className="text-xl font-semibold text-white mb-4 border-b border-purple-500/30 pb-2">
               Overview
             </h3>
-            <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">{project.overview}</p>
+            <div className="prose prose-invert max-w-none text-gray-300 leading-relaxed">
+              <ReactMarkdown remarkPlugins={[remarkGfm] as any}>
+                {project.overview}
+              </ReactMarkdown>
+            </div>
           </div>
 
           {/* Process */}
@@ -278,7 +284,11 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, isOpen, onC
               <h3 className="text-xl font-semibold text-white mb-4 border-b border-purple-500/30 pb-2">
                 Development Process
               </h3>
-              <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">{project.process}</p>
+              <div className="prose prose-invert max-w-none text-gray-300 leading-relaxed">
+                <ReactMarkdown remarkPlugins={[remarkGfm] as any}>
+                  {project.process}
+                </ReactMarkdown>
+              </div>
             </div>
           )}
 
@@ -288,7 +298,11 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, isOpen, onC
               <h3 className="text-xl font-semibold text-white mb-4 border-b border-purple-500/30 pb-2">
                 Results & Impact
               </h3>
-              <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">{project.results}</p>
+              <div className="prose prose-invert max-w-none text-gray-300 leading-relaxed">
+                <ReactMarkdown remarkPlugins={[remarkGfm] as any}>
+                  {project.results}
+                </ReactMarkdown>
+              </div>
             </div>
           )}
 
