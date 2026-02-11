@@ -119,6 +119,20 @@ NEXT_PUBLIC_GENERATE_RESUME_ENDPOINT=generate-resume #generate-resume1 on local 
     -   `social`, `companies`, `schools` (for autocomplete data)
 3.  In the Supabase Authentication settings, configure your desired OAuth providers (Google, GitHub, LinkedIn). Make sure to add `http://localhost:3000/auth/callback` to the list of redirect URLs.
 
+### Project Schema
+
+The `project` table stores an array of `ProjectItem` objects in the `projects` JSONB column. A `ProjectItem` includes:
+-   `id`: string
+-   `title`: string
+-   `role`: string
+-   `overview`: string
+-   `process`: string
+-   `results`: string
+-   `techStack`: Array of `{ name, logo_url }`
+-   `media`: Array of `{ id, type, url }`
+-   `repoLink`: string
+-   `links`: Array of `{ id, label, url }` (New: Renamable custom links)
+
 ### 5. Run the Development Server
 
 ```bash

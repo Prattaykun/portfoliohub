@@ -337,7 +337,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, isOpen, onC
           )}
 
           {/* Links */}
-          {(project.repoLink || deployment) && (
+          {(project.repoLink || deployment || (project.links && project.links.length > 0)) && (
             <div className="border-t border-white/10 pt-6">
               <h3 className="text-xl font-semibold text-white mb-4">Project Links</h3>
               <div className="flex flex-wrap gap-4">
@@ -369,6 +369,45 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, isOpen, onC
                     <span className="transform group-hover:translate-x-1 transition-transform">→</span>
                   </Link>
                 )}
+
+                {/* Custom Links */}
+                {project.links?.map((link: any) => {
+                  let domain = "";
+                  try {
+                    domain = new URL(link.url).hostname;
+                  } catch (e) {
+                    // Fallback if URL is invalid
+                  }
+                  
+                  return (
+                    <Link
+                      key={link.id}
+                      href={link.url}
+                      target="_blank"
+                      className="flex items-center space-x-3 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/50 px-6 py-3 rounded-lg transition-all duration-300 hover:scale-105 group"
+                    >
+                      {domain ? (
+                         <Image
+                           src={`https://www.google.com/s2/favicons?domain=${domain}&sz=32`}
+                           alt={link.label}
+                           width={20}
+                           height={20}
+                           className="rounded-sm"
+                           onError={(e) => {
+                             // Hide image on error (optional, but next/image handles this differently so we might just leave it)
+                             // Actually Next/Image requires a valid src. The google API usually returns a default globe if not found, which is what the user dislikes but accepted as "try to fetch".
+                             // To hide the default globe we'd need to check the image content which is hard.
+                             // For now we assume the google API is "good enough" or at least better than nothing.
+                           }}
+                         />
+                      ) : (
+                        <span className="text-lg">🔗</span>
+                      )}
+                      <span className="text-blue-300 group-hover:text-blue-200">{link.label}</span>
+                      <span className="transform group-hover:translate-x-1 transition-transform">→</span>
+                    </Link>
+                  );
+                })}
 
                 {videos.length > 0 && videos.every((v: any) => !v.url.includes("youtube.com") && !v.url.includes("youtu.be")) && (
                   <Link

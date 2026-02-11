@@ -91,7 +91,7 @@ export function isCloudinaryInfoObject(info: unknown): info is { secure_url: str
 // Helper function to safely extract secure_url from Cloudinary results
 export function getSecureUrlFromCloudinaryResult(results: CloudinaryUploadResult): string | null {
   if (!results.info) return null;
-  
+
   if (typeof results.info === 'string') {
     try {
       // If info is a string, try to parse it as JSON
@@ -105,7 +105,7 @@ export function getSecureUrlFromCloudinaryResult(results: CloudinaryUploadResult
     // If info is already an object with secure_url
     return results.info.secure_url;
   }
-  
+
   return null;
 }
 // -----------------------------
@@ -244,6 +244,15 @@ export interface ProjectMedia {
 }
 
 /**
+ * Represents a custom link (e.g. "Documentation", "Design")
+ */
+export interface ProjectLink {
+  id: string;
+  label: string;
+  url: string;
+}
+
+/**
  * Represents one complete project entry.
  */
 export interface ProjectItem {
@@ -256,6 +265,7 @@ export interface ProjectItem {
   results: string;
   media: ProjectMedia[];
   repoLink: string;
+  links?: ProjectLink[];
 }
 
 /**
@@ -286,7 +296,7 @@ export interface ProjectFormState {
 /**
  * Represents a project example (used for autofilling)
  */
-export interface ProjectExample extends Omit<ProjectItem, "id"> {}
+export interface ProjectExample extends Omit<ProjectItem, "id"> { }
 
 /**
  * Represents a basic question in the ProjectForm flow.

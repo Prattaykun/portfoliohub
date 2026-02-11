@@ -143,6 +143,12 @@ export interface ProjectTech {
   logo_url?: string;
 }
 
+export interface ProjectLink {
+  id: string;
+  label: string;
+  url: string;
+}
+
 export interface Project {
   id: string;
   title: string;
@@ -153,6 +159,7 @@ export interface Project {
   techStack: ProjectTech[];
   repoLink?: string;
   media: ProjectMedia[];
+  links?: ProjectLink[];
 }
 
 export interface ProjectsData {

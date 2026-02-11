@@ -127,7 +127,8 @@ export default function ProjectForm() {
           ...project,
           id: project.id || Math.random().toString(36).slice(2),
           techStack: project.techStack || [],
-          media: project.media || []
+          media: project.media || [],
+          links: project.links || []
         }));
         setProjects(projectsWithIds);
       }
@@ -217,6 +218,7 @@ export default function ProjectForm() {
     results: seed?.results ?? "Key results and achievements",
     media: seed?.media ?? [],
     repoLink: seed?.repoLink ?? "",
+    links: seed?.links ?? [],
   });
 
   const addProject = async (seed?: any) => {
@@ -707,6 +709,83 @@ export default function ProjectForm() {
                                 </div>
                               </div>
                             ))}
+                          </div>
+
+                          {/* Project Links Section */}
+                          <div className="mt-6 border-t border-white/10 pt-4">
+                            <div className="flex items-center justify-between mb-3">
+                              <label className="block text-xs text-zinc-300">Custom Links (Renamable)</label>
+                              <button 
+                                onClick={() => {
+                                  setProjects((s) => s.map((p) => 
+                                    p.id === project.id 
+                                      ? { 
+                                          ...p, 
+                                          links: [
+                                            ...(p.links || []), 
+                                            { id: Math.random().toString(36).slice(2), label: "", url: "" }
+                                          ] 
+                                        }
+                                      : p
+                                  ));
+                                }}
+                                className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs transition-all active:scale-95 cursor-pointer"
+                              >
+                                + Add Link
+                              </button>
+                            </div>
+                            
+                            <div className="space-y-3">
+                              {(project.links || []).map((link: any) => (
+                                <div key={link.id} className="flex flex-col md:flex-row gap-3 items-stretch md:items-start">
+                                  <input
+                                    value={link.label}
+                                    onChange={(e) => {
+                                      setProjects((s) => s.map((p) => 
+                                        p.id === project.id 
+                                          ? { 
+                                              ...p, 
+                                              links: p.links?.map((l: any) => l.id === link.id ? { ...l, label: e.target.value } : l)
+                                            }
+                                          : p
+                                      ));
+                                    }}
+                                    placeholder="Label (e.g. Design)"
+                                    className="w-full md:w-1/3 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none"
+                                  />
+                                  <input
+                                    value={link.url}
+                                    onChange={(e) => {
+                                      setProjects((s) => s.map((p) => 
+                                        p.id === project.id 
+                                          ? { 
+                                              ...p, 
+                                              links: p.links?.map((l: any) => l.id === link.id ? { ...l, url: e.target.value } : l)
+                                            }
+                                          : p
+                                      ));
+                                    }}
+                                    placeholder="URL"
+                                    className="flex-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-blue-400 outline-none w-full"
+                                  />
+                                  <button
+                                    onClick={() => {
+                                      setProjects((s) => s.map((p) => 
+                                        p.id === project.id 
+                                          ? { ...p, links: p.links?.filter((l: any) => l.id !== link.id) }
+                                          : p
+                                      ));
+                                    }}
+                                    className="px-3 py-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 cursor-pointer active:scale-95 transition-transform text-sm"
+                                  >
+                                    Remove
+                                  </button>
+                                </div>
+                              ))}
+                              {(!project.links || project.links.length === 0) && (
+                                <p className="text-xs text-zinc-500 italic text-center py-2">No custom links added yet</p>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>

@@ -464,8 +464,64 @@ export default function ProjectsSection({ user }: ProjectsSectionProps) {
                       type="url"
                       value={formData.repoLink || ''}
                       onChange={(e) => setFormData({ ...formData, repoLink: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-4"
                     />
+
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="block text-sm font-medium text-gray-700">Custom Links</label>
+                      <button
+                        onClick={() => {
+                          setFormData({
+                            ...formData,
+                            links: [
+                              ...(formData.links || []),
+                              { id: Math.random().toString(36).slice(2), label: '', url: '' }
+                            ]
+                          })
+                        }}
+                        className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                      >
+                        + Add Given Link
+                      </button>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      {(formData.links || []).map((link: any, lIdx: number) => (
+                        <div key={link.id || lIdx} className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="Label"
+                            value={link.label}
+                            onChange={(e) => {
+                              const newLinks = [...(formData.links || [])]
+                              newLinks[lIdx] = { ...newLinks[lIdx], label: e.target.value }
+                              setFormData({ ...formData, links: newLinks })
+                            }}
+                            className="w-1/3 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          />
+                          <input
+                            type="text"
+                            placeholder="URL"
+                            value={link.url}
+                            onChange={(e) => {
+                              const newLinks = [...(formData.links || [])]
+                              newLinks[lIdx] = { ...newLinks[lIdx], url: e.target.value }
+                              setFormData({ ...formData, links: newLinks })
+                            }}
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          />
+                          <button
+                            onClick={() => {
+                              const newLinks = (formData.links || []).filter((_: any, idx: number) => idx !== lIdx)
+                              setFormData({ ...formData, links: newLinks })
+                            }}
+                            className="text-red-500 hover:text-red-700 px-2"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               ) : (
@@ -606,6 +662,45 @@ export default function ProjectsSection({ user }: ProjectsSectionProps) {
                                 className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 text-sm"
                               >
                                 <span className="capitalize">{media.type}</span>
+                                <span>→</span>
+                              </a>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Custom Links Display */}
+                      {project.links && project.links.length > 0 && (
+                        <div className="mt-4">
+                          <h4 className="font-medium text-gray-700 mb-2">Links</h4>
+                          <div className="space-y-2">
+                            {project.links.map((link: any) => (
+                              <a
+                                key={link.id}
+                                href={link.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 text-sm"
+                              >
+                                {(() => {
+                                  try {
+                                    const domain = new URL(link.url).hostname;
+                                    return (
+                                      <img 
+                                        src={`https://www.google.com/s2/favicons?domain=${domain}&sz=16`} 
+                                        alt="" 
+                                        className="w-4 h-4 rounded-sm"
+                                        onError={(e) => {
+                                           // Fallback to invisible if broken
+                                           (e.target as HTMLImageElement).style.display = 'none';
+                                        }}
+                                      />
+                                    ); 
+                                  } catch (e) {
+                                    return <span>🔗</span>;
+                                  }
+                                })()}
+                                <span>{link.label}</span>
                                 <span>→</span>
                               </a>
                             ))}
