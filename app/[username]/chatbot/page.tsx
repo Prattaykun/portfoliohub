@@ -393,18 +393,25 @@ export default function ChatbotPage() {
                 <textarea
                     ref={textareaRef}
                     value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
+                    onChange={(e) => setInputValue(e.target.value.slice(0, 200))}
                     onKeyDown={(e) => {
                         if (e.key === "Enter" && !e.shiftKey) {
                             e.preventDefault();
                             handleSendMessage();
                         }
                     }}
-                    placeholder={isRecording ? "Listening..." : "Ask anything..."}
+                    placeholder={isRecording ? "Listening..." : "Ask anything... (Max 200 chars)"}
                     disabled={isRecording || isLoading}
                     rows={1}
-                    className="w-full bg-[#0d1117] text-white border border-white/10 rounded-xl px-4 py-3 pr-12 focus:outline-none focus:ring-1 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all placeholder-gray-600 resize-none min-h-[46px] overflow-hidden"
+                    maxLength={200}
+                    className="w-full bg-[#0d1117] text-white border border-white/10 rounded-xl px-4 py-3 pr-20 focus:outline-none focus:ring-1 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all placeholder-gray-600 resize-none min-h-[46px] overflow-hidden"
                 />
+                
+                {/* Character Count */}
+                <div className="absolute right-12 bottom-3 text-xs text-gray-500 pointer-events-none">
+                    {inputValue.length}/200
+                </div>
+
                 <button
                     onClick={handleSendMessage}
                     disabled={!inputValue.trim() || isLoading || isRecording}

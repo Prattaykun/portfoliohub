@@ -71,6 +71,26 @@ async function fetchUserData(username: string) {
     }
 }
 
+// --- Model Configuration ---
+
+const GROQ_MODELS = [
+    "llama-3.3-70b-versatile",
+    "llama-3.1-8b-instant",
+    "openai/gpt-oss-120b",
+    "openai/gpt-oss-20b"
+];
+
+const GEMINI_MODELS = [
+    "gemini-2.5-flash",
+    "gemini-2.5-pro",
+    "gemini-2.0-flash",
+    "gemini-2.0-flash-exp",
+    "gemini-2.0-flash-lite",
+    "gemini-2.0-pro-exp",
+    "gemini-1.5-pro",
+    "gemini-1.5-flash"
+];
+
 // --- API Route Handler ---
 
 export async function POST(req: NextRequest) {
@@ -80,6 +100,10 @@ export async function POST(req: NextRequest) {
 
         if (!username) {
             return NextResponse.json({ error: "Username is required" }, { status: 400 });
+        }
+
+        if (message && message.length > 200) {
+            return NextResponse.json({ error: "Message exceeds 200 characters limit." }, { status: 400 });
         }
 
         // 1. Fetch User Data for Context
@@ -125,29 +149,85 @@ ${JSON.stringify(history?.slice(-5) || [])}
 
         let answer = "";
 
-        if (audio) {
-            // --- Gemini (Native Audio) ---
-            try {
-                const model = genAI.getGenerativeModel({
-                    model: "gemini-2.5-flash",
-                    systemInstruction: systemPrompt
-                });
+        // --- Helper Function for Text Generation with Fallback ---
 
-                const result = await model.generateContent([
-                    { inlineData: { data: audio, mimeType: "audio/webm" } },
-                    { text: "Listen to the audio and answer the user's question." }
-                ]);
-
-                answer = result.response.text();
-            } catch (geminiError) {
-                console.error("Gemini failed, switching to Groq:", geminiError);
-
+        async function generateTextWithFallback(userMessage: string) {
+            // 1. Try Groq Models first
+            for (const modelId of GROQ_MODELS) {
                 try {
-                    // Fallback: Transcribe audio with Groq (Whisper) -> Text Response with Groq (Llama)
+                    console.log(`Trying Groq model: ${modelId}`);
+                    const completion = await groq.chat.completions.create({
+                        messages: [
+                            { role: "system", content: systemPrompt },
+                            { role: "user", content: userMessage }
+                        ],
+                        model: modelId,
+                        temperature: 0.7,
+                        max_tokens: 2048,
+                    });
+                    // Check if we got a valid response
+                    const content = completion.choices[0]?.message?.content;
+                    if (content) return content;
+                } catch (err) {
+                    console.warn(`Groq model ${modelId} failed:`, err);
+                    continue; // Try next model
+                }
+            }
 
-                    // Convert base64 audio to a File-like object for Groq
+            // 2. If all Groq models fail, try Gemini Models
+            for (const modelId of GEMINI_MODELS) {
+                try {
+                    console.log(`Trying Gemini model: ${modelId}`);
+                    const model = genAI.getGenerativeModel({
+                        model: modelId,
+                        systemInstruction: systemPrompt
+                    });
+                    const result = await model.generateContent(userMessage);
+                    const content = result.response.text();
+                    if (content) return content;
+                } catch (err) {
+                    console.warn(`Gemini model ${modelId} failed:`, err);
+                    continue;
+                }
+            }
+
+            throw new Error("All models failed to generate a response.");
+        }
+
+        if (audio) {
+            // --- Gemini (Native Audio) with Fallback ---
+            let audioProcessed = false;
+
+            // 1. Try Gemini Native Audio models specifically
+            for (const modelId of GEMINI_MODELS) {
+                try {
+                    console.log(`Trying Gemini Audio model: ${modelId}`);
+                    const model = genAI.getGenerativeModel({
+                        model: modelId,
+                        systemInstruction: systemPrompt
+                    });
+
+                    const result = await model.generateContent([
+                        { inlineData: { data: audio, mimeType: "audio/webm" } },
+                        { text: "Listen to the audio and answer the user's question." }
+                    ]);
+
+                    answer = result.response.text();
+                    if (answer) {
+                        audioProcessed = true;
+                        break;
+                    }
+                } catch (geminiError) {
+                    console.warn(`Gemini Audio model ${modelId} failed:`, geminiError);
+                    continue;
+                }
+            }
+
+            if (!audioProcessed) {
+                // 2. Fallback: Transcribe audio with Groq (Whisper) -> Text Response with Fallback
+                console.log("Switching to Groq Whisper fallback...");
+                try {
                     const audioBuffer = Buffer.from(audio, "base64");
-                    // Create a File object (supported in Node 20+ and Next.js Edge/Node runtimes)
                     const audioFile = new File([audioBuffer], "audio.webm", { type: "audio/webm" });
 
                     const transcriptionCompletion = await groq.audio.transcriptions.create({
@@ -165,39 +245,18 @@ ${JSON.stringify(history?.slice(-5) || [])}
                         throw new Error("Empty transcription from Groq");
                     }
 
-                    // Generate response using transcribed text
-                    const completion = await groq.chat.completions.create({
-                        messages: [
-                            { role: "system", content: systemPrompt },
-                            { role: "user", content: transcribedText } // Use transcribed text
-                        ],
-                        model: "llama-3.3-70b-versatile",
-                        temperature: 0.7,
-                        max_tokens: 2048,
-                    });
-
-                    answer = completion.choices[0]?.message?.content || "I'm sorry, I couldn't generate a response (fallback).";
+                    // Use the text fallback function
+                    answer = await generateTextWithFallback(transcribedText);
 
                 } catch (groqError) {
-                    console.error("Groq fallback failed:", groqError);
-                    // Return the original Gemini error if fallback also fails, or a generic error
-                    throw geminiError; // Propagate the original error or handle gracefully
+                    console.error("Groq Whisper fallback failed:", groqError);
+                    throw new Error("Failed to process audio.");
                 }
             }
 
         } else if (message) {
-            // --- Groq (Text Only) ---
-            const completion = await groq.chat.completions.create({
-                messages: [
-                    { role: "system", content: systemPrompt },
-                    { role: "user", content: message }
-                ],
-                model: "llama-3.3-70b-versatile",
-                temperature: 0.7,
-                max_tokens: 2048, // Increased from 1024 to prevent cutoff
-            });
-
-            answer = completion.choices[0]?.message?.content || "I'm sorry, I couldn't generate a response.";
+            // --- Text Only with Fallback ---
+            answer = await generateTextWithFallback(message);
         } else {
             return NextResponse.json({ error: "Message or Audio is required" }, { status: 400 });
         }
