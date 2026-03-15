@@ -163,11 +163,28 @@ export default function ContactSection({ user }: ContactSectionProps) {
       return
     }
 
+    let logoUrl = newLink.logo_url
+
+    if (!logoUrl) {
+      try {
+        const domain = new URL(newLink.url).hostname
+        logoUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`
+        const baseUrl = `https://${domain}`
+
+        void supabase
+          .from('social')
+          .insert({ name: newLink.name, logo_url: logoUrl, base_url: baseUrl })
+          .then(() => { void fetchSocialPlatforms() })
+      } catch {
+        // invalid URL, proceed without logo
+      }
+    }
+
     const newLinkWithId: OtherLink = {
       id: `link-${Date.now()}`,
       name: newLink.name,
       url: newLink.url,
-      logo_url: newLink.logo_url
+      logo_url: logoUrl
     }
 
     setFormData({
