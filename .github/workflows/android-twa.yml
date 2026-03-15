@@ -9,19 +9,19 @@ on:
   workflow_dispatch:
     inputs:
       app_url:
-        description: Deployed HTTPS URL of the PWA
+        description: "Deployed HTTPS URL of the PWA"
         required: false
         default: https://portfoliohub-pi.vercel.app
       version_name:
-        description: Release version name (example: 1.0.3)
+        description: "Release version name (example: 1.0.3)"
         required: true
         default: "1.0.0"
       version_code:
-        description: Android version code override
+        description: "Android version code override"
         required: false
         default: "1"
       prerelease:
-        description: Mark GitHub Release as pre-release
+        description: "Mark GitHub Release as pre-release"
         type: boolean
         required: false
         default: false
