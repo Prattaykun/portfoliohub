@@ -50,7 +50,7 @@ const twaManifest = new TwaManifest({
   enableNotifications: true,
   webManifestUrl: manifestUrl,
   fallbackType: "webview",
-  enableSiteSettingsShortcut: true,
+  enableSiteSettingsShortcut: false,
   shortcuts: [
     {
       name: "Open Dashboard",
