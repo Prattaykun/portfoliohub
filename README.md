@@ -4,6 +4,7 @@
 PortfolioHub is a sleek, modern platform designed for developers and engineers to effortlessly build, manage, and showcase their professional journey. It features a step-by-step guided process to create a comprehensive, shareable portfolio page with dedicated sections for your bio, skills, education, projects, and more.
 
 The application provides a user-friendly dashboard for managing portfolio content and instantly generates a public-facing, animated portfolio page at a unique username URL.
+
 [<img alt="Android Download" src="https://img.shields.io/badge/Android-Download%20APK-3DDC84?style=for-the-badge&logo=android&logoColor=white" />](https://github.com/Prattaykun/portfoliohub/releases)
 ## Key Features
 
