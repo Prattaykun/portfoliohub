@@ -18,13 +18,15 @@ const keystorePath = process.env.ANDROID_KEYSTORE_PATH || path.join(androidDir, 
 const keyAlias = process.env.ANDROID_KEY_ALIAS || "upload";
 const appVersion = process.env.ANDROID_APP_VERSION || process.env.npm_package_version || "1.0.0";
 const versionCode = Number(process.env.ANDROID_VERSION_CODE || "1");
+const faviconUrl = new URL("/favicon.png", appUrl).toString();
+const splashImageUrl = new URL("/logo1.png", appUrl).toString();
 
 const twaManifest = new TwaManifest({
   packageId,
   host,
   name: process.env.ANDROID_APP_NAME || "PortfolioHub",
   launcherName: process.env.ANDROID_LAUNCHER_NAME || "PortfolioHub",
-  display: "standalone",
+  display: "fullscreen",
   themeColor: "#0f172a",
   themeColorDark: "#020617",
   navigationColor: "#0f172a",
@@ -34,9 +36,10 @@ const twaManifest = new TwaManifest({
   backgroundColor: "#0f172a",
   splashScreenFadeOutDuration: Number(process.env.ANDROID_SPLASH_FADE_MS || "300"),
   startUrl: process.env.ANDROID_START_URL || "/?utm_source=twa",
-  iconUrl: new URL("/pwa-icons/512", appUrl).toString(),
-  maskableIconUrl: new URL("/pwa-icons/maskable-512", appUrl).toString(),
-  monochromeIconUrl: new URL("/pwa-icons/monochrome-192", appUrl).toString(),
+  iconUrl: faviconUrl,
+  maskableIconUrl: faviconUrl,
+  monochromeIconUrl: faviconUrl,
+  splashImageUrl,
   orientation: "portrait",
   appVersion,
   appVersionCode: versionCode,
@@ -46,20 +49,20 @@ const twaManifest = new TwaManifest({
   },
   enableNotifications: true,
   webManifestUrl: manifestUrl,
-  fallbackType: "customtabs",
+  fallbackType: "webview",
   enableSiteSettingsShortcut: true,
   shortcuts: [
     {
       name: "Open Dashboard",
       shortName: "Dashboard",
       url: new URL("/dashboard", appUrl).toString(),
-      chosenIconUrl: new URL("/pwa-icons/192", appUrl).toString(),
+      chosenIconUrl: faviconUrl,
     },
     {
       name: "Create Portfolio",
       shortName: "Create",
       url: new URL("/auth", appUrl).toString(),
-      chosenIconUrl: new URL("/pwa-icons/512", appUrl).toString(),
+      chosenIconUrl: faviconUrl,
     },
   ],
   shareTarget: {
