@@ -32,6 +32,7 @@ const twaManifest = new TwaManifest({
   navigationDividerColor: "#020617",
   navigationDividerColorDark: "#020617",
   backgroundColor: "#0f172a",
+  splashScreenFadeOutDuration: Number(process.env.ANDROID_SPLASH_FADE_MS || "300"),
   startUrl: process.env.ANDROID_START_URL || "/?utm_source=twa",
   iconUrl: new URL("/pwa-icons/512", appUrl).toString(),
   maskableIconUrl: new URL("/pwa-icons/maskable-512", appUrl).toString(),
