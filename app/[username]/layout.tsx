@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { toAbsoluteUrl } from "@/lib/site";
 
 type Params = {
   params: Promise<{ username: string }>;
@@ -8,12 +9,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { username } = await params;
 
   try {
-    if (!process.env.NEXT_PUBLIC_SITE_URL) {
-      throw new Error("NEXT_PUBLIC_SITE_URL is not defined");
-    }
-
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_SITE_URL}/api/preview?username=${username}`,
+      toAbsoluteUrl(`/api/preview?username=${encodeURIComponent(username)}`),
       { 
         next: { revalidate: 60 },
         signal: AbortSignal.timeout(5000)
@@ -58,7 +55,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     // Fallback metadata (still no OG image generation)
     const fallbackTitle = `${username}'s Portfolio | PortfolioHub`;
     const fallbackDescription = `Check out ${username}'s portfolio on PortfolioHub`;
-    const fallbackUrl = `https://portfoliohub-pi.vercel.app/${username}`;
+    const fallbackUrl = toAbsoluteUrl(`/${encodeURIComponent(username)}`);
 
     return {
       title: fallbackTitle,

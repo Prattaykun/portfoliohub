@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import puppeteer from 'puppeteer'
 import { v2 as cloudinary } from 'cloudinary'
+import { processSignature } from '@/lib/server/processSignature'
 
 // Configure Cloudinary
 cloudinary.config({
@@ -177,22 +178,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Process signature if available
-    let processedProfile = { ...profile }
+    const processedProfile = { ...profile }
     if (profile.signature) {
       try {
-        // Call the signature processing API
-        const processResponse = await fetch(`${getBaseUrl()}/api/process-signature`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            signatureUrl: profile.signature
-          })
-        })
-
-        if (processResponse.ok) {
-          const { processedSignatureUrl } = await processResponse.json()
+                const processedSignatureUrl = await processSignature(profile.signature)
+                if (processedSignatureUrl) {
           processedProfile.signature = processedSignatureUrl
         }
       } catch (error) {
@@ -221,14 +211,6 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-}
-
-// Helper function to get base URL
-function getBaseUrl(): string {
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`
-  }
-  return `http://localhost:${process.env.PORT || 3000}`
 }
 
 function generateResumeHTML(

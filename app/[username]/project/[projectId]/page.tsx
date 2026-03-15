@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import PortfolioPage from "../../page";
 import { fetchUserData } from "../../portfolio";
+import { toAbsoluteUrl } from "@/lib/site";
 
 type Props = {
   params: Promise<{ username: string; projectId: string }>;
@@ -33,9 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = `${project.title} | ${data.profile.full_name} | PortfolioHub`;
   const description = project.overview || `Check out ${project.title} by ${data.profile.full_name}`;
 
-  // Use NEXT_PUBLIC_SITE_URL or fallback to hardcoded domain
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://portfoliohub-pi.vercel.app';
-  const url = `${baseUrl}/${username}/project/${projectId}`;
+  const url = toAbsoluteUrl(`/${username}/project/${projectId}`);
 
   return {
     title,

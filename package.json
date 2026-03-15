@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "generate:twa": "node scripts/generate-twa-project.mjs"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -35,9 +36,11 @@
     "rehype-slug": "^6.0.0",
     "remark-gfm": "^4.0.0",
     "slick-carousel": "^1.8.1",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
+    "@bubblewrap/core": "^1.24.1",
     "@eslint/eslintrc": "^3",
     "@opentelemetry/api": "1.6.0",
     "@tailwindcss/line-clamp": "^0.4.4",
@@ -49,6 +52,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/react-slick": "^0.23.13",
+    "@types/web-push": "^3.6.4",
     "eslint": "^9",
     "eslint-config-next": "15.5.6",
     "postcss": "^8.5.6",

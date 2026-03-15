@@ -1,16 +1,7 @@
 // next.config.js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-     eslint: {
-    ignoreDuringBuilds: true,
-  },
   images: {
-    domains: [
-      'res.cloudinary.com',
-      'www.google.com',
-      'raw.githubusercontent.com',
-      'lh3.googleusercontent.com'
-    ],
     remotePatterns: [
       {
         protocol: 'https',

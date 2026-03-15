@@ -1,6 +1,7 @@
 "use client"
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../../lib/supabaseClient'
+import { getSiteUrl } from '@/lib/site'
 
 export default function SharePortfolio({ user }: { user: any }) {
   const [username, setUsername] = useState('')
@@ -26,8 +27,8 @@ export default function SharePortfolio({ user }: { user: any }) {
   }
 
   // ✅ Strictly use environment variable
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL
-  const portfolioUrl = baseUrl ? `${baseUrl.replace(/\/$/, '')}/${username}` : ''
+  const baseUrl = getSiteUrl()
+  const portfolioUrl = username ? `${baseUrl}/${username}` : ''
   const chatbotUrl = portfolioUrl ? `${portfolioUrl}/chatbot` : ''
 
   // const copyToClipboard = async (text: string, type: 'portfolio' | 'chatbot') => {
@@ -109,17 +110,6 @@ export default function SharePortfolio({ user }: { user: any }) {
     )
   }
 
-  if (!baseUrl) {
-    return (
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">Share Portfolio</h2>
-        <p className="text-red-600">
-          Error: <code>NEXT_PUBLIC_SITE_URL</code> environment variable is not set.
-        </p>
-      </div>
-    )
-  }
-
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
       <h2 className="text-2xl font-bold text-gray-800 mb-6">Share Your Portfolio</h2>
@@ -194,7 +184,7 @@ export default function SharePortfolio({ user }: { user: any }) {
         </div>
 
         <p className="text-sm text-purple-700">
-          Share this link to let people interact directly with your portfolio's AI chatbot.
+          Share this link to let people interact directly with your portfolio&apos;s AI chatbot.
         </p>
       </div>
 

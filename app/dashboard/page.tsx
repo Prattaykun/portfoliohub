@@ -13,6 +13,7 @@ import ContactSection from '@/components/dashboard/ContactSection'
 import ResumeSection from '@/components/dashboard/ResumeSection'
 import SharePortfolio from '@/components/dashboard/SharePortfolio'
 import LanguageInterests from '@/components/dashboard/LanguageInterests'
+import PwaSection from '@/components/dashboard/PwaSection'
 import { Menu, X, MoreHorizontal } from 'lucide-react'
 
 export default function Dashboard() {
@@ -71,6 +72,7 @@ export default function Dashboard() {
     { id: 'contact', name: 'Contact', icon: '📞' },
     { id: 'resume', name: 'Resume', icon: '📄' },
     { id: 'share', name: 'Share', icon: '🔗' },
+    { id: 'pwa', name: 'PWA', icon: '📱' },
   ]
 
   // Split into visible (bottom bar) and extra (dropdown)
@@ -118,6 +120,7 @@ export default function Dashboard() {
           {activeSection === 'contact' && <ContactSection user={user} />}
           {activeSection === 'resume' && <ResumeSection user={user} />}
           {activeSection === 'share' && <SharePortfolio user={user} />}
+          {activeSection === 'pwa' && <PwaSection />}
         </div>
       </div>
 

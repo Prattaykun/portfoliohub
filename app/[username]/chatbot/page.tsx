@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Mic, Send, StopCircle, Bot, Loader2, ArrowLeft, Share2 } from "lucide-react";
@@ -15,6 +15,7 @@ const supabase = createClient(
 );
 
 interface Message {
+  id: string;
   role: "user" | "model";
   content: string;
   type?: "text" | "audio";
@@ -25,6 +26,62 @@ interface UserProfile {
   photo_url: string;
   roles: string[];
 }
+
+function createMessage(
+  role: Message["role"],
+  content: string,
+  type?: Message["type"]
+): Message {
+  return {
+    id: typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    role,
+    content,
+    type,
+  };
+}
+
+interface ChatMessagesListProps {
+  isLoading: boolean;
+  messages: Message[];
+  messagesContainerRef: React.RefObject<HTMLDivElement | null>;
+  messagesContentRef: React.RefObject<HTMLDivElement | null>;
+}
+
+const ChatMessagesList = React.memo(
+  function ChatMessagesList({
+    isLoading,
+    messages,
+    messagesContainerRef,
+    messagesContentRef,
+  }: ChatMessagesListProps) {
+    return (
+      <div
+        ref={messagesContainerRef}
+        className="flex-1 overflow-y-auto p-4 md:p-8 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent"
+      >
+        <div ref={messagesContentRef} className="space-y-6">
+          {messages.map((message) => (
+            <ChatMessage key={message.id} message={message} />
+          ))}
+
+          {isLoading && (
+            <div className="flex justify-start w-full px-11">
+              <div className="flex items-center space-x-2 text-gray-400 bg-[#1e232e] px-4 py-2 rounded-2xl rounded-tl-none border border-white/5">
+                <Loader2 size={16} className="animate-spin text-purple-400" />
+                <span className="text-sm">Thinking...</span>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  },
+  (previousProps, nextProps) =>
+    previousProps.messages === nextProps.messages &&
+    previousProps.isLoading === nextProps.isLoading
+);
 
 
 // ... (imports remain)
@@ -43,8 +100,9 @@ export default function ChatbotPage() {
   const [showMobileMenu, setShowMobileMenu] = useState(false); // Mobile menu state
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null); // Ref for textarea
-  
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const messagesContentRef = useRef<HTMLDivElement>(null);
+  const shouldStickToBottomRef = useRef(true);
 
   // Track Supabase auth session (logged-in vs logged-out)
   useEffect(() => {
@@ -92,7 +150,10 @@ export default function ChatbotPage() {
             });
             
             setMessages([
-                { role: "model", content: `Hello! I'm the AI agent for **${profileRes.data.full_name}**. \n\nI can answer questions about their work, experience, or specific projects. How can I help you?` }
+                createMessage(
+                  "model",
+                  `Hello! I'm the AI agent for **${profileRes.data.full_name}**. \n\nI can answer questions about their work, experience, or specific projects. How can I help you?`
+                )
             ]);
         }
       }
@@ -101,12 +162,54 @@ export default function ChatbotPage() {
   }, [username]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const container = messagesContainerRef.current;
+
+    if (!container) {
+      return;
+    }
+
+    container.scrollTop = container.scrollHeight;
   };
 
+  useLayoutEffect(() => {
+    const frameId = requestAnimationFrame(() => {
+      if (shouldStickToBottomRef.current) {
+        scrollToBottom();
+      }
+    });
+
+    return () => cancelAnimationFrame(frameId);
+  }, [messages, isLoading]);
+
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    const container = messagesContainerRef.current;
+    const content = messagesContentRef.current;
+
+    if (!container || !content) {
+      return;
+    }
+
+    const updateStickyState = () => {
+      const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
+      shouldStickToBottomRef.current = distanceFromBottom < 80;
+    };
+
+    updateStickyState();
+    container.addEventListener("scroll", updateStickyState, { passive: true });
+
+    const resizeObserver = new ResizeObserver(() => {
+      if (shouldStickToBottomRef.current || isLoading) {
+        scrollToBottom();
+      }
+    });
+
+    resizeObserver.observe(content);
+
+    return () => {
+      container.removeEventListener("scroll", updateStickyState);
+      resizeObserver.disconnect();
+    };
+  }, [isLoading]);
 
   // Handle Textarea Auto-Resize
   useEffect(() => {
@@ -124,7 +227,7 @@ export default function ChatbotPage() {
 
     const userMessage = inputValue;
     setInputValue("");
-    setMessages((prev) => [...prev, { role: "user", content: userMessage, type: "text" }]);
+    setMessages((prev) => [...prev, createMessage("user", userMessage, "text")]);
     setIsLoading(true);
 
     try {
@@ -144,10 +247,10 @@ export default function ChatbotPage() {
         throw new Error(data.error || "Failed to get response");
       }
 
-      setMessages((prev) => [...prev, { role: "model", content: data.answer }]);
+      setMessages((prev) => [...prev, createMessage("model", data.answer)]);
     } catch (error) {
       console.error("Chat Error:", error);
-      setMessages((prev) => [...prev, { role: "model", content: "Sorry, I encountered an error. Please try again." }]);
+      setMessages((prev) => [...prev, createMessage("model", "Sorry, I encountered an error. Please try again.")]);
     } finally {
       setIsLoading(false);
     }
@@ -188,7 +291,7 @@ export default function ChatbotPage() {
   };
 
   const sendAudioMessage = async (base64Audio: string) => {
-    setMessages((prev) => [...prev, { role: "user", content: "(Audio Message)", type: "audio" }]);
+    setMessages((prev) => [...prev, createMessage("user", "(Audio Message)", "audio")]);
     setIsLoading(true);
     try {
       const response = await fetch("/api/chatbot", {
@@ -198,10 +301,10 @@ export default function ChatbotPage() {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error);
-      setMessages((prev) => [...prev, { role: "model", content: data.answer }]);
+      setMessages((prev) => [...prev, createMessage("model", data.answer)]);
     } catch (error) {
       console.error("Chat Error:", error);
-      setMessages((prev) => [...prev, { role: "model", content: "Sorry, I encountered an audio processing error." }]);
+      setMessages((prev) => [...prev, createMessage("model", "Sorry, I encountered an audio processing error.")]);
     } finally {
       setIsLoading(false);
     }
@@ -358,21 +461,12 @@ export default function ChatbotPage() {
         </div>
 
         {/* Messages (Same as before) */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-          {messages.map((msg, idx) => (
-            <ChatMessage key={idx} message={msg} />
-          ))}
-          
-          {isLoading && (
-            <div className="flex justify-start w-full px-11">
-              <div className="flex items-center space-x-2 text-gray-400 bg-[#1e232e] px-4 py-2 rounded-2xl rounded-tl-none border border-white/5">
-                <Loader2 size={16} className="animate-spin text-purple-400" />
-                <span className="text-sm">Thinking...</span>
-              </div>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
+        <ChatMessagesList
+          isLoading={isLoading}
+          messages={messages}
+          messagesContainerRef={messagesContainerRef}
+          messagesContentRef={messagesContentRef}
+        />
 
         {/* Input Area (Updated with auto-resize) */}
         <div className="p-4 md:p-6 bg-[#161b22] border-t border-white/5">

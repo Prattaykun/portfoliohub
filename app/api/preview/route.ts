@@ -1,6 +1,7 @@
 // app/api/preview/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { getSiteUrl } from "@/lib/site";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -53,7 +54,7 @@ export async function GET(req: NextRequest) {
       title: `${profile.full_name || username}'s Portfolio | PortfolioHub`,
       description: `${profile.full_name || username}'s portfolio on PortfolioHub — Explore their projects, skills, and achievements.`,
       image: profile.photo_url || "https://res.cloudinary.com/dckndb9ux/image/upload/v1761344574/Screenshot_2025-10-24_212856_lt4hdq.png",
-      url: `https://portfoliohub-pi.vercel.app/${username}`,
+      url: `${getSiteUrl()}/${username}`,
     };
 
     return NextResponse.json(previewData);

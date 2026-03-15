@@ -34,6 +34,7 @@ The application provides a user-friendly dashboard for managing portfolio conten
 -   **Automated Resume Generation**: Generate and download a professional PDF resume directly from your portfolio data using Puppeteer.
 -   **Media Management**: Easily upload profile photos, project media, and resumes using a Cloudinary widget.
 -   **User Dashboard**: A centralized dashboard to navigate and edit all sections of your portfolio.
+-   **PWA and Android Packaging**: Install PortfolioHub as a Progressive Web App, use Android share-targets and protocol handlers, and build APK/AAB artifacts with Bubblewrap from GitHub Actions.
 
 ## Tech Stack
 
@@ -102,6 +103,15 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 NEXT_PUBLIC_BROWSERLESS_API_KEY= 
 #no need if you use next env variable as 'generate-resume1' as it will use #puppeteer, not browserless
 NEXT_PUBLIC_GENERATE_RESUME_ENDPOINT=generate-resume #generate-resume1 on local server
+
+# Optional PWA push notifications
+NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY=
+WEB_PUSH_PRIVATE_KEY=
+WEB_PUSH_SUBJECT=mailto:you@example.com
+
+# Optional TWA verification on the deployed site
+ANDROID_APP_PACKAGE_ID=
+ANDROID_SHA256_FINGERPRINTS=
 ```
 
 ### 4. Set Up Supabase Backend
@@ -140,3 +150,70 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser to see the application running.
+
+## PWA and Android Build
+
+-   The installed PWA and the Bubblewrap-generated Android app still call the same deployed route handlers, for example `https://portfoliohub-pi.vercel.app/api/chatbot`. `app/api` being part of the Next.js app is not a blocker.
+-   The app now exposes a proper web manifest, service worker, share-target route, protocol handler route, and a dynamic `/.well-known/assetlinks.json` endpoint for TWA verification.
+-   Native Android home-screen widgets are not part of the standard PWA/TWA feature set. The closest standards-based equivalents here are installable app shortcuts, delegated notifications, and share/protocol entry points.
+
+### GitHub Action Secrets and Variables
+
+Add these before running `.github/workflows/android-twa.yml`:
+
+-   Repository variable `ANDROID_APP_PACKAGE_ID`
+-   Optional repository variables `ANDROID_APP_NAME` and `ANDROID_LAUNCHER_NAME`
+-   Repository secret `ANDROID_KEYSTORE_BASE64`
+-   Repository secret `ANDROID_KEY_ALIAS`
+-   Repository secret `ANDROID_KEYSTORE_PASSWORD`
+-   Repository secret `ANDROID_KEY_PASSWORD`
+
+If Android signing secrets are missing, the workflow now falls back to an **unsigned debug APK** build automatically.
+
+### Versioned APK Releases on GitHub
+
+-   The workflow now builds an APK and publishes it directly to GitHub Releases (Play Store is not required).
+-   Manual run: open `Build Android TWA` workflow, set `version_name` (for example `1.0.3`) and `version_code`, then run.
+-   Tag run: pushing a tag like `v1.0.3` also triggers a build and creates/updates that release.
+-   Release assets include `app-release-signed.apk`, `assetlinks.generated.json`, and `twa-manifest.json`.
+
+### Build on Every New Commit (Main Branch)
+
+To make the workflow build automatically on each new commit, do this once:
+
+1. Add repository variable:
+    - `ANDROID_APP_PACKAGE_ID`
+2. Add repository secrets:
+    - `ANDROID_KEYSTORE_BASE64`
+    - `ANDROID_KEY_ALIAS`
+    - `ANDROID_KEYSTORE_PASSWORD`
+    - `ANDROID_KEY_PASSWORD`
+3. Push commits to `main`:
+
+```bash
+git add .
+git commit -m "your message"
+git push origin main
+```
+
+What happens after push to `main`:
+- The `Build Android TWA` workflow runs automatically.
+- If signing secrets exist, it builds a **signed APK** and uploads it as a workflow artifact.
+- If signing secrets are missing, it builds an **unsigned debug APK** and uploads it as a workflow artifact.
+- It does **not** create a GitHub Release for normal branch commits.
+
+To create a versioned Release (APK attached), push a version tag:
+
+```bash
+git tag v1.0.3
+git push origin v1.0.3
+```
+
+Tag/manual release output:
+- With signing secrets: signed release APK + assetlinks + manifest
+- Without signing secrets: unsigned debug APK + manifest (marked as pre-release)
+
+### TWA Verification
+
+-   After the workflow runs, it uploads `assetlinks.generated.json` as an artifact.
+-   Put the reported SHA-256 fingerprint value into `ANDROID_SHA256_FINGERPRINTS` in your deployed environment so `/.well-known/assetlinks.json` serves the correct relation for Chrome verification.

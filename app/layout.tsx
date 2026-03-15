@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/navbar";
+import PwaInit from "@/components/PwaInit";
+import { getSiteUrl } from "@/lib/site";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,22 +17,31 @@ const geistMono = Geist_Mono({
 });
 
 const defaultOpenGraphImage = "https://res.cloudinary.com/dckndb9ux/image/upload/v1761344574/Screenshot_2025-10-24_212856_lt4hdq.png";
+const siteUrl = getSiteUrl();
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
+  applicationName: "PortfolioHub",
   title: {
     default: "PortfolioHub",
     template: "%s | PortfolioHub",
   },
   description: "Showcase your projects and skills with PortfolioHub, a modern portfolio platform.",
+  manifest: "/manifest.webmanifest",
   icons: {
     icon: "/favicon.png",
     shortcut: "/favicon.png",
     apple: "/favicon.png",
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "PortfolioHub",
+  },
   openGraph: {
     title: "PortfolioHub",
     description: "Showcase your projects and skills with PortfolioHub, a modern portfolio platform.",
-    url: "https://portfoliohub-pi.vercel.app",
+    url: siteUrl,
     siteName: "PortfolioHub",
     images: [
       {
@@ -61,6 +72,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <PwaInit />
         <Navbar/>
         {children}
       </body>

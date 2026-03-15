@@ -1,13 +1,6 @@
 // app/api/process-signature/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { v2 as cloudinary } from 'cloudinary'
-
-// Configure Cloudinary
-cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-})
+import { processSignature as processSignatureAsset } from '@/lib/server/processSignature'
 
 export async function POST(request: NextRequest) {
   try {
@@ -40,37 +33,5 @@ export async function POST(request: NextRequest) {
 }
 
 async function processSignature(signatureUrl: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    // Upload the signature image with background removal
-    cloudinary.uploader.upload(
-      signatureUrl,
-      {
-        resource_type: 'image',
-        folder: 'signatures',
-        public_id: `signature_${Date.now()}`,
-        transformation: [
-          {
-            effect: 'remove_background',
-          },
-          {
-            width: 300,
-            height: 100,
-            crop: 'fit',
-          },
-          {
-            format: 'png',
-            quality: 'auto',
-          }
-        ]
-      },
-      (error, result) => {
-        if (error) {
-          console.error('Cloudinary signature upload error:', error)
-          reject(error)
-        } else {
-          resolve(result?.secure_url || '')
-        }
-      }
-    )
-  })
+  return processSignatureAsset(signatureUrl)
 }

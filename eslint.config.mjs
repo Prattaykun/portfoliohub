@@ -11,18 +11,22 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
-  // Next.js and TypeScript defaults
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
-
-  // Custom project rules
   {
     ignores: [
       "node_modules/**",
       ".next/**",
       "out/**",
       "build/**",
+      "android-twa/**",
       "next-env.d.ts",
     ],
+  },
+
+  // Next.js and TypeScript defaults
+  ...compat.extends("next/core-web-vitals", "next/typescript"),
+
+  // Custom project rules
+  {
     rules: {
       // ✅ prevent build failures on these common warnings
       "@typescript-eslint/no-explicit-any": "off",

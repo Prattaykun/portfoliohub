@@ -4,6 +4,7 @@ import remarkGfm from "remark-gfm";
 import { Bot, User, ExternalLink } from "lucide-react";
 
 interface Message {
+  id: string;
   role: "user" | "model";
   content: string;
   type?: "text" | "audio";
@@ -44,50 +45,57 @@ const MarkdownLink = ({ href, children }: any) => {
   );
 };
 
-const ChatMessage = memo(({ message }: ChatMessageProps) => {
-  const isUser = message.role === "user";
+const ChatMessage = memo(
+  ({ message }: ChatMessageProps) => {
+    const isUser = message.role === "user";
 
-  return (
-    <div className={`flex w-full ${isUser ? "justify-end" : "justify-start"}`}>
-      <div
-        className={`flex max-w-[85%] md:max-w-[70%] gap-3 ${
-          isUser ? "flex-row-reverse" : "flex-row"
-        }`}
-      >
+    return (
+      <div className={`flex w-full ${isUser ? "justify-end" : "justify-start"}`}>
         <div
-          className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-            isUser
-              ? "bg-purple-600"
-              : "bg-gradient-to-tr from-blue-500 to-cyan-500"
+          className={`flex max-w-[85%] md:max-w-[70%] gap-3 ${
+            isUser ? "flex-row-reverse" : "flex-row"
           }`}
         >
-          {isUser ? <User size={16} /> : <Bot size={16} />}
-        </div>
+          <div
+            className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
+              isUser
+                ? "bg-purple-600"
+                : "bg-gradient-to-tr from-blue-500 to-cyan-500"
+            }`}
+          >
+            {isUser ? <User size={16} /> : <Bot size={16} />}
+          </div>
 
-        <div
-          className={`rounded-2xl px-5 py-4 text-sm md:text-base leading-relaxed shadow-sm ${
-            isUser
-              ? "bg-purple-600/90 text-white rounded-tr-none"
-              : "bg-[#1e232e] text-gray-100 rounded-tl-none border border-white/5"
-          }`}
-        >
-          {message.role === "model" ? (
-            <div className="prose prose-invert prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-black/30 prose-pre:p-0">
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm as any]}
-                components={{ a: MarkdownLink }}
-              >
-                {message.content}
-              </ReactMarkdown>
-            </div>
-          ) : (
-            message.content
-          )}
+          <div
+            className={`rounded-2xl px-5 py-4 text-sm md:text-base leading-relaxed shadow-sm ${
+              isUser
+                ? "bg-purple-600/90 text-white rounded-tr-none"
+                : "bg-[#1e232e] text-gray-100 rounded-tl-none border border-white/5"
+            }`}
+          >
+            {message.role === "model" ? (
+              <div className="prose prose-invert prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-black/30 prose-pre:p-0">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm as any]}
+                  components={{ a: MarkdownLink }}
+                >
+                  {message.content}
+                </ReactMarkdown>
+              </div>
+            ) : (
+              message.content
+            )}
+          </div>
         </div>
       </div>
-    </div>
-  );
-});
+    );
+  },
+  (previousProps, nextProps) =>
+    previousProps.message.id === nextProps.message.id &&
+    previousProps.message.role === nextProps.message.role &&
+    previousProps.message.content === nextProps.message.content &&
+    previousProps.message.type === nextProps.message.type
+);
 
 ChatMessage.displayName = "ChatMessage";
 
