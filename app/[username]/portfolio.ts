@@ -195,6 +195,8 @@ export interface LangIntData {
 
 export interface ResumeData {
   resume_url?: string;
+  cv_url?: string;
+  active_document?: 'resume' | 'cv';
 }
 
 export interface ProfileData {

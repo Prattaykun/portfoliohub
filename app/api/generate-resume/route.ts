@@ -1,7 +1,12 @@
 // app/api/generate-resume/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { v2 as cloudinary } from 'cloudinary'
+import { createClient } from '@supabase/supabase-js'
 import { processSignature } from '@/lib/server/processSignature'
+import { generateTemplateHTML } from '@/lib/server/templates'
+import { filterResumeData } from '@/lib/server/filterResumeData'
+import { defaultSectionToggles } from '@/lib/resumeTemplates'
+import type { TemplateId, SectionToggles, SelectedItems } from '@/lib/resumeTemplates'
 
 // Configure Cloudinary
 cloudinary.config({
@@ -9,6 +14,12 @@ cloudinary.config({
   api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 })
+
+// Configure Supabase Admin Client
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+const supabaseAdmin = createClient(supabaseUrl, serviceKey)
+
 
 // Type definitions
 interface Profile {
@@ -164,6 +175,10 @@ interface Certificate {
 }
 
 interface RequestPayload {
+  userId?: string
+  template?: TemplateId
+  sections?: SectionToggles
+  selectedItems?: SelectedItems
   profile: Profile
   about: About
   skills: Skills
@@ -177,7 +192,15 @@ interface RequestPayload {
 //${project.results ? `<strong>Results:</strong> ${escapeHtml(project.results)}<br/>` : ''}
 export async function POST(request: NextRequest) {
   try {
-    const { profile, about, skills, projects, contact, langint, certificates = [] }: RequestPayload = await request.json()
+    const body: RequestPayload = await request.json()
+    const {
+      userId: explicitUserId,
+      template = 'classic',
+      sections: rawSections,
+      selectedItems,
+      profile, about, skills, projects, contact, langint,
+      certificates = []
+    } = body
 
     if (!profile || !about || !contact) {
       return NextResponse.json(
@@ -185,6 +208,9 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
+
+    // Merge section toggles with defaults
+    const sections: SectionToggles = { ...defaultSectionToggles(), ...rawSections }
 
     // Process signature if available
     const processedProfile = { ...profile }
@@ -196,12 +222,45 @@ export async function POST(request: NextRequest) {
         }
       } catch (error) {
         console.error('Signature processing failed, using original:', error)
-        // Continue with original signature if processing fails
       }
     }
 
-    // Generate HTML content for the resume
-    const htmlContent = generateResumeHTML(processedProfile, about, skills, projects, contact, langint, certificates)
+    // Filter data based on selected items (if provided)
+    let filteredAbout = about
+    let filteredSkills = skills
+    let filteredProjects = projects
+    let filteredLangint = langint
+    let filteredCertificates = certificates
+
+    if (selectedItems) {
+      const filtered = filterResumeData(
+        about, skills, projects, langint, certificates,
+        sections, selectedItems
+      )
+      filteredAbout = filtered.about
+      filteredSkills = filtered.skills
+      filteredProjects = filtered.projects
+      filteredLangint = filtered.langint
+      filteredCertificates = filtered.certificates
+    }
+
+    // Generate HTML — dispatch to correct template
+    let htmlContent: string
+
+    if (template === 'classic' || !template) {
+      // Use the original classic generator (defined below in this file)
+      htmlContent = generateResumeHTML(
+        processedProfile, filteredAbout, filteredSkills,
+        filteredProjects, contact, filteredLangint, filteredCertificates
+      )
+    } else {
+      // Use one of the new template generators
+      htmlContent = generateTemplateHTML(
+        template, processedProfile, filteredAbout, filteredSkills,
+        filteredProjects, contact, filteredLangint, filteredCertificates,
+        sections
+      )
+    }
 
     // Generate PDF from HTML using Browserless API
     const pdfBuffer = await generatePDFWithBrowserless(htmlContent)
@@ -209,7 +268,31 @@ export async function POST(request: NextRequest) {
     // Upload PDF to Cloudinary
     const resumeUrl = await uploadToCloudinary(pdfBuffer)
 
+    // Persist resumeUrl directly to database using Supabase Admin service key
+    const targetUserId = explicitUserId || profile?.uid
+    if (targetUserId && resumeUrl) {
+      try {
+        const { data: existingRecord } = await supabaseAdmin
+          .from('resumes')
+          .select('*')
+          .eq('auth_user_id', targetUserId)
+          .maybeSingle()
+
+        await supabaseAdmin.from('resumes').upsert({
+          auth_user_id: targetUserId,
+          resume_url: resumeUrl,
+          cv_url: existingRecord?.cv_url || null,
+          active_document: existingRecord?.active_document || 'resume',
+          updated_at: new Date().toISOString(),
+        })
+        console.log('Successfully saved resumeUrl to database for user:', targetUserId)
+      } catch (dbErr) {
+        console.error('Error saving resumeUrl to database:', dbErr)
+      }
+    }
+
     return NextResponse.json({ resumeUrl })
+
   } catch (error) {
     console.error('Resume generation error:', error)
     return NextResponse.json(

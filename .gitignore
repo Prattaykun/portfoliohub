@@ -41,7 +41,9 @@ yarn-error.log*
 /.keys/
 *.jks
 *.keystore
+*.apk
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+docs/
