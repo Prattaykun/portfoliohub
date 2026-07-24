@@ -55,9 +55,9 @@
     "semantic_hash": "9bb4c4bd8767bb8ae89a95212b77afc9"
   },
   "app/[username]/chatbot/page.tsx": {
-    "mtime": 1773580593.9701555,
-    "ast_hash": "3bb7955c43e87d6beb0d2895b912e3f1",
-    "semantic_hash": "3bb7955c43e87d6beb0d2895b912e3f1"
+    "mtime": 1784936685.0853844,
+    "ast_hash": "6538453f5251f635215600738168c385",
+    "semantic_hash": ""
   },
   "app/[username]/layout.tsx": {
     "mtime": 1773580593.9701555,
@@ -255,9 +255,9 @@
     "semantic_hash": "c1423bfa1d1026f2adb13f4f86edd97b"
   },
   "components/ChatMessage.tsx": {
-    "mtime": 1773580593.986092,
-    "ast_hash": "011804a5aca02fc5aa44a2ff32edfe2b",
-    "semantic_hash": "011804a5aca02fc5aa44a2ff32edfe2b"
+    "mtime": 1784936675.7335436,
+    "ast_hash": "6168e024b48b9910100110f7c71ec6a5",
+    "semantic_hash": ""
   },
   "components/PwaInit.tsx": {
     "mtime": 1773580593.986092,

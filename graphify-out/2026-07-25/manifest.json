@@ -95,9 +95,9 @@
     "semantic_hash": "9b69c91b3c7c91444550c1e93bc53865"
   },
   "app/admin/page.tsx": {
-    "mtime": 1784930608.4809184,
-    "ast_hash": "f2f38e80a27d6293af96ff1ba6954346",
-    "semantic_hash": "f2f38e80a27d6293af96ff1ba6954346"
+    "mtime": 1784934404.7252252,
+    "ast_hash": "e109dee304af545909c2510ab87ba9bb",
+    "semantic_hash": ""
   },
   "app/api/admin/cloudinary/route.ts": {
     "mtime": 1784928367.9040613,
@@ -110,9 +110,9 @@
     "semantic_hash": "78be75e3e4a3d689a9428269cd7264a9"
   },
   "app/api/chatbot/route.ts": {
-    "mtime": 1773580593.9731507,
-    "ast_hash": "7cfa6ff780f351f7335711ed324ea3e1",
-    "semantic_hash": "7cfa6ff780f351f7335711ed324ea3e1"
+    "mtime": 1784934369.8468013,
+    "ast_hash": "1c5472399f3b6d17e91243f0b135c630",
+    "semantic_hash": ""
   },
   "app/api/check-username/route.ts": {
     "mtime": 1773580593.9731507,
@@ -582,6 +582,26 @@
   "README.md": {
     "mtime": 1773582784.5750332,
     "ast_hash": "e22606438aacf43d27832503abe0d213",
+    "semantic_hash": ""
+  },
+  "app/api/admin/chatbot-settings/route.ts": {
+    "mtime": 1784934355.2798097,
+    "ast_hash": "7c21f984462ca7009a99822fead88bc5",
+    "semantic_hash": ""
+  },
+  "lib/chatbotModels.ts": {
+    "mtime": 1784934347.6916718,
+    "ast_hash": "80cbbcd849aa2acbaeb29f2de5c99a95",
+    "semantic_hash": ""
+  },
+  "lib/server/getChatbotConfig.ts": {
+    "mtime": 1784934352.032452,
+    "ast_hash": "15a5198f8d43827601a85e5cff1b52a0",
+    "semantic_hash": ""
+  },
+  "supabase/chatbot_config.sql": {
+    "mtime": 1784934344.4460008,
+    "ast_hash": "f5e7a6cfa3f0ef4c9d048e2f5ab8cf3c",
     "semantic_hash": ""
   }
 }

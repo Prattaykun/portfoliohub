@@ -502,7 +502,7 @@
       "label": "ChatbotPage()",
       "file_type": "code",
       "source_file": "app/[username]/chatbot/page.tsx",
-      "source_location": "L89",
+      "source_location": "L90",
       "_origin": "ast",
       "id": "app_username_chatbot_page_chatbotpage",
       "community": 11,
@@ -1011,8 +1011,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_username_project_projectid_page",
-      "community": 5,
-      "community_name": "site.ts",
+      "community": 16,
+      "community_name": "fetchUserData",
       "norm_label": "[projectid]/page.tsx"
     },
     {
@@ -1022,8 +1022,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "app_username_project_projectid_page_props",
-      "community": 5,
-      "community_name": "site.ts",
+      "community": 16,
+      "community_name": "fetchUserData",
       "norm_label": "props"
     },
     {
@@ -1033,8 +1033,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "app_username_project_projectid_page_generatemetadata",
-      "community": 5,
-      "community_name": "site.ts",
+      "community": 16,
+      "community_name": "fetchUserData",
       "norm_label": "generatemetadata()"
     },
     {
@@ -2809,10 +2809,21 @@
       "norm_label": "chatmessageprops"
     },
     {
+      "label": "remarkPlugins",
+      "file_type": "code",
+      "source_file": "components/ChatMessage.tsx",
+      "source_location": "L18",
+      "_origin": "ast",
+      "id": "components_chatmessage_remarkplugins",
+      "community": 11,
+      "community_name": "chatbot/page.tsx",
+      "norm_label": "remarkplugins"
+    },
+    {
       "label": "MarkdownLink()",
       "file_type": "code",
       "source_file": "components/ChatMessage.tsx",
-      "source_location": "L19",
+      "source_location": "L22",
       "_origin": "ast",
       "id": "components_chatmessage_markdownlink",
       "community": 11,
@@ -2820,10 +2831,21 @@
       "norm_label": "markdownlink()"
     },
     {
+      "label": "markdownComponents",
+      "file_type": "code",
+      "source_file": "components/ChatMessage.tsx",
+      "source_location": "L51",
+      "_origin": "ast",
+      "id": "components_chatmessage_markdowncomponents",
+      "community": 11,
+      "community_name": "chatbot/page.tsx",
+      "norm_label": "markdowncomponents"
+    },
+    {
       "label": "ChatMessage",
       "file_type": "code",
       "source_file": "components/ChatMessage.tsx",
-      "source_location": "L48",
+      "source_location": "L53",
       "_origin": "ast",
       "id": "components_chatmessage_chatmessage",
       "community": 11,
@@ -3156,8 +3178,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_dashboard_resumesection",
-      "community": 2,
-      "community_name": "generate-cv/route.ts",
+      "community": 3,
+      "community_name": "resumeTemplates.ts",
       "norm_label": "resumesection.tsx"
     },
     {
@@ -3167,8 +3189,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "components_dashboard_resumesection_resumerow",
-      "community": 2,
-      "community_name": "generate-cv/route.ts",
+      "community": 3,
+      "community_name": "resumeTemplates.ts",
       "norm_label": "resumerow"
     },
     {
@@ -3178,8 +3200,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "components_dashboard_resumesection_resumesection",
-      "community": 2,
-      "community_name": "generate-cv/route.ts",
+      "community": 3,
+      "community_name": "resumeTemplates.ts",
       "norm_label": "resumesection()"
     },
     {
@@ -3189,8 +3211,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_dashboard_shareportfolio",
-      "community": 5,
-      "community_name": "site.ts",
+      "community": 1,
+      "community_name": "supabaseClient.ts",
       "norm_label": "shareportfolio.tsx"
     },
     {
@@ -3783,8 +3805,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "lib_cvtemplates_activedocumenttype",
-      "community": 2,
-      "community_name": "generate-cv/route.ts",
+      "community": 3,
+      "community_name": "resumeTemplates.ts",
       "norm_label": "activedocumenttype"
     },
     {
@@ -3915,8 +3937,8 @@
       "source_location": "L70",
       "_origin": "ast",
       "id": "lib_resumetemplates_selecteditems",
-      "community": 2,
-      "community_name": "generate-cv/route.ts",
+      "community": 3,
+      "community_name": "resumeTemplates.ts",
       "norm_label": "selecteditems"
     },
     {
@@ -8875,7 +8897,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/[username]/chatbot/page.tsx",
-      "source_location": "L89",
+      "source_location": "L90",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_username_chatbot_page",
@@ -8961,11 +8983,23 @@
       "confidence_score": 1.0
     },
     {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/[username]/chatbot/page.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_username_chatbot_page",
+      "target": "components_chatmessage_chatmessage",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "app/[username]/chatbot/page.tsx",
-      "source_location": "L153",
+      "source_location": "L174",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_username_chatbot_page_chatbotpage",
@@ -12926,7 +12960,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "components/ChatMessage.tsx",
-      "source_location": "L48",
+      "source_location": "L53",
       "weight": 1.0,
       "_origin": "ast",
       "source": "components_chatmessage",
@@ -12948,12 +12982,24 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "components/ChatMessage.tsx",
-      "source_location": "L19",
+      "source_location": "L51",
       "weight": 1.0,
       "_origin": "ast",
       "source": "components_chatmessage",
-      "target": "components_chatmessage_markdownlink",
+      "target": "components_chatmessage_markdowncomponents",
       "confidence_score": 1.0
+    },
+    {
+      "relation": "indirect_call",
+      "confidence": "INFERRED",
+      "source_file": "components/ChatMessage.tsx",
+      "source_location": "L51",
+      "weight": 1.0,
+      "_origin": "ast",
+      "context": "collection",
+      "source": "components_chatmessage",
+      "target": "components_chatmessage_markdownlink",
+      "confidence_score": 0.5
     },
     {
       "relation": "contains",
@@ -12964,6 +13010,17 @@
       "_origin": "ast",
       "source": "components_chatmessage",
       "target": "components_chatmessage_message",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/ChatMessage.tsx",
+      "source_location": "L18",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "components_chatmessage",
+      "target": "components_chatmessage_remarkplugins",
       "confidence_score": 1.0
     },
     {
@@ -19650,5 +19707,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "67e448eba106662a52ba751c1d5133ed272e236b"
+  "built_at_commit": "06a280ad26b78cfad72f8ab2ef88ed07ba212e03"
 }

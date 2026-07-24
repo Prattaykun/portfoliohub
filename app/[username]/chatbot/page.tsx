@@ -59,7 +59,8 @@ const ChatMessagesList = React.memo(
     return (
       <div
         ref={messagesContainerRef}
-        className="flex-1 overflow-y-auto p-4 md:p-8 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent"
+        className="flex-1 overflow-y-auto overscroll-contain p-4 md:p-8 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent [overflow-anchor:none]"
+        style={{ WebkitOverflowScrolling: "touch" }}
       >
         <div ref={messagesContentRef} className="space-y-6">
           {messages.map((message) => (
@@ -103,6 +104,26 @@ export default function ChatbotPage() {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const messagesContentRef = useRef<HTMLDivElement>(null);
   const shouldStickToBottomRef = useRef(true);
+  const scrollRafRef = useRef<number | null>(null);
+  const isLoadingRef = useRef(false);
+
+  isLoadingRef.current = isLoading;
+
+  const scrollToBottom = () => {
+    const container = messagesContainerRef.current;
+    if (!container) return;
+
+    // Coalesce to one write per frame — avoids layout thrash during markdown paint
+    if (scrollRafRef.current != null) {
+      cancelAnimationFrame(scrollRafRef.current);
+    }
+    scrollRafRef.current = requestAnimationFrame(() => {
+      scrollRafRef.current = null;
+      const el = messagesContainerRef.current;
+      if (!el) return;
+      el.scrollTop = el.scrollHeight;
+    });
+  };
 
   // Track Supabase auth session (logged-in vs logged-out)
   useEffect(() => {
@@ -161,24 +182,11 @@ export default function ChatbotPage() {
     fetchProfile();
   }, [username]);
 
-  const scrollToBottom = () => {
-    const container = messagesContainerRef.current;
-
-    if (!container) {
-      return;
-    }
-
-    container.scrollTop = container.scrollHeight;
-  };
-
+  // Stick to bottom only when messages change / loading toggles — not on every layout tick
   useLayoutEffect(() => {
-    const frameId = requestAnimationFrame(() => {
-      if (shouldStickToBottomRef.current) {
-        scrollToBottom();
-      }
-    });
-
-    return () => cancelAnimationFrame(frameId);
+    if (shouldStickToBottomRef.current) {
+      scrollToBottom();
+    }
   }, [messages, isLoading]);
 
   useEffect(() => {
@@ -189,16 +197,27 @@ export default function ChatbotPage() {
       return;
     }
 
+    let scrollIdleTimer: ReturnType<typeof setTimeout> | null = null;
+    let isUserScrolling = false;
+
     const updateStickyState = () => {
-      const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
+      const distanceFromBottom =
+        container.scrollHeight - container.scrollTop - container.clientHeight;
       shouldStickToBottomRef.current = distanceFromBottom < 80;
+      isUserScrolling = true;
+      if (scrollIdleTimer) clearTimeout(scrollIdleTimer);
+      scrollIdleTimer = setTimeout(() => {
+        isUserScrolling = false;
+      }, 150);
     };
 
     updateStickyState();
     container.addEventListener("scroll", updateStickyState, { passive: true });
 
+    // Only follow content growth while loading or pinned — never fight user scroll
     const resizeObserver = new ResizeObserver(() => {
-      if (shouldStickToBottomRef.current || isLoading) {
+      if (isUserScrolling) return;
+      if (shouldStickToBottomRef.current || isLoadingRef.current) {
         scrollToBottom();
       }
     });
@@ -208,8 +227,13 @@ export default function ChatbotPage() {
     return () => {
       container.removeEventListener("scroll", updateStickyState);
       resizeObserver.disconnect();
+      if (scrollIdleTimer) clearTimeout(scrollIdleTimer);
+      if (scrollRafRef.current != null) {
+        cancelAnimationFrame(scrollRafRef.current);
+        scrollRafRef.current = null;
+      }
     };
-  }, [isLoading]);
+  }, []);
 
   // Handle Textarea Auto-Resize
   useEffect(() => {

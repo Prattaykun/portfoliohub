@@ -1,16 +1,16 @@
 # Graph Report - portfoliohub  (2026-07-25)
 
 ## Corpus Check
-- 120 files · ~86,069 words
+- 120 files · ~86,213 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 706 nodes · 1034 edges · 93 communities (38 shown, 55 thin omitted)
-- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
+- 708 nodes · 1037 edges · 93 communities (38 shown, 55 thin omitted)
+- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 1 edges (avg confidence: 0.5)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `67e448eb`
+- Built from commit: `06a280ad`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -117,14 +117,14 @@
 ## Surprising Connections (you probably didn't know these)
 - `generateMetadata()` --calls--> `toAbsoluteUrl()`  [EXTRACTED]
   app/[username]/layout.tsx → lib/site.ts
+- `generateMetadata()` --calls--> `toAbsoluteUrl()`  [EXTRACTED]
+  app/[username]/project/[projectId]/page.tsx → lib/site.ts
+- `RequestPayload` --references--> `SelectedItems`  [EXTRACTED]
+  app/api/generate-cv/route.ts → lib/resumeTemplates.ts
 - `POST()` --calls--> `processSignature()`  [EXTRACTED]
   app/api/generate-cv/route.ts → lib/server/processSignature.ts
 - `POST()` --calls--> `upsertResumeDocument()`  [EXTRACTED]
   app/api/generate-cv/route.ts → lib/server/upsertResumeDocument.ts
-- `RequestPayload` --references--> `SelectedItems`  [EXTRACTED]
-  app/api/generate-resume/route.ts → lib/resumeTemplates.ts
-- `POST()` --calls--> `defaultSectionToggles()`  [EXTRACTED]
-  app/api/generate-resume/route.ts → lib/resumeTemplates.ts
 
 ## Import Cycles
 - None detected.
@@ -140,20 +140,20 @@ Cohesion: 0.05
 Nodes (24): MediaItem, Section, AuthTabs(), clsx(), Tab, AnyObj, ContactSectionProps, OtherLink (+16 more)
 
 ### Community 2 - "generate-cv/route.ts"
-Cohesion: 0.14
-Nodes (28): generatePDFWithBrowserless(), POST(), RequestPayload, supabaseAdmin, uploadToCloudinary(), CVWizard(), extractAch(), Props (+20 more)
+Cohesion: 0.15
+Nodes (25): generatePDFWithBrowserless(), POST(), RequestPayload, supabaseAdmin, uploadToCloudinary(), CVWizard(), extractAch(), Props (+17 more)
 
 ### Community 3 - "resumeTemplates.ts"
-Cohesion: 0.17
-Nodes (25): RequestPayload, extractAch(), ResumeWizard(), WizardProps, Props, Props, defaultSectionToggles(), SectionKey (+17 more)
+Cohesion: 0.15
+Nodes (28): RequestPayload, extractAch(), ResumeWizard(), WizardProps, Props, Props, ResumeRow, ActiveDocumentType (+20 more)
 
 ### Community 4 - "generate-resume1/route.ts"
 Cohesion: 0.09
 Nodes (26): About, Certificate, CertificateSkill, Contact, ContactLink, Education, escapeHtml(), Experience (+18 more)
 
 ### Community 5 - "site.ts"
-Cohesion: 0.10
-Nodes (18): GET(), supabase, geistMono, geistSans, metadata, siteUrl, manifest(), generateMetadata() (+10 more)
+Cohesion: 0.11
+Nodes (16): GET(), supabase, geistMono, geistSans, metadata, siteUrl, manifest(), generateMetadata() (+8 more)
 
 ### Community 6 - "compilerOptions"
 Cohesion: 0.07
@@ -172,8 +172,8 @@ Cohesion: 0.14
 Nodes (13): androidDir, checksum, __dirname, faviconUrl, __filename, generator, log, manifestUrl (+5 more)
 
 ### Community 11 - "chatbot/page.tsx"
-Cohesion: 0.17
-Nodes (10): ChatbotPage(), ChatMessagesList, ChatMessagesListProps, createMessage(), Message, supabase, UserProfile, ChatMessage (+2 more)
+Cohesion: 0.15
+Nodes (12): ChatbotPage(), ChatMessagesList, ChatMessagesListProps, createMessage(), Message, supabase, UserProfile, ChatMessage (+4 more)
 
 ### Community 12 - "devDependencies"
 Cohesion: 0.18
@@ -192,8 +192,8 @@ Cohesion: 0.20
 Nodes (9): name, private, scripts, build, dev, generate:twa, lint, start (+1 more)
 
 ### Community 16 - "fetchUserData"
-Cohesion: 0.31
-Nodes (7): Image(), size, PortfolioPage(), fetchUserData(), getYoutubeThumbnail(), Image(), size
+Cohesion: 0.23
+Nodes (9): Image(), size, PortfolioPage(), fetchUserData(), getYoutubeThumbnail(), Image(), size, generateMetadata() (+1 more)
 
 ### Community 17 - "PortfolioSections.tsx"
 Cohesion: 0.25
@@ -256,7 +256,7 @@ Cohesion: 0.50
 Nodes (3): For --cluster-only, For --update (incremental re-extraction), graphify reference: incremental update and cluster-only
 
 ## Knowledge Gaps
-- **304 isolated node(s):** `countryCodes`, `MediaItem`, `Section`, `CertMedia`, `CertSkill` (+299 more)
+- **305 isolated node(s):** `countryCodes`, `MediaItem`, `Section`, `CertMedia`, `CertSkill` (+300 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **55 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -264,16 +264,16 @@ Nodes (3): For --cluster-only, For --update (incremental re-extraction), graphif
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `dependencies` connect `dependencies` to `chatbot/route.ts`, `MediaCard.tsx`, `package.json`, `typescript`, `framer-motion`, `groq-sdk`, `lodash`, `lodash.debounce`, `lucide-react`, `markdown-wasm`, `next`, `next-cloudinary`, `@next/mdx`, `pdfkit`, `puppeteer`, `react-datepicker`, `react-markdown`, `react-slick`, `rehype-slug`, `remark-gfm`, `slick-carousel`, `@supabase/auth-helpers-nextjs`, `@supabase/ssr`, `@supabase/supabase-js`, `@upstash/redis`, `web-push`?**
-  _High betweenness centrality (0.238) - this node is a cross-community bridge._
+  _High betweenness centrality (0.237) - this node is a cross-community bridge._
 - **Why does `react` connect `MediaCard.tsx` to `dependencies`?**
-  _High betweenness centrality (0.208) - this node is a cross-community bridge._
-- **Why does `supabase` connect `supabaseClient.ts` to `types.ts`, `generate-cv/route.ts`, `site.ts`?**
-  _High betweenness centrality (0.150) - this node is a cross-community bridge._
+  _High betweenness centrality (0.207) - this node is a cross-community bridge._
+- **Why does `supabase` connect `supabaseClient.ts` to `types.ts`, `resumeTemplates.ts`?**
+  _High betweenness centrality (0.149) - this node is a cross-community bridge._
 - **What connects `countryCodes`, `MediaItem`, `Section` to the rest of the system?**
-  _304 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _305 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `types.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.05185185185185185 - nodes in this community are weakly interconnected._
 - **Should `supabaseClient.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.05325814536340852 - nodes in this community are weakly interconnected._
-- **Should `generate-cv/route.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.13658536585365855 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05323653962492438 - nodes in this community are weakly interconnected._
+- **Should `resumeTemplates.ts` be split into smaller, more focused modules?**
+  _Cohesion score 0.14634146341463414 - nodes in this community are weakly interconnected._

@@ -14,6 +14,9 @@ interface ChatMessageProps {
   message: Message;
 }
 
+// Stable across renders — avoids remounting markdown on parent updates
+const remarkPlugins = [remarkGfm];
+
 // Custom Link Component for Markdown
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const MarkdownLink = ({ href, children }: any) => {
@@ -25,7 +28,7 @@ const MarkdownLink = ({ href, children }: any) => {
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-1 px-3 py-1 my-1 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-sm font-medium transition-colors no-underline shadow-md"
+        className="inline-flex items-center gap-1 px-3 py-1 my-1 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-sm font-medium transition-colors no-underline"
       >
         {children}
         <ExternalLink size={14} />
@@ -45,12 +48,17 @@ const MarkdownLink = ({ href, children }: any) => {
   );
 };
 
+const markdownComponents = { a: MarkdownLink };
+
 const ChatMessage = memo(
   ({ message }: ChatMessageProps) => {
     const isUser = message.role === "user";
 
     return (
-      <div className={`flex w-full ${isUser ? "justify-end" : "justify-start"}`}>
+      <div
+        className={`flex w-full ${isUser ? "justify-end" : "justify-start"}`}
+        style={{ contentVisibility: "auto", containIntrinsicSize: "auto 120px" }}
+      >
         <div
           className={`flex max-w-[85%] md:max-w-[70%] gap-3 ${
             isUser ? "flex-row-reverse" : "flex-row"
@@ -67,7 +75,7 @@ const ChatMessage = memo(
           </div>
 
           <div
-            className={`rounded-2xl px-5 py-4 text-sm md:text-base leading-relaxed shadow-sm ${
+            className={`rounded-2xl px-5 py-4 text-sm md:text-base leading-relaxed contain-content ${
               isUser
                 ? "bg-purple-600/90 text-white rounded-tr-none"
                 : "bg-[#1e232e] text-gray-100 rounded-tl-none border border-white/5"
@@ -76,8 +84,8 @@ const ChatMessage = memo(
             {message.role === "model" ? (
               <div className="prose prose-invert prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-black/30 prose-pre:p-0">
                 <ReactMarkdown
-                  remarkPlugins={[remarkGfm as any]}
-                  components={{ a: MarkdownLink }}
+                  remarkPlugins={remarkPlugins as any}
+                  components={markdownComponents}
                 >
                   {message.content}
                 </ReactMarkdown>
