@@ -71,14 +71,22 @@ body { font-family:'Montserrat',sans-serif; color:#333; background:#fff; }
       ${profile.photo_url ? `<img src="${escapeHtml(profile.photo_url)}" alt="Photo" />` : ''}
     </div>
     <div class="sidebar-body">
+      ${sections.contacts !== false ? `
       <div class="sb-section">
         <div class="sb-title">CONTACT</div>
         ${contact.phone ? `<div class="sb-row"><img src="https://img.icons8.com/?size=100&id=9730&format=png&color=000000" /><span>Phone:<br/>${escapeHtml(contact.phone)}</span></div>` : ''}
         ${contact.email ? `<div class="sb-row"><img src="https://img.icons8.com/?size=100&id=12623&format=png&color=000000" /><span>Email:<br/>${escapeHtml(contact.email)}</span></div>` : ''}
         ${contact.address ? `<div class="sb-row"><img src="https://img.icons8.com/?size=100&id=7880&format=png&color=000000" /><span>Address:<br/>${escapeHtml(contact.address)}</span></div>` : ''}
-        ${contact.linkedin ? `<div class="sb-row"><img src="https://www.google.com/s2/favicons?domain=linkedin.com&sz=128" /><span>LinkedIn<br/>${escapeHtml(contact.linkedin.replace('https://','').replace('www.',''))}</span></div>` : ''}
-        ${contact.github ? `<div class="sb-row"><img src="https://www.google.com/s2/favicons?domain=github.com&sz=128" /><span>GitHub<br/>${escapeHtml(contact.github.replace('https://','').replace('www.',''))}</span></div>` : ''}
-      </div>
+        ${contact.linkedin ? `<div class="sb-row"><img src="https://www.google.com/s2/favicons?domain=linkedin.com&sz=128" /><span>LinkedIn<br/>${escapeHtml(contact.linkedin.replace(/^https?:\/\//,'').replace(/^www\./,''))}</span></div>` : ''}
+        ${contact.github ? `<div class="sb-row"><img src="https://www.google.com/s2/favicons?domain=github.com&sz=128" /><span>GitHub<br/>${escapeHtml(contact.github.replace(/^https?:\/\//,'').replace(/^www\./,''))}</span></div>` : ''}
+        ${Array.isArray(contact.other_links) ? contact.other_links.map((link: any) => {
+          if (!link?.url) return ''
+          const name = link.name || 'Link'
+          const displayUrl = link.url.replace(/^https?:\/\//,'').replace(/^www\./,'')
+          const iconUrl = link.logo_url || `https://www.google.com/s2/favicons?domain=${encodeURIComponent(link.url)}&sz=128`
+          return `<div class="sb-row"><img src="${escapeHtml(iconUrl)}" /><span>${escapeHtml(name)}<br/>${escapeHtml(displayUrl)}</span></div>`
+        }).join('') : ''}
+      </div>` : ''}
 
       ${sections.skills && hasSoft ? `
       <div class="sb-section">

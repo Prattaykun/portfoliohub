@@ -20,7 +20,16 @@ import {
   ChevronLeft,
   ChevronRight,
   User as UserIcon,
+  Bot,
+  Save,
+  Cpu,
 } from 'lucide-react'
+import type { ChatbotProvider } from '@/lib/chatbotModels'
+import {
+  CHATBOT_MODEL_CATALOG,
+  CHATBOT_PROVIDERS,
+  DEFAULT_CHATBOT_CONFIG,
+} from '@/lib/chatbotModels'
 
 interface OwnerInfo {
   userId?: string
@@ -81,10 +90,28 @@ export default function AdminPage() {
     description: '',
   })
 
+  // Tabs + Chatbot AI settings
+  type AdminTab = 'media' | 'chatbot'
+  const [activeTab, setActiveTab] = useState<AdminTab>('media')
+  const [chatProvider, setChatProvider] = useState<ChatbotProvider>(DEFAULT_CHATBOT_CONFIG.provider)
+  const [chatModel, setChatModel] = useState(DEFAULT_CHATBOT_CONFIG.model)
+  const [chatUpdatedAt, setChatUpdatedAt] = useState<string | null>(null)
+  const [chatModelsCatalog, setChatModelsCatalog] = useState<Record<ChatbotProvider, readonly string[]>>(
+    CHATBOT_MODEL_CATALOG
+  )
+  const [isLoadingChatSettings, setIsLoadingChatSettings] = useState(false)
+  const [isSavingChatSettings, setIsSavingChatSettings] = useState(false)
+
   // Check auth status on mount
   useEffect(() => {
     checkAdminAuth()
   }, [])
+
+  useEffect(() => {
+    if (isAuthenticated && activeTab === 'chatbot') {
+      fetchChatbotSettings()
+    }
+  }, [isAuthenticated, activeTab])
 
   const checkAdminAuth = async () => {
     try {
@@ -96,6 +123,54 @@ export default function AdminPage() {
       }
     } catch {
       // not authenticated
+    }
+  }
+
+  const fetchChatbotSettings = async () => {
+    setIsLoadingChatSettings(true)
+    try {
+      const res = await fetch('/api/admin/chatbot-settings')
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Failed to load chatbot settings')
+
+      if (data.models) setChatModelsCatalog(data.models)
+      if (data.config?.provider) setChatProvider(data.config.provider)
+      if (data.config?.model) setChatModel(data.config.model)
+      setChatUpdatedAt(data.updated_at || null)
+    } catch (err: any) {
+      showNotification('error', err.message || 'Failed to load chatbot AI settings')
+    } finally {
+      setIsLoadingChatSettings(false)
+    }
+  }
+
+  const saveChatbotSettings = async () => {
+    setIsSavingChatSettings(true)
+    try {
+      const res = await fetch('/api/admin/chatbot-settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ provider: chatProvider, model: chatModel }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.details || data.error || 'Failed to save')
+
+      if (data.config?.provider) setChatProvider(data.config.provider)
+      if (data.config?.model) setChatModel(data.config.model)
+      setChatUpdatedAt(data.updated_at || null)
+      showNotification('success', data.message || 'Chatbot AI settings saved')
+    } catch (err: any) {
+      showNotification('error', err.message || 'Failed to save chatbot AI settings')
+    } finally {
+      setIsSavingChatSettings(false)
+    }
+  }
+
+  const handleProviderChange = (provider: ChatbotProvider) => {
+    setChatProvider(provider)
+    const models = chatModelsCatalog[provider] || []
+    if (!models.includes(chatModel)) {
+      setChatModel(models[0] || '')
     }
   }
 
@@ -325,14 +400,25 @@ export default function AdminPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <button
-            onClick={fetchCloudinaryMedia}
-            disabled={isLoadingMedia}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-gray-300 transition-colors"
-          >
-            <RefreshCw className={`w-4 h-4 ${isLoadingMedia ? 'animate-spin' : ''}`} />
-            <span>Refresh Media</span>
-          </button>
+          {activeTab === 'media' ? (
+            <button
+              onClick={fetchCloudinaryMedia}
+              disabled={isLoadingMedia}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-gray-300 transition-colors"
+            >
+              <RefreshCw className={`w-4 h-4 ${isLoadingMedia ? 'animate-spin' : ''}`} />
+              <span>Refresh Media</span>
+            </button>
+          ) : (
+            <button
+              onClick={fetchChatbotSettings}
+              disabled={isLoadingChatSettings}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-gray-300 transition-colors"
+            >
+              <RefreshCw className={`w-4 h-4 ${isLoadingChatSettings ? 'animate-spin' : ''}`} />
+              <span>Refresh Settings</span>
+            </button>
+          )}
 
           <button
             onClick={handleLogout}
@@ -343,6 +429,34 @@ export default function AdminPage() {
           </button>
         </div>
       </header>
+
+      {/* Tab Switcher */}
+      <div className="max-w-7xl mx-auto mt-6">
+        <div className="inline-flex items-center gap-1 p-1.5 rounded-xl bg-white/5 border border-white/10">
+          <button
+            onClick={() => setActiveTab('media')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+              activeTab === 'media'
+                ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/25'
+                : 'text-gray-400 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <HardDrive className="w-4 h-4" />
+            <span>Media Storage</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('chatbot')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+              activeTab === 'chatbot'
+                ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/25'
+                : 'text-gray-400 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <Bot className="w-4 h-4" />
+            <span>Chatbot AI</span>
+          </button>
+        </div>
+      </div>
 
       {/* Notification Toast */}
       {notification && (
@@ -369,7 +483,117 @@ export default function AdminPage() {
         </div>
       )}
 
-      {/* Main Content Area */}
+      {/* Chatbot AI Settings Tab */}
+      {activeTab === 'chatbot' && (
+        <div className="max-w-7xl mx-auto mt-8 space-y-6">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 md:p-8 backdrop-blur-md">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
+              <div className="flex items-start gap-3">
+                <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center shadow-lg shrink-0">
+                  <Cpu className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-white">Chatbot Provider & Model</h2>
+                  <p className="text-xs text-gray-400 mt-1 max-w-xl">
+                    Choose which AI provider and model powers all portfolio chatbots. The selected model is tried first;
+                    other models/providers are used as fallback.
+                  </p>
+                </div>
+              </div>
+              {chatUpdatedAt && (
+                <span className="text-[11px] text-gray-500 whitespace-nowrap">
+                  Last saved: {new Date(chatUpdatedAt).toLocaleString()}
+                </span>
+              )}
+            </div>
+
+            {isLoadingChatSettings ? (
+              <div className="py-12 text-center text-gray-400 text-sm flex items-center justify-center gap-3">
+                <RefreshCw className="w-5 h-5 animate-spin text-purple-400" />
+                <span>Loading chatbot settings...</span>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-3">
+                    Provider
+                  </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {CHATBOT_PROVIDERS.map((p) => (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => handleProviderChange(p.id)}
+                        className={`p-4 rounded-xl border text-left transition-all ${
+                          chatProvider === p.id
+                            ? 'border-purple-500 bg-purple-500/15 shadow-lg shadow-purple-500/10'
+                            : 'border-white/10 bg-white/5 hover:bg-white/10'
+                        }`}
+                      >
+                        <div className="font-semibold text-sm text-white">{p.label}</div>
+                        <div className="text-[11px] text-gray-400 mt-1">
+                          {p.id === 'groq' && 'Fast Llama / GPT-OSS via Groq'}
+                          {p.id === 'gemini' && 'Google AI Studio (GEMINI_API_KEY)'}
+                          {p.id === 'vertex-ai' && 'Vertex AI publishers API (VERTEX_API_KEY)'}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2">
+                    Model
+                  </label>
+                  <select
+                    value={chatModel}
+                    onChange={(e) => setChatModel(e.target.value)}
+                    className="w-full max-w-xl bg-[#0b0f19] border border-white/10 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500"
+                  >
+                    {(chatModelsCatalog[chatProvider] || []).map((m) => (
+                      <option key={m} value={m}>
+                        {m}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4 text-xs text-gray-400 space-y-1.5">
+                  <p className="font-semibold text-gray-300">Active selection</p>
+                  <p>
+                    Provider: <span className="text-purple-300 font-mono">{chatProvider}</span>
+                  </p>
+                  <p>
+                    Model: <span className="text-purple-300 font-mono">{chatModel}</span>
+                  </p>
+                  <p className="pt-2 border-t border-white/5 mt-2">
+                    API keys are read from env: <span className="font-mono text-gray-300">GROQ_API_KEY</span>,{' '}
+                    <span className="font-mono text-gray-300">GEMINI_API_KEY</span>,{' '}
+                    <span className="font-mono text-gray-300">VERTEX_API_KEY</span>.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={saveChatbotSettings}
+                  disabled={isSavingChatSettings || !chatModel}
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white text-xs font-semibold shadow-lg shadow-purple-500/25 disabled:opacity-50 transition-all"
+                >
+                  {isSavingChatSettings ? (
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Save className="w-4 h-4" />
+                  )}
+                  <span>{isSavingChatSettings ? 'Saving...' : 'Save Chatbot Settings'}</span>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Main Content Area — Media Storage */}
+      {activeTab === 'media' && (
       <div className="max-w-7xl mx-auto mt-8 space-y-8">
         {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -653,6 +877,7 @@ export default function AdminPage() {
           )}
         </div>
       </div>
+      )}
 
       {/* Confirmation Modal */}
       {confirmModal.isOpen && (

@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import type { ActiveDocumentType } from '@/lib/cvTemplates'
+import { upsertResumeDocument } from '@/lib/server/upsertResumeDocument'
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -16,22 +17,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid parameters' }, { status: 400 })
     }
 
-    // Fetch existing record to preserve urls
-    const { data: existingRecord } = await supabaseAdmin
-      .from('resumes')
-      .select('*')
-      .eq('auth_user_id', userId)
-      .maybeSingle()
-
-    const { error } = await supabaseAdmin
-      .from('resumes')
-      .upsert({
-        auth_user_id: userId,
-        resume_url: existingRecord?.resume_url || null,
-        cv_url: existingRecord?.cv_url || null,
-        active_document: activeDocument,
-        updated_at: new Date().toISOString(),
-      })
+    const { error } = await upsertResumeDocument(supabaseAdmin, {
+      userId,
+      activeDocument,
+    })
 
     if (error) {
       console.error('Active document update error:', error)

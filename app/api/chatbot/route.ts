@@ -1,27 +1,39 @@
-
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { createClient } from "@supabase/supabase-js";
 import Groq from "groq-sdk";
+import {
+    GEMINI_MODELS,
+    modelFallbackOrder,
+    providerFallbackOrder,
+    type ChatbotProvider,
+} from "@/lib/chatbotModels";
+import { getChatbotConfig } from "@/lib/server/getChatbotConfig";
 
-// Initialize Gemini (for Audio)
+// Initialize Gemini (for Audio + text)
 const geminiApiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(geminiApiKey!);
 
-// Initialize Groq (for Text)
+// Initialize Groq (for Text + Whisper)
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-// Initialize Supabase client
+const vertexApiKey = process.env.VERTEX_API_KEY;
+
+// Initialize Supabase client (portfolio data)
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
+const supabaseAdmin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
 // --- User Data Fetching Logic ---
 
 async function fetchUserData(username: string) {
     try {
-        // Fetch User and Chatbot Info
         const { data: usernameData, error: usernameError } = await supabase
             .from("users_usernames")
             .select("auth_user_id, chatbot_info")
@@ -71,25 +83,80 @@ async function fetchUserData(username: string) {
     }
 }
 
-// --- Model Configuration ---
+async function generateWithGroq(systemPrompt: string, userMessage: string, modelId: string) {
+    const completion = await groq.chat.completions.create({
+        messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userMessage }
+        ],
+        model: modelId,
+        temperature: 0.7,
+        max_tokens: 2048,
+    });
+    return completion.choices[0]?.message?.content || null;
+}
 
-const GROQ_MODELS = [
-    "llama-3.3-70b-versatile",
-    "llama-3.1-8b-instant",
-    "openai/gpt-oss-120b",
-    "openai/gpt-oss-20b"
-];
+async function generateWithGemini(systemPrompt: string, userMessage: string, modelId: string) {
+    const model = genAI.getGenerativeModel({
+        model: modelId,
+        systemInstruction: systemPrompt
+    });
+    const result = await model.generateContent(userMessage);
+    return result.response.text() || null;
+}
 
-const GEMINI_MODELS = [
-    "gemini-2.5-flash",
-    "gemini-2.5-pro",
-    "gemini-2.0-flash",
-    "gemini-2.0-flash-exp",
-    "gemini-2.0-flash-lite",
-    "gemini-2.0-pro-exp",
-    "gemini-1.5-pro",
-    "gemini-1.5-flash"
-];
+async function generateWithVertex(systemPrompt: string, userMessage: string, modelId: string) {
+    if (!vertexApiKey) {
+        throw new Error("VERTEX_API_KEY is not configured");
+    }
+
+    const url =
+        `https://aiplatform.googleapis.com/v1/publishers/google/models/${encodeURIComponent(modelId)}:generateContent` +
+        `?key=${encodeURIComponent(vertexApiKey)}`;
+
+    const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            systemInstruction: { parts: [{ text: systemPrompt }] },
+            contents: [
+                {
+                    role: "user",
+                    parts: [{ text: userMessage }],
+                },
+            ],
+        }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+        throw new Error(data?.error?.message || `Vertex AI error (${res.status})`);
+    }
+
+    const parts = data?.candidates?.[0]?.content?.parts;
+    const text = Array.isArray(parts)
+        ? parts.map((p: { text?: string }) => p?.text || "").join("")
+        : "";
+    return text || null;
+}
+
+async function generateForProvider(
+    provider: ChatbotProvider,
+    systemPrompt: string,
+    userMessage: string,
+    modelId: string
+) {
+    switch (provider) {
+        case "groq":
+            return generateWithGroq(systemPrompt, userMessage, modelId);
+        case "gemini":
+            return generateWithGemini(systemPrompt, userMessage, modelId);
+        case "vertex-ai":
+            return generateWithVertex(systemPrompt, userMessage, modelId);
+        default:
+            return null;
+    }
+}
 
 // --- API Route Handler ---
 
@@ -106,14 +173,14 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Message exceeds 200 characters limit." }, { status: 400 });
         }
 
-        // 1. Fetch User Data for Context
         const { data: userData, error: userError } = await fetchUserData(username);
 
         if (userError || !userData) {
             return NextResponse.json({ error: userError || "User not found" }, { status: 404 });
         }
 
-        // 2. Prepare System Prompt
+        const chatbotConfig = await getChatbotConfig(supabaseAdmin);
+
         const systemPrompt = `
 You are an advanced, agentic AI assistant for **${userData.profile?.full_name || "this user"}**.
 You are answering questions from a visitor to their portfolio website.
@@ -149,45 +216,29 @@ ${JSON.stringify(history?.slice(-5) || [])}
 
         let answer = "";
 
-        // --- Helper Function for Text Generation with Fallback ---
-
         async function generateTextWithFallback(userMessage: string) {
-            // 1. Try Groq Models first
-            for (const modelId of GROQ_MODELS) {
-                try {
-                    console.log(`Trying Groq model: ${modelId}`);
-                    const completion = await groq.chat.completions.create({
-                        messages: [
-                            { role: "system", content: systemPrompt },
-                            { role: "user", content: userMessage }
-                        ],
-                        model: modelId,
-                        temperature: 0.7,
-                        max_tokens: 2048,
-                    });
-                    // Check if we got a valid response
-                    const content = completion.choices[0]?.message?.content;
-                    if (content) return content;
-                } catch (err) {
-                    console.warn(`Groq model ${modelId} failed:`, err);
-                    continue; // Try next model
-                }
-            }
+            const providers = providerFallbackOrder(chatbotConfig.provider);
 
-            // 2. If all Groq models fail, try Gemini Models
-            for (const modelId of GEMINI_MODELS) {
-                try {
-                    console.log(`Trying Gemini model: ${modelId}`);
-                    const model = genAI.getGenerativeModel({
-                        model: modelId,
-                        systemInstruction: systemPrompt
-                    });
-                    const result = await model.generateContent(userMessage);
-                    const content = result.response.text();
-                    if (content) return content;
-                } catch (err) {
-                    console.warn(`Gemini model ${modelId} failed:`, err);
-                    continue;
+            for (const provider of providers) {
+                const models =
+                    provider === chatbotConfig.provider
+                        ? modelFallbackOrder(provider, chatbotConfig.model)
+                        : modelFallbackOrder(provider, "");
+
+                for (const modelId of models) {
+                    try {
+                        console.log(`Trying ${provider} model: ${modelId}`);
+                        const content = await generateForProvider(
+                            provider,
+                            systemPrompt,
+                            userMessage,
+                            modelId
+                        );
+                        if (content) return content;
+                    } catch (err) {
+                        console.warn(`${provider} model ${modelId} failed:`, err);
+                        continue;
+                    }
                 }
             }
 
@@ -195,10 +246,9 @@ ${JSON.stringify(history?.slice(-5) || [])}
         }
 
         if (audio) {
-            // --- Gemini (Native Audio) with Fallback ---
+            // Audio: Gemini native first, then Groq Whisper + text fallback (Vertex is text-only here)
             let audioProcessed = false;
 
-            // 1. Try Gemini Native Audio models specifically
             for (const modelId of GEMINI_MODELS) {
                 try {
                     console.log(`Trying Gemini Audio model: ${modelId}`);
@@ -224,7 +274,6 @@ ${JSON.stringify(history?.slice(-5) || [])}
             }
 
             if (!audioProcessed) {
-                // 2. Fallback: Transcribe audio with Groq (Whisper) -> Text Response with Fallback
                 console.log("Switching to Groq Whisper fallback...");
                 try {
                     const audioBuffer = Buffer.from(audio, "base64");
@@ -245,17 +294,13 @@ ${JSON.stringify(history?.slice(-5) || [])}
                         throw new Error("Empty transcription from Groq");
                     }
 
-                    // Use the text fallback function
                     answer = await generateTextWithFallback(transcribedText);
-
                 } catch (groqError) {
                     console.error("Groq Whisper fallback failed:", groqError);
                     throw new Error("Failed to process audio.");
                 }
             }
-
         } else if (message) {
-            // --- Text Only with Fallback ---
             answer = await generateTextWithFallback(message);
         } else {
             return NextResponse.json({ error: "Message or Audio is required" }, { status: 400 });

@@ -67,12 +67,21 @@ body { font-family:'Lato', sans-serif; color:#2d3748; background:#fff; line-heig
   <div class="header">
     <div class="header-name">${escapeHtml(profile.full_name)}</div>
     <div class="header-role">${about.roles?.length ? escapeHtml(about.roles.join(' • ')) : ''}</div>
+    ${sections.contacts !== false ? `
     <div class="header-contact">
-      ${contact.address ? `<span>${escapeHtml(contact.address)}</span> <span class="sep">|</span>` : ''}
-      ${contact.email ? `<span>${escapeHtml(contact.email)}</span> <span class="sep">|</span>` : ''}
-      ${contact.phone ? `<span>${escapeHtml(contact.phone)}</span> <span class="sep">|</span>` : ''}
-      ${contact.linkedin ? `<span>${escapeHtml(contact.linkedin.replace('https://','').replace('www.',''))}</span>` : ''}
-    </div>
+      ${[
+        contact.address ? `<span>${escapeHtml(contact.address)}</span>` : '',
+        contact.email ? `<span>${escapeHtml(contact.email)}</span>` : '',
+        contact.phone ? `<span>${escapeHtml(contact.phone)}</span>` : '',
+        contact.linkedin ? `<span>${escapeHtml(contact.linkedin.replace(/^https?:\/\//,'').replace(/^www\./,''))}</span>` : '',
+        contact.github ? `<span>${escapeHtml(contact.github.replace(/^https?:\/\//,'').replace(/^www\./,''))}</span>` : '',
+        ...(Array.isArray(contact.other_links) ? contact.other_links.map((link: any) => {
+          if (!link?.url) return ''
+          const label = link.name ? `${link.name}: ${link.url.replace(/^https?:\/\//,'').replace(/^www\./,'')}` : link.url.replace(/^https?:\/\//,'').replace(/^www\./,'')
+          return `<span>${escapeHtml(label)}</span>`
+        }) : [])
+      ].filter(Boolean).join(' <span class="sep">|</span> ')}
+    </div>` : ''}
   </div>
 
   <!-- SUMMARY -->

@@ -44,20 +44,27 @@ export default function ResumeSection({ user }: { user: any }) {
   }, [user])
 
   const fetchDocumentData = async () => {
-    const { data, error } = await supabase
-      .from("resumes")
-      .select("*")
-      .eq("auth_user_id", user.id)
-      .maybeSingle<ResumeRow>()
-
-    if (error) {
-      console.error("Fetch document data error:", error)
-      return
+    try {
+      const res = await fetch(`/api/user/save-document?userId=${user.id}`)
+      const json = await res.json()
+      if (json.success && json.data) {
+        if (json.data.resume_url) setResumeUrl(json.data.resume_url)
+        if (json.data.cv_url) setCvUrl(json.data.cv_url)
+        if (json.data.active_document) setActiveDoc(json.data.active_document)
+      } else {
+        // Fallback to client query if endpoint failed
+        const { data } = await supabase
+          .from("resumes")
+          .select("*")
+          .eq("auth_user_id", user.id)
+          .maybeSingle<ResumeRow>()
+        if (data?.resume_url) setResumeUrl(data.resume_url)
+        if (data?.cv_url) setCvUrl(data.cv_url)
+        if (data?.active_document) setActiveDoc(data.active_document)
+      }
+    } catch (err) {
+      console.error("Fetch document data error:", err)
     }
-
-    if (data?.resume_url) setResumeUrl(data.resume_url)
-    if (data?.cv_url) setCvUrl(data.cv_url)
-    if (data?.active_document) setActiveDoc(data.active_document)
   }
 
   const checkProfileCompleteness = async (): Promise<boolean> => {
@@ -118,6 +125,7 @@ export default function ResumeSection({ user }: { user: any }) {
   }
 
   const saveResumeToDB = async (url: string) => {
+    setResumeUrl(url)
     try {
       const res = await fetch('/api/user/save-document', {
         method: 'POST',
@@ -129,23 +137,31 @@ export default function ResumeSection({ user }: { user: any }) {
           activeDocument: activeDoc,
         }),
       })
-      if (!res.ok) {
-        throw new Error('Save document API returned error')
-      }
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.details || json.error || 'Save document API error')
+      if (json.data?.resume_url) setResumeUrl(json.data.resume_url)
+      if (json.data?.cv_url) setCvUrl(json.data.cv_url)
     } catch (err) {
       console.error('Save resume to DB API error, trying fallback:', err)
-      await supabase.from("resumes").upsert({
-        auth_user_id: user.id,
-        resume_url: url,
-        cv_url: cvUrl || null,
-        active_document: activeDoc || 'resume',
-        updated_at: new Date().toISOString(),
-      })
+      const { error } = await supabase.from("resumes").upsert(
+        {
+          auth_user_id: user.id,
+          resume_url: url,
+          cv_url: cvUrl || null,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: 'auth_user_id' }
+      )
+      if (error) {
+        console.error('Fallback resume save failed:', error)
+        setMessage('Resume generated but failed to save. Please try again.')
+        throw error
+      }
     }
-    setResumeUrl(url)
   }
 
   const saveCVToDB = async (url: string) => {
+    setCvUrl(url)
     try {
       const res = await fetch('/api/user/save-document', {
         method: 'POST',
@@ -157,20 +173,27 @@ export default function ResumeSection({ user }: { user: any }) {
           activeDocument: activeDoc,
         }),
       })
-      if (!res.ok) {
-        throw new Error('Save document API returned error')
-      }
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.details || json.error || 'Save CV API error')
+      if (json.data?.resume_url) setResumeUrl(json.data.resume_url)
+      if (json.data?.cv_url) setCvUrl(json.data.cv_url)
     } catch (err) {
       console.error('Save CV to DB API error, trying fallback:', err)
-      await supabase.from("resumes").upsert({
-        auth_user_id: user.id,
-        resume_url: resumeUrl || null,
-        cv_url: url,
-        active_document: activeDoc || 'resume',
-        updated_at: new Date().toISOString(),
-      })
+      const { error } = await supabase.from("resumes").upsert(
+        {
+          auth_user_id: user.id,
+          resume_url: resumeUrl || null,
+          cv_url: url,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: 'auth_user_id' }
+      )
+      if (error) {
+        console.error('Fallback CV save failed:', error)
+        setMessage('CV generated but failed to save. Please try again.')
+        throw error
+      }
     }
-    setCvUrl(url)
   }
 
   const handleResumeFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -372,6 +395,7 @@ export default function ResumeSection({ user }: { user: any }) {
             about={aboutData}
             skills={skillsData}
             projects={projectsData}
+            contact={contactData}
             langint={langintData}
             certificates={certificatesData}
             onGenerate={handleResumeGenerate}
@@ -394,6 +418,7 @@ export default function ResumeSection({ user }: { user: any }) {
             about={aboutData}
             skills={skillsData}
             projects={projectsData}
+            contact={contactData}
             langint={langintData}
             certificates={certificatesData}
             onGenerate={handleCVGenerate}

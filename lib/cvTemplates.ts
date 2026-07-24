@@ -41,6 +41,7 @@ export const CV_TEMPLATES: CVTemplateInfo[] = [
 ]
 
 export interface CVSectionToggles {
+  contacts: boolean
   objective: boolean
   education: boolean
   experience: boolean
@@ -54,6 +55,7 @@ export interface CVSectionToggles {
 }
 
 export const defaultCVSectionToggles = (): CVSectionToggles => ({
+  contacts: true,
   objective: true,
   education: true,
   experience: true,
@@ -67,6 +69,7 @@ export const defaultCVSectionToggles = (): CVSectionToggles => ({
 })
 
 export const WIZARD_CV_SECTIONS = [
+  { key: 'contacts', label: 'Contact Details', description: 'Email, phone, location & social profiles' },
   { key: 'objective', label: 'Summary / Bio', description: 'Brief introduction or career objective' },
   { key: 'education', label: 'Education', description: 'Degrees, universities, and academic accomplishments' },
   { key: 'experience', label: 'Professional Experience', description: 'Work history, roles, and key responsibilities' },

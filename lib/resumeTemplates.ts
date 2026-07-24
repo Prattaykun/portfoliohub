@@ -51,6 +51,7 @@ export const TEMPLATES: TemplateInfo[] = [
 
 // Sections that can be toggled on/off in the wizard
 export const WIZARD_SECTIONS = [
+  { key: 'contacts', label: 'Contact Details', description: 'Email, phone, location & social profiles' },
   { key: 'objective', label: 'Profile / Objective', description: 'Your bio summary' },
   { key: 'education', label: 'Education', description: 'Schools & degrees' },
   { key: 'experience', label: 'Work Experience', description: 'Companies & roles' },
@@ -67,6 +68,7 @@ export type SectionKey = (typeof WIZARD_SECTIONS)[number]['key']
 
 // What the frontend sends to the API for selective generation
 export interface SelectedItems {
+  contactItemIds: string[]
   educationIds: string[]
   experienceCompanyIds: string[]
   experienceRoleIds: string[]
@@ -79,6 +81,7 @@ export interface SelectedItems {
 }
 
 export interface SectionToggles {
+  contacts: boolean
   objective: boolean
   education: boolean
   experience: boolean
@@ -94,6 +97,7 @@ export interface SectionToggles {
 // Default: everything on
 export function defaultSectionToggles(): SectionToggles {
   return {
+    contacts: true,
     objective: true,
     education: true,
     experience: true,

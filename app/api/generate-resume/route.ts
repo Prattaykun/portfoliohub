@@ -5,6 +5,7 @@ import { createClient } from '@supabase/supabase-js'
 import { processSignature } from '@/lib/server/processSignature'
 import { generateTemplateHTML } from '@/lib/server/templates'
 import { filterResumeData } from '@/lib/server/filterResumeData'
+import { upsertResumeDocument } from '@/lib/server/upsertResumeDocument'
 import { defaultSectionToggles } from '@/lib/resumeTemplates'
 import type { TemplateId, SectionToggles, SelectedItems } from '@/lib/resumeTemplates'
 
@@ -232,16 +233,19 @@ export async function POST(request: NextRequest) {
     let filteredLangint = langint
     let filteredCertificates = certificates
 
+    let filteredContact = contact
+
     if (selectedItems) {
       const filtered = filterResumeData(
         about, skills, projects, langint, certificates,
-        sections, selectedItems
+        sections, selectedItems, contact
       )
       filteredAbout = filtered.about
       filteredSkills = filtered.skills
       filteredProjects = filtered.projects
       filteredLangint = filtered.langint
       filteredCertificates = filtered.certificates
+      filteredContact = filtered.contact
     }
 
     // Generate HTML — dispatch to correct template
@@ -251,13 +255,13 @@ export async function POST(request: NextRequest) {
       // Use the original classic generator (defined below in this file)
       htmlContent = generateResumeHTML(
         processedProfile, filteredAbout, filteredSkills,
-        filteredProjects, contact, filteredLangint, filteredCertificates
+        filteredProjects, filteredContact, filteredLangint, filteredCertificates
       )
     } else {
       // Use one of the new template generators
       htmlContent = generateTemplateHTML(
         template, processedProfile, filteredAbout, filteredSkills,
-        filteredProjects, contact, filteredLangint, filteredCertificates,
+        filteredProjects, filteredContact, filteredLangint, filteredCertificates,
         sections
       )
     }
@@ -268,26 +272,17 @@ export async function POST(request: NextRequest) {
     // Upload PDF to Cloudinary
     const resumeUrl = await uploadToCloudinary(pdfBuffer)
 
-    // Persist resumeUrl directly to database using Supabase Admin service key
+    // Persist resumeUrl (preserves cv_url). Client also saves via /api/user/save-document.
     const targetUserId = explicitUserId || profile?.uid
     if (targetUserId && resumeUrl) {
-      try {
-        const { data: existingRecord } = await supabaseAdmin
-          .from('resumes')
-          .select('*')
-          .eq('auth_user_id', targetUserId)
-          .maybeSingle()
-
-        await supabaseAdmin.from('resumes').upsert({
-          auth_user_id: targetUserId,
-          resume_url: resumeUrl,
-          cv_url: existingRecord?.cv_url || null,
-          active_document: existingRecord?.active_document || 'resume',
-          updated_at: new Date().toISOString(),
-        })
+      const { error: dbError } = await upsertResumeDocument(supabaseAdmin, {
+        userId: targetUserId,
+        resumeUrl,
+      })
+      if (dbError) {
+        console.error('Error saving resumeUrl to database:', dbError)
+      } else {
         console.log('Successfully saved resumeUrl to database for user:', targetUserId)
-      } catch (dbErr) {
-        console.error('Error saving resumeUrl to database:', dbErr)
       }
     }
 
@@ -545,18 +540,28 @@ function generateResumeHTML(
                 ${contact.linkedin ? `
                 <div class="contact-item">
                     <img src="https://www.google.com/s2/favicons?domain=linkedin.com&sz=128" class="contact-icon" />
-                    <span>${escapeHtml(contact.linkedin.replace('https://', '').replace('www.', ''))}</span>
+                    <span>${escapeHtml(contact.linkedin.replace(/^https?:\/\//, '').replace(/^www\./, ''))}</span>
                 </div>` : ''}
                 ${contact.github ? `
                 <div class="contact-item">
                     <img src="https://www.google.com/s2/favicons?domain=github.com&sz=128" class="contact-icon" />
-                    <span>${escapeHtml(contact.github.replace('https://', '').replace('www.', ''))}</span>
+                    <span>${escapeHtml(contact.github.replace(/^https?:\/\//, '').replace(/^www\./, ''))}</span>
                 </div>` : ''}
                 ${contact.address ? `
                 <div class="contact-item">
                     <img src="https://img.icons8.com/?size=100&id=7880&format=png&color=000000" class="contact-icon" />
                     <span>${escapeHtml(contact.address)}</span>
                 </div>` : ''}
+                ${Array.isArray(contact.other_links) ? contact.other_links.map((link: any) => {
+                  if (!link?.url) return ''
+                  const label = link.name ? `${link.name}: ${link.url.replace(/^https?:\/\//, '').replace(/^www\./, '')}` : link.url.replace(/^https?:\/\//, '').replace(/^www\./, '')
+                  const iconUrl = link.logo_url || `https://www.google.com/s2/favicons?domain=${encodeURIComponent(link.url)}&sz=128`
+                  return `
+                  <div class="contact-item">
+                      <img src="${escapeHtml(iconUrl)}" class="contact-icon" />
+                      <span>${escapeHtml(label)}</span>
+                  </div>`
+                }).join('') : ''}
             </div>
         </div>
     </div>

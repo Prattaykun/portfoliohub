@@ -14,7 +14,8 @@ export function filterResumeData(
   langint: any,
   certificates: any[],
   sections: SectionToggles,
-  selectedItems: SelectedItems
+  selectedItems: SelectedItems,
+  contact?: any
 ) {
   // Clone to avoid mutation
   const filteredAbout = { ...about }
@@ -22,6 +23,27 @@ export function filterResumeData(
   const filteredProjects = projects ? { ...projects } : null
   const filteredLangint = langint ? { ...langint } : null
   let filteredCertificates = certificates ? [...certificates] : []
+  let filteredContact = contact ? { ...contact } : {}
+
+  // Filter contact info
+  if (sections.contacts === false) {
+    filteredContact = { auth_user_id: contact?.auth_user_id }
+  } else if (contact && Array.isArray(selectedItems?.contactItemIds)) {
+    const selected = selectedItems.contactItemIds
+    if (!selected.includes('email')) filteredContact.email = ''
+    if (!selected.includes('phone')) filteredContact.phone = ''
+    if (!selected.includes('address')) filteredContact.address = ''
+    if (!selected.includes('linkedin')) filteredContact.linkedin = ''
+    if (!selected.includes('github')) filteredContact.github = ''
+    if (Array.isArray(filteredContact.other_links)) {
+      filteredContact.other_links = filteredContact.other_links.filter(
+        (link: any, idx: number) => {
+          const linkId = link.id || `other_${idx}`
+          return selected.includes(linkId) || selected.includes(`other_${idx}`)
+        }
+      )
+    }
+  }
 
   // Filter education
   if (sections.education && filteredAbout.education) {
@@ -105,5 +127,6 @@ export function filterResumeData(
     projects: filteredProjects,
     langint: filteredLangint,
     certificates: filteredCertificates,
+    contact: filteredContact,
   }
 }

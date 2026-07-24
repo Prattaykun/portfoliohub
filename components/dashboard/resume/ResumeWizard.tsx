@@ -12,6 +12,7 @@ interface WizardProps {
   about: any
   skills: any
   projects: any
+  contact?: any
   langint: any
   certificates: any[]
   onGenerate: (template: TemplateId, sections: SectionToggles, selectedItems: SelectedItems) => void
@@ -20,7 +21,7 @@ interface WizardProps {
 }
 
 export default function ResumeWizard({
-  about, skills, projects, langint, certificates,
+  about, skills, projects, contact, langint, certificates,
   onGenerate, onCancel, generating
 }: WizardProps) {
   const [step, setStep] = useState(0)
@@ -28,7 +29,30 @@ export default function ResumeWizard({
   const [template, setTemplate] = useState<TemplateId>("teal-sidebar")
   const [sections, setSections] = useState<SectionToggles>(defaultSectionToggles())
 
+  // Contact items list
+  const contactItems = useMemo(() => {
+    const items: { id: string; label: string; subtitle?: string }[] = []
+    if (contact?.email) items.push({ id: 'email', label: 'Email Address', subtitle: contact.email })
+    if (contact?.phone) items.push({ id: 'phone', label: 'Phone Number', subtitle: contact.phone })
+    if (contact?.address) items.push({ id: 'address', label: 'Location / Address', subtitle: contact.address })
+    if (contact?.linkedin) items.push({ id: 'linkedin', label: 'LinkedIn Profile', subtitle: contact.linkedin })
+    if (contact?.github) items.push({ id: 'github', label: 'GitHub Profile', subtitle: contact.github })
+    if (Array.isArray(contact?.other_links)) {
+      contact.other_links.forEach((link: any, i: number) => {
+        items.push({
+          id: link.id || `other_${i}`,
+          label: link.name || 'Social Link',
+          subtitle: link.url,
+        })
+      })
+    }
+    return items
+  }, [contact])
+
   // Selected item IDs
+  const [contactItemIds, setContactItemIds] = useState<string[]>(() =>
+    contactItems.map(i => i.id)
+  )
   const [eduIds, setEduIds] = useState<string[]>(() =>
     (about?.education || []).map((e: any) => e.id)
   )
@@ -66,6 +90,7 @@ export default function ResumeWizard({
       { key: "template", label: "Template" },
       { key: "sections", label: "Sections" },
     ]
+    if (sections.contacts && contactItems.length) steps.push({ key: "contacts", label: "Contacts" })
     if (sections.education && about?.education?.length) steps.push({ key: "education", label: "Education" })
     if (sections.experience && about?.experience?.length) steps.push({ key: "experience", label: "Experience" })
     if (sections.skills && ((skills?.technical?.length) || (skills?.soft?.length)))
@@ -77,7 +102,7 @@ export default function ResumeWizard({
     if (sections.languages && langint?.language?.length) steps.push({ key: "languages", label: "Languages" })
     steps.push({ key: "review", label: "Review" })
     return steps
-  }, [sections, about, skills, projects, certificates, langint])
+  }, [sections, contactItems, about, skills, projects, certificates, langint])
 
   const currentKey = wizardSteps[step]?.key || "template"
   const isLast = step === wizardSteps.length - 1
@@ -97,6 +122,7 @@ export default function ResumeWizard({
 
   function handleGenerate() {
     onGenerate(template, sections, {
+      contactItemIds,
       educationIds: eduIds,
       experienceCompanyIds: compIds,
       experienceRoleIds: roleIds,
@@ -166,6 +192,11 @@ export default function ResumeWizard({
         return <TemplateSelector selected={template} onSelect={setTemplate} />
       case "sections":
         return <SectionTogglesStep sections={sections} onChange={handleSectionsChange} />
+      case "contacts":
+        return <ItemPicker title="Select Contact Info & Socials" description="Choose which contact channels and links to include"
+          items={contactItems} selectedIds={contactItemIds}
+          onToggle={(id) => setContactItemIds(toggleId(contactItemIds, id))}
+          onToggleAll={(all) => setContactItemIds(all ? contactItems.map((i: any) => i.id) : [])} />
       case "education":
         return <ItemPicker title="Select Education" description="Choose which schools & degrees to include"
           items={eduItems} selectedIds={eduIds}
@@ -244,6 +275,10 @@ export default function ResumeWizard({
             <div style={{ fontSize: 13, color: "#444" }}>
               {Object.entries(sections).filter(([, v]) => v).map(([k]) => k).join(", ")}
             </div>
+          </div>
+          <div>
+            <div style={{ fontSize: 12, color: "#888", fontWeight: 600, marginBottom: 4 }}>CONTACTS</div>
+            <div style={{ fontSize: 13, color: "#444" }}>{sections.contacts ? `${contactItemIds.length} items selected` : 'Disabled'}</div>
           </div>
           <div>
             <div style={{ fontSize: 12, color: "#888", fontWeight: 600, marginBottom: 4 }}>EDUCATION</div>

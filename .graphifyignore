@@ -1,0 +1,17 @@
+# .graphifyignore
+node_modules/
+.next/
+dist/
+out/
+build/
+.git/
+.env*
+public/
+graphify-out/
+*.apk
+*.webp
+*.png
+*.jpg
+*.jpeg
+*.svg
+*.ico

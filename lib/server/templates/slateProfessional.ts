@@ -83,11 +83,20 @@ body { font-family:'Lato',sans-serif; color:#333; background:#fff; width:210mm; 
   </div>
 
   <!-- CONTACT BAR -->
+  ${sections.contacts !== false ? `
   <div class="contact-bar">
     ${contact.phone ? `<div class="cb-item"><img src="https://img.icons8.com/?size=100&id=9730&format=png&color=000000" />${escapeHtml(contact.phone)}</div>` : ''}
     ${contact.email ? `<div class="cb-item"><img src="https://img.icons8.com/?size=100&id=12623&format=png&color=000000" />${escapeHtml(contact.email)}</div>` : ''}
     ${contact.address ? `<div class="cb-item"><img src="https://img.icons8.com/?size=100&id=7880&format=png&color=000000" />${escapeHtml(contact.address)}</div>` : ''}
-  </div>
+    ${contact.linkedin ? `<div class="cb-item"><img src="https://www.google.com/s2/favicons?domain=linkedin.com&sz=128" />${escapeHtml(contact.linkedin.replace(/^https?:\/\//,'').replace(/^www\./,''))}</div>` : ''}
+    ${contact.github ? `<div class="cb-item"><img src="https://www.google.com/s2/favicons?domain=github.com&sz=128" />${escapeHtml(contact.github.replace(/^https?:\/\//,'').replace(/^www\./,''))}</div>` : ''}
+    ${Array.isArray(contact.other_links) ? contact.other_links.map((link: any) => {
+      if (!link?.url) return ''
+      const label = link.name ? `${link.name}: ${link.url.replace(/^https?:\/\//,'').replace(/^www\./,'')}` : link.url.replace(/^https?:\/\//,'').replace(/^www\./,'')
+      const iconUrl = link.logo_url || `https://www.google.com/s2/favicons?domain=${encodeURIComponent(link.url)}&sz=128`
+      return `<div class="cb-item"><img src="${escapeHtml(iconUrl)}" />${escapeHtml(label)}</div>`
+    }).join('') : ''}
+  </div>` : ''}
 
   <!-- BODY -->
   <div class="body-wrap">

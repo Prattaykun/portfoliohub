@@ -321,7 +321,7 @@ export async function fetchUserData(username: string): Promise<{ data: UserData 
         .from("resumes")
         .select("*")
         .eq("auth_user_id", usernameData.auth_user_id)
-        .single(),
+        .maybeSingle(),
     ]);
 
     if (!profile) {

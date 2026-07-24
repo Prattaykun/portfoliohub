@@ -90,14 +90,22 @@ body { font-family:'Open Sans',sans-serif; color:#333; background:#fff; width:21
   <div class="body-wrap">
     <!-- LEFT COLUMN -->
     <div class="left-col">
+      ${sections.contacts !== false ? `
       <div class="sec">
         <div class="sec-title">Contact</div>
         ${contact.phone ? `<div class="contact-row"><img src="https://img.icons8.com/?size=100&id=9730&format=png&color=000000" /><div><div class="contact-label">Phone</div>${escapeHtml(contact.phone)}</div></div>` : ''}
         ${contact.email ? `<div class="contact-row"><img src="https://img.icons8.com/?size=100&id=12623&format=png&color=000000" /><div><div class="contact-label">Email</div>${escapeHtml(contact.email)}</div></div>` : ''}
         ${contact.address ? `<div class="contact-row"><img src="https://img.icons8.com/?size=100&id=7880&format=png&color=000000" /><div><div class="contact-label">Address</div>${escapeHtml(contact.address)}</div></div>` : ''}
-        ${contact.linkedin ? `<div class="contact-row"><img src="https://www.google.com/s2/favicons?domain=linkedin.com&sz=128" /><div><div class="contact-label">LinkedIn</div>${escapeHtml(contact.linkedin.replace('https://','').replace('www.',''))}</div></div>` : ''}
-        ${contact.github ? `<div class="contact-row"><img src="https://www.google.com/s2/favicons?domain=github.com&sz=128" /><div><div class="contact-label">GitHub</div>${escapeHtml(contact.github.replace('https://','').replace('www.',''))}</div></div>` : ''}
-      </div>
+        ${contact.linkedin ? `<div class="contact-row"><img src="https://www.google.com/s2/favicons?domain=linkedin.com&sz=128" /><div><div class="contact-label">LinkedIn</div>${escapeHtml(contact.linkedin.replace(/^https?:\/\//,'').replace(/^www\./,''))}</div></div>` : ''}
+        ${contact.github ? `<div class="contact-row"><img src="https://www.google.com/s2/favicons?domain=github.com&sz=128" /><div><div class="contact-label">GitHub</div>${escapeHtml(contact.github.replace(/^https?:\/\//,'').replace(/^www\./,''))}</div></div>` : ''}
+        ${Array.isArray(contact.other_links) ? contact.other_links.map((link: any) => {
+          if (!link?.url) return ''
+          const name = link.name || 'Link'
+          const displayUrl = link.url.replace(/^https?:\/\//,'').replace(/^www\./,'')
+          const iconUrl = link.logo_url || `https://www.google.com/s2/favicons?domain=${encodeURIComponent(link.url)}&sz=128`
+          return `<div class="contact-row"><img src="${escapeHtml(iconUrl)}" /><div><div class="contact-label">${escapeHtml(name)}</div>${escapeHtml(displayUrl)}</div></div>`
+        }).join('') : ''}
+      </div>` : ''}
 
       ${sections.education && about.education?.length ? `
       <div class="sec">

@@ -5,6 +5,7 @@ import { createClient } from '@supabase/supabase-js'
 import { processSignature } from '@/lib/server/processSignature'
 import { generateCVTemplateHTML } from '@/lib/server/cvTemplates'
 import { filterResumeData } from '@/lib/server/filterResumeData'
+import { upsertResumeDocument } from '@/lib/server/upsertResumeDocument'
 import { defaultCVSectionToggles } from '@/lib/cvTemplates'
 import type { CVTemplateId, CVSectionToggles } from '@/lib/cvTemplates'
 import type { SelectedItems } from '@/lib/resumeTemplates'
@@ -157,22 +158,25 @@ export async function POST(request: NextRequest) {
     let filteredLangint = langint
     let filteredCertificates = certificates
 
+    let filteredContact = contact
+
     if (selectedItems) {
       const filtered = filterResumeData(
         about, skills, projects, langint, certificates,
-        sections as any, selectedItems
+        sections as any, selectedItems, contact
       )
       filteredAbout = filtered.about
       filteredSkills = filtered.skills
       filteredProjects = filtered.projects
       filteredLangint = filtered.langint
       filteredCertificates = filtered.certificates
+      filteredContact = filtered.contact
     }
 
     // Render CV HTML
     const htmlContent = generateCVTemplateHTML(
       template, processedProfile, filteredAbout, filteredSkills,
-      filteredProjects, contact, filteredLangint, filteredCertificates,
+      filteredProjects, filteredContact, filteredLangint, filteredCertificates,
       sections
     )
 
@@ -182,26 +186,17 @@ export async function POST(request: NextRequest) {
     // Upload to Cloudinary
     const cvUrl = await uploadToCloudinary(pdfBuffer)
 
-    // Persist cvUrl directly to database using Supabase Admin service key
+    // Persist cvUrl (preserves resume_url). Client also saves via /api/user/save-document.
     const targetUserId = explicitUserId || profile?.uid || profile?.auth_user_id
     if (targetUserId && cvUrl) {
-      try {
-        const { data: existingRecord } = await supabaseAdmin
-          .from('resumes')
-          .select('*')
-          .eq('auth_user_id', targetUserId)
-          .maybeSingle()
-
-        await supabaseAdmin.from('resumes').upsert({
-          auth_user_id: targetUserId,
-          resume_url: existingRecord?.resume_url || null,
-          cv_url: cvUrl,
-          active_document: existingRecord?.active_document || 'resume',
-          updated_at: new Date().toISOString(),
-        })
+      const { error: dbError } = await upsertResumeDocument(supabaseAdmin, {
+        userId: targetUserId,
+        cvUrl,
+      })
+      if (dbError) {
+        console.error('Error saving cvUrl to database:', dbError)
+      } else {
         console.log('Successfully saved cvUrl to database for user:', targetUserId)
-      } catch (dbErr) {
-        console.error('Error saving cvUrl to database:', dbErr)
       }
     }
 
