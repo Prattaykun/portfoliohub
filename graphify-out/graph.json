@@ -4894,8 +4894,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "package_dependencies_contentlayer",
-      "community": 19,
-      "community_name": "dependencies",
+      "community": 9,
+      "community_name": "contentlayer",
       "norm_label": "contentlayer"
     },
     {
@@ -4905,8 +4905,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "contentlayer",
-      "community": 19,
-      "community_name": "dependencies",
+      "community": 9,
+      "community_name": "contentlayer",
       "norm_label": "contentlayer"
     },
     {
@@ -4916,8 +4916,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "package_dependencies_framer_motion",
-      "community": 45,
-      "community_name": "framer-motion",
+      "community": 19,
+      "community_name": "dependencies",
       "norm_label": "framer-motion"
     },
     {
@@ -4927,8 +4927,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "framer_motion",
-      "community": 45,
-      "community_name": "framer-motion",
+      "community": 19,
+      "community_name": "dependencies",
       "norm_label": "framer-motion"
     },
     {
@@ -8771,7 +8771,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/[username]/PortfolioSections.tsx",
-      "source_location": "L516",
+      "source_location": "L527",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_username_portfoliosections_portfoliosections",
@@ -19707,5 +19707,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "06a280ad26b78cfad72f8ab2ef88ed07ba212e03"
+  "built_at_commit": "1442e808e6b9fb1f6ce066d5f62f0222223be8e4"
 }

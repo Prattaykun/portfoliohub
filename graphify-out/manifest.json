@@ -45,9 +45,9 @@
     "semantic_hash": "6e0c12ea27e7e6e4943aa582a8e43da2"
   },
   "app/[username]/PortfolioSections.tsx": {
-    "mtime": 1773580593.9691498,
-    "ast_hash": "4fd901faeea1e85906b14063b1735634",
-    "semantic_hash": "4fd901faeea1e85906b14063b1735634"
+    "mtime": 1784938083.9458156,
+    "ast_hash": "73a6c6a3f76b0c5a6e832fcfed0fdc74",
+    "semantic_hash": ""
   },
   "app/[username]/ProjectModal.tsx": {
     "mtime": 1773580593.9691498,

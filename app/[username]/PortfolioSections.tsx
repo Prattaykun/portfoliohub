@@ -340,14 +340,25 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
             {normalized.map((company: any, cIdx: number) => (
               <div key={company.id || cIdx} className="relative bg-white/6 rounded-2xl p-6 md:p-8 border border-white/8 hover:shadow-2xl transition-shadow duration-300 overflow-hidden">
                 <div className="md:flex md:items-start md:gap-6">
-                  {/* left: logo + company (no boxed background) */}
+                  {/* left: logo + company in uniform circular frame */}
                   <div className="md:w-36 flex-shrink-0 flex items-center md:items-start gap-4">
                     {company.logo ? (
-                      <div className="w-20 h-20 rounded-lg overflow-hidden flex items-center justify-center">
-                        <img src={company.logo} alt={company.company} className="w-full h-full object-contain" onError={(e) => ((e.target as HTMLImageElement).style.display = "none")} />
+                      <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/10 p-2 border border-white/15 shadow-md flex items-center justify-center overflow-hidden flex-shrink-0 backdrop-blur-sm group-hover:border-purple-400/40 transition-all duration-300">
+                        <img
+                          src={company.logo}
+                          alt={company.company}
+                          className="w-full h-full object-contain rounded-full p-0.5"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.onerror = null;
+                            target.parentElement!.innerHTML = `<div className="w-full h-full flex items-center justify-center text-xl md:text-2xl font-bold text-purple-300">${company.company ? company.company.charAt(0).toUpperCase() : '🏢'}</div>`;
+                          }}
+                        />
                       </div>
                     ) : (
-                      <div className="w-20 h-20 rounded-lg flex items-center justify-center text-gray-400">🏢</div>
+                      <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-purple-500/20 via-pink-500/10 to-white/10 border border-purple-400/20 shadow-md flex items-center justify-center text-xl md:text-2xl font-bold text-purple-300 flex-shrink-0">
+                        {company.company ? company.company.charAt(0).toUpperCase() : "🏢"}
+                      </div>
                     )}
 
                     <div className="hidden md:block">

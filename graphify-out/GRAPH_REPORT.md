@@ -1,7 +1,7 @@
 # Graph Report - portfoliohub  (2026-07-25)
 
 ## Corpus Check
-- 120 files · ~86,213 words
+- 120 files · ~86,269 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `06a280ad`
+- Built from commit: `1442e808`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -24,6 +24,7 @@
 - compilerOptions
 - portfolio.ts
 - generate-resume/route.ts
+- contentlayer
 - generate-twa-project.mjs
 - chatbot/page.tsx
 - devDependencies
@@ -53,7 +54,6 @@
 - @tailwindcss/postcss
 - eslint
 - eslint-config-next
-- framer-motion
 - groq-sdk
 - lodash
 - lodash.debounce
@@ -201,7 +201,7 @@ Nodes (7): ContactLink, Education, Experience, UserData, MediaItem, MediaSection
 
 ### Community 19 - "dependencies"
 Cohesion: 0.29
-Nodes (7): cloudinary, contentlayer, dependencies, cloudinary, contentlayer, react-dom, react-dom
+Nodes (7): cloudinary, framer-motion, dependencies, cloudinary, framer-motion, react-dom, react-dom
 
 ### Community 20 - "generate-assetlinks.mjs"
 Cohesion: 0.33
@@ -263,7 +263,7 @@ Nodes (3): For --cluster-only, For --update (incremental re-extraction), graphif
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `dependencies` connect `dependencies` to `chatbot/route.ts`, `MediaCard.tsx`, `package.json`, `typescript`, `framer-motion`, `groq-sdk`, `lodash`, `lodash.debounce`, `lucide-react`, `markdown-wasm`, `next`, `next-cloudinary`, `@next/mdx`, `pdfkit`, `puppeteer`, `react-datepicker`, `react-markdown`, `react-slick`, `rehype-slug`, `remark-gfm`, `slick-carousel`, `@supabase/auth-helpers-nextjs`, `@supabase/ssr`, `@supabase/supabase-js`, `@upstash/redis`, `web-push`?**
+- **Why does `dependencies` connect `dependencies` to `contentlayer`, `chatbot/route.ts`, `MediaCard.tsx`, `package.json`, `typescript`, `groq-sdk`, `lodash`, `lodash.debounce`, `lucide-react`, `markdown-wasm`, `next`, `next-cloudinary`, `@next/mdx`, `pdfkit`, `puppeteer`, `react-datepicker`, `react-markdown`, `react-slick`, `rehype-slug`, `remark-gfm`, `slick-carousel`, `@supabase/auth-helpers-nextjs`, `@supabase/ssr`, `@supabase/supabase-js`, `@upstash/redis`, `web-push`?**
   _High betweenness centrality (0.237) - this node is a cross-community bridge._
 - **Why does `react` connect `MediaCard.tsx` to `dependencies`?**
   _High betweenness centrality (0.207) - this node is a cross-community bridge._
