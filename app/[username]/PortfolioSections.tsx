@@ -338,12 +338,12 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
 
           <div className="space-y-8">
             {normalized.map((company: any, cIdx: number) => (
-              <div key={company.id || cIdx} className="relative bg-white/6 rounded-2xl p-6 md:p-8 border border-white/8 hover:shadow-2xl transition-shadow duration-300 overflow-hidden">
-                <div className="md:flex md:items-start md:gap-6">
-                  {/* left: logo + company in uniform circular frame */}
-                  <div className="md:w-36 flex-shrink-0 flex items-center md:items-start gap-4">
+              <div key={company.id || cIdx} className="relative bg-white/6 rounded-2xl p-6 md:p-8 border border-white/8 hover:shadow-2xl transition-shadow duration-300 overflow-hidden group">
+                <div className="flex flex-col md:flex-row md:items-start gap-6">
+                  {/* left: logo + company info */}
+                  <div className="md:w-44 flex-shrink-0 flex flex-col items-start gap-2">
                     {company.logo ? (
-                      <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/10 p-2 border border-white/15 shadow-md flex items-center justify-center overflow-hidden flex-shrink-0 backdrop-blur-sm group-hover:border-purple-400/40 transition-all duration-300">
+                      <div className="w-16 h-16 rounded-full bg-white/10 p-2 border border-white/15 shadow-md flex items-center justify-center overflow-hidden flex-shrink-0 backdrop-blur-sm group-hover:border-purple-400/40 transition-all duration-300">
                         <img
                           src={company.logo}
                           alt={company.company}
@@ -351,71 +351,88 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
                             target.onerror = null;
-                            target.parentElement!.innerHTML = `<div className="w-full h-full flex items-center justify-center text-xl md:text-2xl font-bold text-purple-300">${company.company ? company.company.charAt(0).toUpperCase() : '🏢'}</div>`;
+                            target.parentElement!.innerHTML = `<div className="w-full h-full flex items-center justify-center text-xl font-bold text-purple-300">${company.company ? company.company.charAt(0).toUpperCase() : '🏢'}</div>`;
                           }}
                         />
                       </div>
                     ) : (
-                      <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-purple-500/20 via-pink-500/10 to-white/10 border border-purple-400/20 shadow-md flex items-center justify-center text-xl md:text-2xl font-bold text-purple-300 flex-shrink-0">
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500/20 via-pink-500/10 to-white/10 border border-purple-400/20 shadow-md flex items-center justify-center text-xl font-bold text-purple-300 flex-shrink-0">
                         {company.company ? company.company.charAt(0).toUpperCase() : "🏢"}
                       </div>
                     )}
 
-                    <div className="hidden md:block">
-                      <div className="text-sm font-semibold text-gray-200">{company.company}</div>
+                    <div className="min-w-0 w-full pr-2">
+                      <h4 className="text-base font-semibold text-white leading-snug break-words">{company.company}</h4>
                       {company.companyUrl ? (
-                        <a href={company.companyUrl.startsWith("http") ? company.companyUrl : `https://${company.companyUrl}`} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-300 hover:text-blue-200">
+                        <a
+                          href={company.companyUrl.startsWith("http") ? company.companyUrl : `https://${company.companyUrl}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-xs text-purple-300 hover:text-purple-200 mt-1 font-medium transition-colors"
+                        >
                           Visit ↗
                         </a>
                       ) : (
-                        <div className="text-xs text-gray-400">No website</div>
+                        <span className="text-xs text-gray-500 mt-1 block">No website</span>
                       )}
                     </div>
                   </div>
 
                   {/* right: roles & timeline */}
-                  <div className="flex-1 mt-4 md:mt-0">
-                    <div className="hidden md:block absolute left-[140px] top-8 bottom-8 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent pointer-events-none" />
-
+                  <div className="flex-1 min-w-0 mt-2 md:mt-0">
                     <div className="space-y-6">
                       {company.roles?.map((role: any, rIdx: number) => (
-                        <div key={role.id || rIdx} className="md:flex md:items-start md:gap-6">
-                          <div className="hidden md:flex flex-col items-center w-12">
-                            <div className="w-3 h-3 rounded-full bg-purple-400 shadow-lg" />
-                            {rIdx < company.roles.length - 1 && <div className="flex-1 w-px bg-white/6 mt-2" />}
+                        <div key={role.id || rIdx} className="flex items-start gap-4 md:gap-5">
+                          {/* timeline dot & vertical line */}
+                          <div className="flex flex-col items-center flex-shrink-0 pt-1.5 self-stretch">
+                            <div className="w-3.5 h-3.5 rounded-full bg-purple-400 shadow-lg shadow-purple-500/50 ring-4 ring-purple-400/20 flex-shrink-0" />
+                            {rIdx < company.roles.length - 1 && (
+                              <div className="w-px bg-white/10 flex-1 my-2 min-h-[30px]" />
+                            )}
                           </div>
 
-                          <div className="flex-1">
-                            <div className="flex justify-between items-start gap-4">
-                              <div className="min-w-0">
-                                <h3 className="text-lg md:text-xl font-semibold text-white hover:text-purple-300 transition-colors">{role.title}</h3>
-                                <div className="text-sm text-gray-300 mt-1">
-                                  <span>{formatMonthYear(role.start)}</span>
-                                  {" — "}
-                                  <span>{role.present ? "Present" : (role.end ? formatMonthYear(role.end) : "Present")}</span>
-                                  {" · "}
-                                  <span className="text-gray-400">{computeDuration(role.start, role.end, role.present)}</span>
-                                </div>
-                                {role.location && <div className="text-sm text-gray-400 mt-1">{role.location}</div>}
-                              </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                              <h3 className="text-lg md:text-xl font-semibold text-white hover:text-purple-300 transition-colors">
+                                {role.title}
+                              </h3>
 
-                              <div className="flex-shrink-0 ml-3 flex items-center gap-3">
-                                {role.offerLetter && (
-                                  <a href={role.offerLetter} target="_blank" rel="noopener noreferrer" className="text-sm bg-emerald-700/20 text-emerald-200 px-3 py-1 rounded-full border border-emerald-600/30 hover:bg-emerald-700/30 transition">
-                                    Offer
-                                  </a>
-                                )}
-                              </div>
+                              {role.offerLetter && (
+                                <a
+                                  href={role.offerLetter}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-xs bg-emerald-700/20 text-emerald-200 px-2.5 py-0.5 rounded-full border border-emerald-600/30 hover:bg-emerald-700/30 transition flex-shrink-0"
+                                >
+                                  Offer
+                                </a>
+                              )}
                             </div>
 
+                            <div className="text-sm text-gray-300 mt-1 flex flex-wrap items-center gap-x-2">
+                              <span>{formatMonthYear(role.start)}</span>
+                              <span>—</span>
+                              <span>{role.present ? "Present" : (role.end ? formatMonthYear(role.end) : "Present")}</span>
+                              {computeDuration(role.start, role.end, role.present) && (
+                                <>
+                                  <span className="text-gray-500">·</span>
+                                  <span className="text-gray-400">{computeDuration(role.start, role.end, role.present)}</span>
+                                </>
+                              )}
+                            </div>
+
+                            {role.location && (
+                              <div className="text-sm text-gray-400 mt-1">{role.location}</div>
+                            )}
+
                             {role.description && (
-                              <p className="text-gray-300 mt-3 leading-relaxed">{role.description}</p>
+                              <p className="text-gray-300 mt-3 leading-relaxed text-sm md:text-base">{role.description}</p>
                             )}
 
                             {role.skills && role.skills.length > 0 && (
                               <div className="mt-3 flex flex-wrap gap-2">
                                 {role.skills.map((s: string, si: number) => (
-                                  <span key={si} className="px-2 py-1 bg-white/6 text-gray-200 rounded-full text-xs border border-white/8">
+                                  <span key={si} className="px-2.5 py-1 bg-white/6 text-gray-200 rounded-full text-xs border border-white/8">
                                     {s}
                                   </span>
                                 ))}
@@ -424,7 +441,7 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
 
                             {role.attachments && role.attachments.length > 0 && (
                               <div className="mt-4">
-                                <div className="text-sm text-gray-400 mb-2">Attachments</div>
+                                <div className="text-xs text-gray-400 mb-2">Attachments</div>
                                 <div className="flex items-center gap-3 flex-wrap">
                                   {role.attachments.map((att: string, ai: number) => (
                                     <a key={ai} href={att} target="_blank" rel="noopener noreferrer" className="w-32 h-20 rounded overflow-hidden border border-white/8 block transition-transform hover:scale-105">
@@ -437,15 +454,6 @@ export const PortfolioSections: React.FC<PortfolioSectionsProps> = ({
                           </div>
                         </div>
                       ))}
-
-                      <div className="md:hidden mt-3 flex items-center justify-between gap-3">
-                        <div className="text-sm text-gray-400">{company.company}</div>
-                        {company.companyUrl ? (
-                          <a className="text-sm text-blue-300 hover:text-blue-200" href={company.companyUrl.startsWith("http") ? company.companyUrl : `https://${company.companyUrl}`} target="_blank" rel="noreferrer">↗ Website</a>
-                        ) : (
-                          <div className="text-xs text-gray-500">No website</div>
-                        )}
-                      </div>
                     </div>
                   </div>
                 </div>
