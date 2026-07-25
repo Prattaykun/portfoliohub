@@ -3,6 +3,7 @@
 
 import React, { useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
+import { getUsernameValidationError } from '@/lib/reservedUsernames'
 
 function clsx(...inputs: Array<string | false | null | undefined>) {
   return inputs.filter(Boolean).join(' ')
@@ -23,8 +24,10 @@ export default function AuthTabs() {
   const [forgotEmailOrUsername, setForgotEmailOrUsername] = useState('')
 
   async function checkUsername() {
-    if (!username.trim()) {
-      setMessage('Please enter a username.')
+    const valErr = getUsernameValidationError(username)
+    if (valErr) {
+      setAvailable(false)
+      setMessage(valErr)
       return
     }
     setChecking(true)
@@ -42,12 +45,14 @@ export default function AuthTabs() {
         setMessage(
           j.available
             ? 'Great — username is available!'
-            : 'Sorry — username already taken.'
+            : j.error || 'Sorry — username already taken.'
         )
       } else {
+        setAvailable(false)
         setMessage(j.error || 'Error checking username.')
       }
     } catch {
+      setAvailable(false)
       setMessage('Network error while checking username.')
     } finally {
       setChecking(false)
@@ -55,6 +60,11 @@ export default function AuthTabs() {
   }
 
   async function signupEmailPassword() {
+    const valErr = getUsernameValidationError(username)
+    if (valErr) {
+      setMessage(valErr)
+      return
+    }
     if (!available) {
       setMessage('Please check username availability first.')
       return

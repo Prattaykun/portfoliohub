@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { supabase } from '../../lib/supabaseClient'
+import { getUsernameValidationError } from '../../lib/reservedUsernames'
 import { CldUploadWidget, type CloudinaryUploadWidgetResults } from 'next-cloudinary'
 
 interface UserProfileSectionProps {
@@ -61,14 +62,9 @@ export default function UserProfileSection({ user, userProfile }: UserProfileSec
     setLoading(true)
     setMessage('')
 
-    if (!username.trim()) {
-      setMessage('Please enter a username')
-      setLoading(false)
-      return
-    }
-
-    if (username.includes('#')) {
-      setMessage('Username cannot contain "#" character')
+    const valErr = getUsernameValidationError(username)
+    if (valErr) {
+      setMessage(valErr)
       setLoading(false)
       return
     }
@@ -277,7 +273,7 @@ export default function UserProfileSection({ user, userProfile }: UserProfileSec
         {message && (
           <p
             className={`mt-2 text-sm ${
-              message.includes('Error') || message.includes('taken') || message.includes('cannot') ? 'text-red-600' : 'text-green-600'
+              message.includes('successfully') ? 'text-green-600' : 'text-red-600'
             }`}
           >
             {message}

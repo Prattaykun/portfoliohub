@@ -1,6 +1,7 @@
 // app/api/check-username/route.ts
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { isReservedUsername, getUsernameValidationError } from '@/lib/reservedUsernames'
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -10,6 +11,11 @@ const supabaseAdmin = createClient(url, serviceKey)
 export async function POST(req: Request) {
   const { username } = await req.json()
   if (!username) return NextResponse.json({ error: 'missing username' }, { status: 400 })
+
+  const validationError = getUsernameValidationError(username)
+  if (validationError) {
+    return NextResponse.json({ available: false, error: validationError })
+  }
 
   try {
     const { data, error } = await supabaseAdmin
@@ -21,7 +27,7 @@ export async function POST(req: Request) {
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
     const available = !data || data.length === 0
-    return NextResponse.json({ available })
+    return NextResponse.json({ available, error: available ? null : 'Sorry — username already taken.' })
   } catch (err: any) {
     return NextResponse.json({ error: err.message ?? 'error' }, { status: 500 })
   }

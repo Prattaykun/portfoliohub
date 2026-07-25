@@ -1,6 +1,7 @@
 // app/api/signup/route.ts
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { isReservedUsername, getUsernameValidationError } from '@/lib/reservedUsernames'
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -14,6 +15,13 @@ export async function POST(req: Request) {
 
     if (!uid) {
       return NextResponse.json({ error: 'Missing uid' }, { status: 400 })
+    }
+
+    if (username) {
+      const valErr = getUsernameValidationError(username)
+      if (valErr) {
+        return NextResponse.json({ error: valErr }, { status: 400 })
+      }
     }
 
     // Build payload — never update username
