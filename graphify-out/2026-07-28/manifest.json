@@ -45,8 +45,8 @@
     "semantic_hash": "6e0c12ea27e7e6e4943aa582a8e43da2"
   },
   "app/[username]/PortfolioSections.tsx": {
-    "mtime": 1784938083.9458156,
-    "ast_hash": "73a6c6a3f76b0c5a6e832fcfed0fdc74",
+    "mtime": 1784956735.9946814,
+    "ast_hash": "e0fe1dee54b67e7bee5eea67797629e6",
     "semantic_hash": ""
   },
   "app/[username]/ProjectModal.tsx": {
@@ -95,14 +95,14 @@
     "semantic_hash": "9b69c91b3c7c91444550c1e93bc53865"
   },
   "app/admin/page.tsx": {
-    "mtime": 1784934404.7252252,
-    "ast_hash": "e109dee304af545909c2510ab87ba9bb",
+    "mtime": 1785252483.4864023,
+    "ast_hash": "473bc289b8662744c27f4191d42eb54b",
     "semantic_hash": ""
   },
   "app/api/admin/cloudinary/route.ts": {
-    "mtime": 1784928367.9040613,
-    "ast_hash": "5be76029fe9a98877bc134d8c8252df7",
-    "semantic_hash": "5be76029fe9a98877bc134d8c8252df7"
+    "mtime": 1785250624.3018525,
+    "ast_hash": "b73723e44b3453d67178fb1d1aa8493a",
+    "semantic_hash": ""
   },
   "app/api/admin/login/route.ts": {
     "mtime": 1784927589.7311604,
@@ -115,9 +115,9 @@
     "semantic_hash": ""
   },
   "app/api/check-username/route.ts": {
-    "mtime": 1773580593.9731507,
-    "ast_hash": "67cab1ff5e09485e16ae980db24a5408",
-    "semantic_hash": "67cab1ff5e09485e16ae980db24a5408"
+    "mtime": 1784957038.2271433,
+    "ast_hash": "647b370d4ab03ec1f797c7594a93796f",
+    "semantic_hash": ""
   },
   "app/api/forgotpassword/route.ts": {
     "mtime": 1773580593.974162,
@@ -170,9 +170,9 @@
     "semantic_hash": "a977a6096abf3c31ca7fafb94bde3727"
   },
   "app/api/signup/route.ts": {
-    "mtime": 1773580593.980044,
-    "ast_hash": "b3d4cf0d3b0be75c77e562e921bbd5c8",
-    "semantic_hash": "b3d4cf0d3b0be75c77e562e921bbd5c8"
+    "mtime": 1784957043.5363412,
+    "ast_hash": "cad830a2415836f30e95ec2ee019efdc",
+    "semantic_hash": ""
   },
   "app/api/user/active-document/route.ts": {
     "mtime": 1784932879.3039355,
@@ -250,9 +250,9 @@
     "semantic_hash": "71bf71fe218ef1b08d330b182402264c"
   },
   "components/AuthTabs.tsx": {
-    "mtime": 1773580593.986092,
-    "ast_hash": "c1423bfa1d1026f2adb13f4f86edd97b",
-    "semantic_hash": "c1423bfa1d1026f2adb13f4f86edd97b"
+    "mtime": 1784957049.8212304,
+    "ast_hash": "37108eaad018a97a5cae025cb5cc760e",
+    "semantic_hash": ""
   },
   "components/ChatMessage.tsx": {
     "mtime": 1784936675.7335436,
@@ -315,9 +315,9 @@
     "semantic_hash": "fc6e6b4f852ed0cb7ab8adba29cb7a61"
   },
   "components/dashboard/UserProfileSection.tsx": {
-    "mtime": 1773580593.9921117,
-    "ast_hash": "f841641dd20488adf51982b9067bc1d1",
-    "semantic_hash": "f841641dd20488adf51982b9067bc1d1"
+    "mtime": 1784957061.3341048,
+    "ast_hash": "e411c9b67957ec022c736975fb878029",
+    "semantic_hash": ""
   },
   "components/dashboard/cv/CVWizard.tsx": {
     "mtime": 1784931538.224546,
@@ -602,6 +602,11 @@
   "supabase/chatbot_config.sql": {
     "mtime": 1784934344.4460008,
     "ast_hash": "f5e7a6cfa3f0ef4c9d048e2f5ab8cf3c",
+    "semantic_hash": ""
+  },
+  "lib/reservedUsernames.ts": {
+    "mtime": 1784957032.1718836,
+    "ast_hash": "1d51062bbc9ce9d82fb7c4dc2581813c",
     "semantic_hash": ""
   }
 }

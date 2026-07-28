@@ -373,7 +373,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_username_projectmodal",
-      "community": 22,
+      "community": 18,
       "community_name": "ProjectModal.tsx",
       "norm_label": "projectmodal.tsx"
     },
@@ -384,7 +384,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "app_username_projectmodal_projectmodalprops",
-      "community": 22,
+      "community": 18,
       "community_name": "ProjectModal.tsx",
       "norm_label": "projectmodalprops"
     },
@@ -395,7 +395,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "app_username_projectmodal_nextarrow",
-      "community": 22,
+      "community": 18,
       "community_name": "ProjectModal.tsx",
       "norm_label": "nextarrow()"
     },
@@ -406,7 +406,7 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "app_username_projectmodal_prevarrow",
-      "community": 22,
+      "community": 18,
       "community_name": "ProjectModal.tsx",
       "norm_label": "prevarrow()"
     },
@@ -857,7 +857,7 @@
       "source_location": "L152",
       "_origin": "ast",
       "id": "app_username_portfolio_project",
-      "community": 22,
+      "community": 18,
       "community_name": "ProjectModal.tsx",
       "norm_label": "project"
     },
@@ -1192,21 +1192,21 @@
       "norm_label": "supabaseadmin"
     },
     {
-      "label": "fetchResources()",
+      "label": "fetchAllResources()",
       "file_type": "code",
       "source_file": "app/api/admin/cloudinary/route.ts",
-      "source_location": "L17",
+      "source_location": "L18",
       "_origin": "ast",
-      "id": "app_api_admin_cloudinary_route_fetchresources",
+      "id": "app_api_admin_cloudinary_route_fetchallresources",
       "community": 21,
       "community_name": "cloudinary/route.ts",
-      "norm_label": "fetchresources()"
+      "norm_label": "fetchallresources()"
     },
     {
       "label": "GET()",
       "file_type": "code",
       "source_file": "app/api/admin/cloudinary/route.ts",
-      "source_location": "L35",
+      "source_location": "L48",
       "_origin": "ast",
       "id": "app_api_admin_cloudinary_route_get",
       "community": 21,
@@ -1217,7 +1217,7 @@
       "label": "POST()",
       "file_type": "code",
       "source_file": "app/api/admin/cloudinary/route.ts",
-      "source_location": "L167",
+      "source_location": "L182",
       "_origin": "ast",
       "id": "app_api_admin_cloudinary_route_post",
       "community": 21,
@@ -1385,30 +1385,30 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_check_username_route",
-      "community": 28,
-      "community_name": "check-username/route.ts",
+      "community": 1,
+      "community_name": "supabaseClient.ts",
       "norm_label": "check-username/route.ts"
     },
     {
       "label": "supabaseAdmin",
       "file_type": "code",
       "source_file": "app/api/check-username/route.ts",
-      "source_location": "L8",
+      "source_location": "L9",
       "_origin": "ast",
       "id": "app_api_check_username_route_supabaseadmin",
-      "community": 28,
-      "community_name": "check-username/route.ts",
+      "community": 1,
+      "community_name": "supabaseClient.ts",
       "norm_label": "supabaseadmin"
     },
     {
       "label": "POST()",
       "file_type": "code",
       "source_file": "app/api/check-username/route.ts",
-      "source_location": "L10",
+      "source_location": "L11",
       "_origin": "ast",
       "id": "app_api_check_username_route_post",
-      "community": 28,
-      "community_name": "check-username/route.ts",
+      "community": 1,
+      "community_name": "supabaseClient.ts",
       "norm_label": "post()"
     },
     {
@@ -1990,8 +1990,8 @@
       "source_location": "L178",
       "_origin": "ast",
       "id": "app_api_generate_resume_route_requestpayload",
-      "community": 3,
-      "community_name": "resumeTemplates.ts",
+      "community": 8,
+      "community_name": "generate-resume/route.ts",
       "norm_label": "requestpayload"
     },
     {
@@ -2254,30 +2254,30 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_signup_route",
-      "community": 31,
-      "community_name": "signup/route.ts",
+      "community": 1,
+      "community_name": "supabaseClient.ts",
       "norm_label": "signup/route.ts"
     },
     {
       "label": "supabaseAdmin",
       "file_type": "code",
       "source_file": "app/api/signup/route.ts",
-      "source_location": "L8",
+      "source_location": "L9",
       "_origin": "ast",
       "id": "app_api_signup_route_supabaseadmin",
-      "community": 31,
-      "community_name": "signup/route.ts",
+      "community": 1,
+      "community_name": "supabaseClient.ts",
       "norm_label": "supabaseadmin"
     },
     {
       "label": "POST()",
       "file_type": "code",
       "source_file": "app/api/signup/route.ts",
-      "source_location": "L10",
+      "source_location": "L11",
       "_origin": "ast",
       "id": "app_api_signup_route_post",
-      "community": 31,
-      "community_name": "signup/route.ts",
+      "community": 1,
+      "community_name": "supabaseClient.ts",
       "norm_label": "post()"
     },
     {
@@ -2287,8 +2287,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_user_active_document_route",
-      "community": 8,
-      "community_name": "generate-resume/route.ts",
+      "community": 9,
+      "community_name": "contentlayer",
       "norm_label": "active-document/route.ts"
     },
     {
@@ -2298,8 +2298,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "app_api_user_active_document_route_supabaseadmin",
-      "community": 8,
-      "community_name": "generate-resume/route.ts",
+      "community": 9,
+      "community_name": "contentlayer",
       "norm_label": "supabaseadmin"
     },
     {
@@ -2309,8 +2309,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "app_api_user_active_document_route_post",
-      "community": 8,
-      "community_name": "generate-resume/route.ts",
+      "community": 9,
+      "community_name": "contentlayer",
       "norm_label": "post()"
     },
     {
@@ -2320,8 +2320,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_user_save_document_route",
-      "community": 8,
-      "community_name": "generate-resume/route.ts",
+      "community": 9,
+      "community_name": "contentlayer",
       "norm_label": "save-document/route.ts"
     },
     {
@@ -2331,8 +2331,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "app_api_user_save_document_route_supabaseadmin",
-      "community": 8,
-      "community_name": "generate-resume/route.ts",
+      "community": 9,
+      "community_name": "contentlayer",
       "norm_label": "supabaseadmin"
     },
     {
@@ -2342,8 +2342,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "app_api_user_save_document_route_get",
-      "community": 8,
-      "community_name": "generate-resume/route.ts",
+      "community": 9,
+      "community_name": "contentlayer",
       "norm_label": "get()"
     },
     {
@@ -2353,8 +2353,8 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "app_api_user_save_document_route_post",
-      "community": 8,
-      "community_name": "generate-resume/route.ts",
+      "community": 9,
+      "community_name": "contentlayer",
       "norm_label": "post()"
     },
     {
@@ -2746,7 +2746,7 @@
       "label": "clsx()",
       "file_type": "code",
       "source_file": "components/AuthTabs.tsx",
-      "source_location": "L7",
+      "source_location": "L8",
       "_origin": "ast",
       "id": "components_authtabs_clsx",
       "community": 1,
@@ -2757,7 +2757,7 @@
       "label": "Tab",
       "file_type": "code",
       "source_file": "components/AuthTabs.tsx",
-      "source_location": "L11",
+      "source_location": "L12",
       "_origin": "ast",
       "id": "components_authtabs_tab",
       "community": 1,
@@ -2768,7 +2768,7 @@
       "label": "AuthTabs()",
       "file_type": "code",
       "source_file": "components/AuthTabs.tsx",
-      "source_location": "L13",
+      "source_location": "L14",
       "_origin": "ast",
       "id": "components_authtabs_authtabs",
       "community": 1,
@@ -3178,8 +3178,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_dashboard_resumesection",
-      "community": 3,
-      "community_name": "resumeTemplates.ts",
+      "community": 8,
+      "community_name": "generate-resume/route.ts",
       "norm_label": "resumesection.tsx"
     },
     {
@@ -3189,8 +3189,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "components_dashboard_resumesection_resumerow",
-      "community": 3,
-      "community_name": "resumeTemplates.ts",
+      "community": 8,
+      "community_name": "generate-resume/route.ts",
       "norm_label": "resumerow"
     },
     {
@@ -3200,8 +3200,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "components_dashboard_resumesection_resumesection",
-      "community": 3,
-      "community_name": "resumeTemplates.ts",
+      "community": 8,
+      "community_name": "generate-resume/route.ts",
       "norm_label": "resumesection()"
     },
     {
@@ -3263,7 +3263,7 @@
       "label": "UserProfileSectionProps",
       "file_type": "code",
       "source_file": "components/dashboard/UserProfileSection.tsx",
-      "source_location": "L8",
+      "source_location": "L9",
       "_origin": "ast",
       "id": "components_dashboard_userprofilesection_userprofilesectionprops",
       "community": 1,
@@ -3274,7 +3274,7 @@
       "label": "UserProfileSection()",
       "file_type": "code",
       "source_file": "components/dashboard/UserProfileSection.tsx",
-      "source_location": "L14",
+      "source_location": "L15",
       "_origin": "ast",
       "id": "components_dashboard_userprofilesection_userprofilesection",
       "community": 1,
@@ -3376,8 +3376,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_dashboard_resume_resumewizard",
-      "community": 3,
-      "community_name": "resumeTemplates.ts",
+      "community": 8,
+      "community_name": "generate-resume/route.ts",
       "norm_label": "resumewizard.tsx"
     },
     {
@@ -3387,8 +3387,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "components_dashboard_resume_resumewizard_wizardprops",
-      "community": 3,
-      "community_name": "resumeTemplates.ts",
+      "community": 8,
+      "community_name": "generate-resume/route.ts",
       "norm_label": "wizardprops"
     },
     {
@@ -3398,8 +3398,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "components_dashboard_resume_resumewizard_resumewizard",
-      "community": 3,
-      "community_name": "resumeTemplates.ts",
+      "community": 8,
+      "community_name": "generate-resume/route.ts",
       "norm_label": "resumewizard()"
     },
     {
@@ -3409,8 +3409,8 @@
       "source_location": "L412",
       "_origin": "ast",
       "id": "components_dashboard_resume_resumewizard_extractach",
-      "community": 3,
-      "community_name": "resumeTemplates.ts",
+      "community": 8,
+      "community_name": "generate-resume/route.ts",
       "norm_label": "extractach()"
     },
     {
@@ -3420,8 +3420,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_dashboard_resume_sectiontoggles",
-      "community": 3,
-      "community_name": "resumeTemplates.ts",
+      "community": 8,
+      "community_name": "generate-resume/route.ts",
       "norm_label": "sectiontoggles.tsx"
     },
     {
@@ -3431,8 +3431,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "components_dashboard_resume_sectiontoggles_props",
-      "community": 3,
-      "community_name": "resumeTemplates.ts",
+      "community": 8,
+      "community_name": "generate-resume/route.ts",
       "norm_label": "props"
     },
     {
@@ -3442,8 +3442,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "components_dashboard_resume_sectiontoggles_sectiontogglesstep",
-      "community": 3,
-      "community_name": "resumeTemplates.ts",
+      "community": 8,
+      "community_name": "generate-resume/route.ts",
       "norm_label": "sectiontogglesstep()"
     },
     {
@@ -3453,8 +3453,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_dashboard_resume_templateselector",
-      "community": 3,
-      "community_name": "resumeTemplates.ts",
+      "community": 8,
+      "community_name": "generate-resume/route.ts",
       "norm_label": "templateselector.tsx"
     },
     {
@@ -3464,8 +3464,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "components_dashboard_resume_templateselector_props",
-      "community": 3,
-      "community_name": "resumeTemplates.ts",
+      "community": 8,
+      "community_name": "generate-resume/route.ts",
       "norm_label": "props"
     },
     {
@@ -3475,8 +3475,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "components_dashboard_resume_templateselector_templateselector",
-      "community": 3,
-      "community_name": "resumeTemplates.ts",
+      "community": 8,
+      "community_name": "generate-resume/route.ts",
       "norm_label": "templateselector()"
     },
     {
@@ -3508,8 +3508,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_particles",
-      "community": 1,
-      "community_name": "supabaseClient.ts",
+      "community": 22,
+      "community_name": "ProjectModal.tsx",
       "norm_label": "particles.tsx"
     },
     {
@@ -3519,8 +3519,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "components_particles_particlesprops",
-      "community": 1,
-      "community_name": "supabaseClient.ts",
+      "community": 22,
+      "community_name": "ProjectModal.tsx",
       "norm_label": "particlesprops"
     },
     {
@@ -3530,8 +3530,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "components_particles_particles",
-      "community": 1,
-      "community_name": "supabaseClient.ts",
+      "community": 22,
+      "community_name": "ProjectModal.tsx",
       "norm_label": "particles()"
     },
     {
@@ -3805,8 +3805,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "lib_cvtemplates_activedocumenttype",
-      "community": 3,
-      "community_name": "resumeTemplates.ts",
+      "community": 8,
+      "community_name": "generate-resume/route.ts",
       "norm_label": "activedocumenttype"
     },
     {
@@ -3865,14 +3865,58 @@
       "norm_label": "wizard_cv_sections"
     },
     {
+      "label": "reservedUsernames.ts",
+      "file_type": "code",
+      "source_file": "lib/reservedUsernames.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "lib_reservedusernames",
+      "community": 1,
+      "community_name": "supabaseClient.ts",
+      "norm_label": "reservedusernames.ts"
+    },
+    {
+      "label": "RESERVED_USERNAMES",
+      "file_type": "code",
+      "source_file": "lib/reservedUsernames.ts",
+      "source_location": "L7",
+      "_origin": "ast",
+      "id": "lib_reservedusernames_reserved_usernames",
+      "community": 1,
+      "community_name": "supabaseClient.ts",
+      "norm_label": "reserved_usernames"
+    },
+    {
+      "label": "isReservedUsername()",
+      "file_type": "code",
+      "source_file": "lib/reservedUsernames.ts",
+      "source_location": "L70",
+      "_origin": "ast",
+      "id": "lib_reservedusernames_isreservedusername",
+      "community": 1,
+      "community_name": "supabaseClient.ts",
+      "norm_label": "isreservedusername()"
+    },
+    {
+      "label": "getUsernameValidationError()",
+      "file_type": "code",
+      "source_file": "lib/reservedUsernames.ts",
+      "source_location": "L80",
+      "_origin": "ast",
+      "id": "lib_reservedusernames_getusernamevalidationerror",
+      "community": 1,
+      "community_name": "supabaseClient.ts",
+      "norm_label": "getusernamevalidationerror()"
+    },
+    {
       "label": "resumeTemplates.ts",
       "file_type": "code",
       "source_file": "lib/resumeTemplates.ts",
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_resumetemplates",
-      "community": 3,
-      "community_name": "resumeTemplates.ts",
+      "community": 8,
+      "community_name": "generate-resume/route.ts",
       "norm_label": "resumetemplates.ts"
     },
     {
@@ -3882,8 +3926,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "lib_resumetemplates_templateid",
-      "community": 3,
-      "community_name": "resumeTemplates.ts",
+      "community": 8,
+      "community_name": "generate-resume/route.ts",
       "norm_label": "templateid"
     },
     {
@@ -3893,8 +3937,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "lib_resumetemplates_templateinfo",
-      "community": 3,
-      "community_name": "resumeTemplates.ts",
+      "community": 8,
+      "community_name": "generate-resume/route.ts",
       "norm_label": "templateinfo"
     },
     {
@@ -3904,8 +3948,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "lib_resumetemplates_templates",
-      "community": 3,
-      "community_name": "resumeTemplates.ts",
+      "community": 8,
+      "community_name": "generate-resume/route.ts",
       "norm_label": "templates"
     },
     {
@@ -3915,8 +3959,8 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "lib_resumetemplates_wizard_sections",
-      "community": 3,
-      "community_name": "resumeTemplates.ts",
+      "community": 8,
+      "community_name": "generate-resume/route.ts",
       "norm_label": "wizard_sections"
     },
     {
@@ -3926,8 +3970,8 @@
       "source_location": "L67",
       "_origin": "ast",
       "id": "lib_resumetemplates_sectionkey",
-      "community": 3,
-      "community_name": "resumeTemplates.ts",
+      "community": 8,
+      "community_name": "generate-resume/route.ts",
       "norm_label": "sectionkey"
     },
     {
@@ -3937,8 +3981,8 @@
       "source_location": "L70",
       "_origin": "ast",
       "id": "lib_resumetemplates_selecteditems",
-      "community": 3,
-      "community_name": "resumeTemplates.ts",
+      "community": 8,
+      "community_name": "generate-resume/route.ts",
       "norm_label": "selecteditems"
     },
     {
@@ -3948,8 +3992,8 @@
       "source_location": "L83",
       "_origin": "ast",
       "id": "lib_resumetemplates_sectiontoggles",
-      "community": 3,
-      "community_name": "resumeTemplates.ts",
+      "community": 8,
+      "community_name": "generate-resume/route.ts",
       "norm_label": "sectiontoggles"
     },
     {
@@ -3959,8 +4003,8 @@
       "source_location": "L98",
       "_origin": "ast",
       "id": "lib_resumetemplates_defaultsectiontoggles",
-      "community": 3,
-      "community_name": "resumeTemplates.ts",
+      "community": 8,
+      "community_name": "generate-resume/route.ts",
       "norm_label": "defaultsectiontoggles()"
     },
     {
@@ -4113,8 +4157,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_server_filterresumedata",
-      "community": 2,
-      "community_name": "generate-cv/route.ts",
+      "community": 8,
+      "community_name": "generate-resume/route.ts",
       "norm_label": "filterresumedata.ts"
     },
     {
@@ -4399,8 +4443,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_server_upsertresumedocument",
-      "community": 8,
-      "community_name": "generate-resume/route.ts",
+      "community": 9,
+      "community_name": "contentlayer",
       "norm_label": "upsertresumedocument.ts"
     },
     {
@@ -4410,8 +4454,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "lib_server_upsertresumedocument_activedocumenttype",
-      "community": 8,
-      "community_name": "generate-resume/route.ts",
+      "community": 9,
+      "community_name": "contentlayer",
       "norm_label": "activedocumenttype"
     },
     {
@@ -4421,8 +4465,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "lib_server_upsertresumedocument_upsertparams",
-      "community": 8,
-      "community_name": "generate-resume/route.ts",
+      "community": 9,
+      "community_name": "contentlayer",
       "norm_label": "upsertparams"
     },
     {
@@ -4432,8 +4476,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "lib_server_upsertresumedocument_nonempty",
-      "community": 8,
-      "community_name": "generate-resume/route.ts",
+      "community": 9,
+      "community_name": "contentlayer",
       "norm_label": "nonempty()"
     },
     {
@@ -4443,8 +4487,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "lib_server_upsertresumedocument_upsertresumedocument",
-      "community": 8,
-      "community_name": "generate-resume/route.ts",
+      "community": 9,
+      "community_name": "contentlayer",
       "norm_label": "upsertresumedocument()"
     },
     {
@@ -4894,8 +4938,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "package_dependencies_contentlayer",
-      "community": 9,
-      "community_name": "contentlayer",
+      "community": 19,
+      "community_name": "dependencies",
       "norm_label": "contentlayer"
     },
     {
@@ -4905,8 +4949,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "contentlayer",
-      "community": 9,
-      "community_name": "contentlayer",
+      "community": 19,
+      "community_name": "dependencies",
       "norm_label": "contentlayer"
     },
     {
@@ -4916,8 +4960,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "package_dependencies_framer_motion",
-      "community": 19,
-      "community_name": "dependencies",
+      "community": 28,
+      "community_name": "check-username/route.ts",
       "norm_label": "framer-motion"
     },
     {
@@ -4927,8 +4971,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "framer_motion",
-      "community": 19,
-      "community_name": "dependencies",
+      "community": 28,
+      "community_name": "check-username/route.ts",
       "norm_label": "framer-motion"
     },
     {
@@ -6357,8 +6401,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "util_mouse",
-      "community": 1,
-      "community_name": "supabaseClient.ts",
+      "community": 22,
+      "community_name": "ProjectModal.tsx",
       "norm_label": "mouse.ts"
     },
     {
@@ -6368,8 +6412,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "util_mouse_mouseposition",
-      "community": 1,
-      "community_name": "supabaseClient.ts",
+      "community": 22,
+      "community_name": "ProjectModal.tsx",
       "norm_label": "mouseposition"
     },
     {
@@ -6379,8 +6423,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "util_mouse_usemouseposition",
-      "community": 1,
-      "community_name": "supabaseClient.ts",
+      "community": 22,
+      "community_name": "ProjectModal.tsx",
       "norm_label": "usemouseposition()"
     },
     {
@@ -8771,7 +8815,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/[username]/PortfolioSections.tsx",
-      "source_location": "L527",
+      "source_location": "L535",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_username_portfoliosections_portfoliosections",
@@ -10207,18 +10251,18 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/api/admin/cloudinary/route.ts",
-      "source_location": "L17",
+      "source_location": "L18",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_admin_cloudinary_route",
-      "target": "app_api_admin_cloudinary_route_fetchresources",
+      "target": "app_api_admin_cloudinary_route_fetchallresources",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/api/admin/cloudinary/route.ts",
-      "source_location": "L35",
+      "source_location": "L48",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_admin_cloudinary_route",
@@ -10229,7 +10273,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/api/admin/cloudinary/route.ts",
-      "source_location": "L167",
+      "source_location": "L182",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_admin_cloudinary_route",
@@ -10252,11 +10296,11 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "app/api/admin/cloudinary/route.ts",
-      "source_location": "L39",
+      "source_location": "L53",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_admin_cloudinary_route_get",
-      "target": "app_api_admin_cloudinary_route_fetchresources",
+      "target": "app_api_admin_cloudinary_route_fetchallresources",
       "confidence_score": 1.0
     },
     {
@@ -10563,7 +10607,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/api/check-username/route.ts",
-      "source_location": "L10",
+      "source_location": "L11",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_check_username_route",
@@ -10574,12 +10618,60 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/api/check-username/route.ts",
-      "source_location": "L8",
+      "source_location": "L9",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_check_username_route",
       "target": "app_api_check_username_route_supabaseadmin",
       "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/check-username/route.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_api_check_username_route",
+      "target": "lib_reservedusernames",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/check-username/route.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_api_check_username_route",
+      "target": "lib_reservedusernames_getusernamevalidationerror",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/check-username/route.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_api_check_username_route",
+      "target": "lib_reservedusernames_isreservedusername",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/api/check-username/route.ts",
+      "source_location": "L15",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_api_check_username_route_post",
+      "target": "lib_reservedusernames_getusernamevalidationerror"
     },
     {
       "relation": "contains",
@@ -12103,7 +12195,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/api/signup/route.ts",
-      "source_location": "L10",
+      "source_location": "L11",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_signup_route",
@@ -12114,12 +12206,60 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/api/signup/route.ts",
-      "source_location": "L8",
+      "source_location": "L9",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_signup_route",
       "target": "app_api_signup_route_supabaseadmin",
       "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/signup/route.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_api_signup_route",
+      "target": "lib_reservedusernames",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/signup/route.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_api_signup_route",
+      "target": "lib_reservedusernames_getusernamevalidationerror",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/signup/route.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_api_signup_route",
+      "target": "lib_reservedusernames_isreservedusername",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/api/signup/route.ts",
+      "source_location": "L21",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_api_signup_route_post",
+      "target": "lib_reservedusernames_getusernamevalidationerror"
     },
     {
       "relation": "contains",
@@ -12891,7 +13031,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "components/AuthTabs.tsx",
-      "source_location": "L13",
+      "source_location": "L14",
       "weight": 1.0,
       "_origin": "ast",
       "source": "components_authtabs",
@@ -12902,7 +13042,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "components/AuthTabs.tsx",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0,
       "_origin": "ast",
       "source": "components_authtabs",
@@ -12913,11 +13053,35 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "components/AuthTabs.tsx",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0,
       "_origin": "ast",
       "source": "components_authtabs",
       "target": "components_authtabs_tab",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/AuthTabs.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "components_authtabs",
+      "target": "lib_reservedusernames",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/AuthTabs.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "components_authtabs",
+      "target": "lib_reservedusernames_getusernamevalidationerror",
       "confidence_score": 1.0
     },
     {
@@ -12949,7 +13113,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "components/AuthTabs.tsx",
-      "source_location": "L180",
+      "source_location": "L190",
       "weight": 1.0,
       "_origin": "ast",
       "source": "components_authtabs_authtabs",
@@ -13686,7 +13850,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "components/dashboard/UserProfileSection.tsx",
-      "source_location": "L14",
+      "source_location": "L15",
       "weight": 1.0,
       "_origin": "ast",
       "source": "components_dashboard_userprofilesection",
@@ -13697,11 +13861,35 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "components/dashboard/UserProfileSection.tsx",
-      "source_location": "L8",
+      "source_location": "L9",
       "weight": 1.0,
       "_origin": "ast",
       "source": "components_dashboard_userprofilesection",
       "target": "components_dashboard_userprofilesection_userprofilesectionprops",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/dashboard/UserProfileSection.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "components_dashboard_userprofilesection",
+      "target": "lib_reservedusernames",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/dashboard/UserProfileSection.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "components_dashboard_userprofilesection",
+      "target": "lib_reservedusernames_getusernamevalidationerror",
       "confidence_score": 1.0
     },
     {
@@ -13727,6 +13915,18 @@
       "source": "components_dashboard_userprofilesection",
       "target": "lib_supabaseclient_supabase",
       "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "components/dashboard/UserProfileSection.tsx",
+      "source_location": "L65",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "components_dashboard_userprofilesection_userprofilesection",
+      "target": "lib_reservedusernames_getusernamevalidationerror"
     },
     {
       "relation": "contains",
@@ -14884,6 +15084,63 @@
       "_origin": "ast",
       "source": "lib_server_cvtemplates_olivawilson",
       "target": "lib_cvtemplates_cvsectiontoggles",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/reservedUsernames.ts",
+      "source_location": "L80",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_reservedusernames",
+      "target": "lib_reservedusernames_getusernamevalidationerror",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/reservedUsernames.ts",
+      "source_location": "L70",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_reservedusernames",
+      "target": "lib_reservedusernames_isreservedusername",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/reservedUsernames.ts",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_reservedusernames",
+      "target": "lib_reservedusernames_reserved_usernames",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/reservedUsernames.ts",
+      "source_location": "L73",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_reservedusernames_isreservedusername",
+      "target": "lib_reservedusernames_reserved_usernames"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/reservedUsernames.ts",
+      "source_location": "L91",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_reservedusernames_getusernamevalidationerror",
+      "target": "lib_reservedusernames_isreservedusername",
       "confidence_score": 1.0
     },
     {
@@ -19707,5 +19964,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "1442e808e6b9fb1f6ce066d5f62f0222223be8e4"
+  "built_at_commit": "dba1de8753948d5d081bb1f3889cb813ac9310bb"
 }

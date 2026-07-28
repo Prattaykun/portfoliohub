@@ -1,16 +1,16 @@
-# Graph Report - portfoliohub  (2026-07-25)
+# Graph Report - portfoliohub  (2026-07-28)
 
 ## Corpus Check
-- 120 files · ~86,269 words
+- 121 files · ~86,630 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 708 nodes · 1037 edges · 93 communities (38 shown, 55 thin omitted)
+- 712 nodes · 1055 edges · 93 communities (39 shown, 54 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 1 edges (avg confidence: 0.5)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `1442e808`
+- Built from commit: `dba1de87`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -33,6 +33,7 @@
 - package.json
 - fetchUserData
 - PortfolioSections.tsx
+- ProjectModal.tsx
 - dependencies
 - generate-assetlinks.mjs
 - cloudinary/route.ts
@@ -44,7 +45,6 @@
 - check-username/route.ts
 - forgotpassword/route.ts
 - api/login/route.ts
-- signup/route.ts
 - apple-icon.tsx
 - open/page.tsx
 - route.tsx
@@ -119,17 +119,17 @@
   app/[username]/layout.tsx → lib/site.ts
 - `generateMetadata()` --calls--> `toAbsoluteUrl()`  [EXTRACTED]
   app/[username]/project/[projectId]/page.tsx → lib/site.ts
+- `POST()` --calls--> `getUsernameValidationError()`  [EXTRACTED]
+  app/api/check-username/route.ts → lib/reservedUsernames.ts
 - `RequestPayload` --references--> `SelectedItems`  [EXTRACTED]
   app/api/generate-cv/route.ts → lib/resumeTemplates.ts
 - `POST()` --calls--> `processSignature()`  [EXTRACTED]
   app/api/generate-cv/route.ts → lib/server/processSignature.ts
-- `POST()` --calls--> `upsertResumeDocument()`  [EXTRACTED]
-  app/api/generate-cv/route.ts → lib/server/upsertResumeDocument.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (93 total, 55 thin omitted)
+## Communities (93 total, 54 thin omitted)
 
 ### Community 0 - "types.ts"
 Cohesion: 0.05
@@ -137,15 +137,15 @@ Nodes (44): NOTE: ensure your ExperienceEntry in '@/util/types' matches the shap
 
 ### Community 1 - "supabaseClient.ts"
 Cohesion: 0.05
-Nodes (24): MediaItem, Section, AuthTabs(), clsx(), Tab, AnyObj, ContactSectionProps, OtherLink (+16 more)
+Nodes (28): POST(), supabaseAdmin, POST(), supabaseAdmin, MediaItem, Section, AuthTabs(), clsx() (+20 more)
 
 ### Community 2 - "generate-cv/route.ts"
-Cohesion: 0.15
+Cohesion: 0.16
 Nodes (25): generatePDFWithBrowserless(), POST(), RequestPayload, supabaseAdmin, uploadToCloudinary(), CVWizard(), extractAch(), Props (+17 more)
 
 ### Community 3 - "resumeTemplates.ts"
-Cohesion: 0.15
-Nodes (28): RequestPayload, extractAch(), ResumeWizard(), WizardProps, Props, Props, ResumeRow, ActiveDocumentType (+20 more)
+Cohesion: 0.42
+Nodes (12): escapeHtml(), extractAchievements(), formatDate(), getCurrentDate(), getStarCount(), renderDeclaration(), renderStars(), generateTemplateHTML() (+4 more)
 
 ### Community 4 - "generate-resume1/route.ts"
 Cohesion: 0.09
@@ -165,7 +165,11 @@ Nodes (25): AboutData, Certificate, CertificateMedia, CertificateSkill, ContactD
 
 ### Community 8 - "generate-resume/route.ts"
 Cohesion: 0.07
-Nodes (32): About, Certificate, CertificateSkill, CompanyExperience, Contact, ContactLink, Education, escapeHtml() (+24 more)
+Nodes (40): About, Certificate, CertificateSkill, CompanyExperience, Contact, ContactLink, Education, escapeHtml() (+32 more)
+
+### Community 9 - "contentlayer"
+Cohesion: 0.24
+Nodes (8): POST(), supabaseAdmin, POST(), supabaseAdmin, ActiveDocumentType, nonEmpty(), UpsertParams, upsertResumeDocument()
 
 ### Community 10 - "generate-twa-project.mjs"
 Cohesion: 0.14
@@ -201,7 +205,7 @@ Nodes (7): ContactLink, Education, Experience, UserData, MediaItem, MediaSection
 
 ### Community 19 - "dependencies"
 Cohesion: 0.29
-Nodes (7): cloudinary, framer-motion, dependencies, cloudinary, framer-motion, react-dom, react-dom
+Nodes (7): cloudinary, contentlayer, dependencies, cloudinary, contentlayer, react-dom, react-dom
 
 ### Community 20 - "generate-assetlinks.mjs"
 Cohesion: 0.33
@@ -209,11 +213,11 @@ Nodes (5): assetLinks, __dirname, __filename, fingerprints, repoRoot
 
 ### Community 21 - "cloudinary/route.ts"
 Cohesion: 0.50
-Nodes (3): fetchResources(), GET(), supabaseAdmin
+Nodes (3): fetchAllResources(), GET(), supabaseAdmin
 
 ### Community 22 - "ProjectModal.tsx"
-Cohesion: 0.25
-Nodes (5): Project, ProjectModalProps, AnimatedName(), TypingRoles(), TypingRolesProps
+Cohesion: 0.24
+Nodes (7): AnimatedName(), Particles(), ParticlesProps, TypingRoles(), TypingRolesProps, MousePosition, useMousePosition()
 
 ### Community 23 - "eslint.config.mjs"
 Cohesion: 0.40
@@ -258,22 +262,22 @@ Nodes (3): For --cluster-only, For --update (incremental re-extraction), graphif
 ## Knowledge Gaps
 - **305 isolated node(s):** `countryCodes`, `MediaItem`, `Section`, `CertMedia`, `CertSkill` (+300 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **55 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **54 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `dependencies` connect `dependencies` to `contentlayer`, `chatbot/route.ts`, `MediaCard.tsx`, `package.json`, `typescript`, `groq-sdk`, `lodash`, `lodash.debounce`, `lucide-react`, `markdown-wasm`, `next`, `next-cloudinary`, `@next/mdx`, `pdfkit`, `puppeteer`, `react-datepicker`, `react-markdown`, `react-slick`, `rehype-slug`, `remark-gfm`, `slick-carousel`, `@supabase/auth-helpers-nextjs`, `@supabase/ssr`, `@supabase/supabase-js`, `@upstash/redis`, `web-push`?**
-  _High betweenness centrality (0.237) - this node is a cross-community bridge._
+- **Why does `dependencies` connect `dependencies` to `chatbot/route.ts`, `MediaCard.tsx`, `package.json`, `check-username/route.ts`, `typescript`, `groq-sdk`, `lodash`, `lodash.debounce`, `lucide-react`, `markdown-wasm`, `next`, `next-cloudinary`, `@next/mdx`, `pdfkit`, `puppeteer`, `react-datepicker`, `react-markdown`, `react-slick`, `rehype-slug`, `remark-gfm`, `slick-carousel`, `@supabase/auth-helpers-nextjs`, `@supabase/ssr`, `@supabase/supabase-js`, `@upstash/redis`, `web-push`?**
+  _High betweenness centrality (0.240) - this node is a cross-community bridge._
 - **Why does `react` connect `MediaCard.tsx` to `dependencies`?**
-  _High betweenness centrality (0.207) - this node is a cross-community bridge._
-- **Why does `supabase` connect `supabaseClient.ts` to `types.ts`, `resumeTemplates.ts`?**
-  _High betweenness centrality (0.149) - this node is a cross-community bridge._
+  _High betweenness centrality (0.210) - this node is a cross-community bridge._
+- **Why does `supabase` connect `supabaseClient.ts` to `types.ts`, `generate-resume/route.ts`?**
+  _High betweenness centrality (0.156) - this node is a cross-community bridge._
 - **What connects `countryCodes`, `MediaItem`, `Section` to the rest of the system?**
   _305 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `types.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.05185185185185185 - nodes in this community are weakly interconnected._
 - **Should `supabaseClient.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.05323653962492438 - nodes in this community are weakly interconnected._
-- **Should `resumeTemplates.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.14634146341463414 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.053410893707033315 - nodes in this community are weakly interconnected._
+- **Should `generate-resume1/route.ts` be split into smaller, more focused modules?**
+  _Cohesion score 0.09359605911330049 - nodes in this community are weakly interconnected._

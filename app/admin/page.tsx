@@ -75,7 +75,7 @@ export default function AdminPage() {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 10
+  const [itemsPerPage, setItemsPerPage] = useState(25)
 
   // Confirmation Modal state
   const [confirmModal, setConfirmModal] = useState<{
@@ -832,45 +832,133 @@ export default function AdminPage() {
 
               {/* Table Pagination Controls */}
               <div className="p-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-400">
-                <div>
-                  Page <span className="text-white font-semibold">{currentPage}</span> of{' '}
-                  <span className="text-white font-semibold">{totalPages}</span> ({resources.length} total items)
+                <div className="flex items-center gap-4">
+                  <span>
+                    Page <span className="text-white font-semibold">{currentPage}</span> of{' '}
+                    <span className="text-white font-semibold">{totalPages}</span> ({resources.length} total items)
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-500">Show</span>
+                    <select
+                      value={itemsPerPage}
+                      onChange={(e) => {
+                        setItemsPerPage(Number(e.target.value))
+                        setCurrentPage(1)
+                      }}
+                      className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white text-xs focus:outline-none focus:ring-1 focus:ring-purple-500"
+                    >
+                      <option value={10} className="bg-[#0b0f19]">10</option>
+                      <option value={25} className="bg-[#0b0f19]">25</option>
+                      <option value={50} className="bg-[#0b0f19]">50</option>
+                      <option value={100} className="bg-[#0b0f19]">100</option>
+                    </select>
+                    <span className="text-gray-500">per page</span>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
+                  {/* First page */}
+                  <button
+                    onClick={() => setCurrentPage(1)}
+                    disabled={currentPage === 1}
+                    className="px-2 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-30 transition-colors text-white font-semibold"
+                    title="First page"
+                  >
+                    «
+                  </button>
+
                   <button
                     onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                     disabled={currentPage === 1}
-                    className="p-2 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-30 transition-colors"
+                    className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-30 transition-colors"
                   >
                     <ChevronLeft className="w-4 h-4 text-white" />
                   </button>
 
                   <div className="flex items-center gap-1">
+                    {/* Show first page if not in window */}
+                    {currentPage > 4 && (
+                      <>
+                        <button
+                          onClick={() => setCurrentPage(1)}
+                          className="w-8 h-8 rounded-lg font-semibold text-xs bg-white/5 hover:bg-white/10 text-gray-400 transition-colors"
+                        >
+                          1
+                        </button>
+                        <span className="text-gray-500 px-1">…</span>
+                      </>
+                    )}
+
                     {Array.from({ length: totalPages }, (_, i) => i + 1)
-                      .slice(Math.max(0, currentPage - 3), Math.min(totalPages, currentPage + 2))
+                      .filter(p => p >= Math.max(1, currentPage - 2) && p <= Math.min(totalPages, currentPage + 2))
                       .map(pageNum => (
                         <button
                           key={pageNum}
                           onClick={() => setCurrentPage(pageNum)}
                           className={`w-8 h-8 rounded-lg font-semibold text-xs transition-colors ${
                             currentPage === pageNum
-                              ? 'bg-purple-600 text-white'
+                              ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/25'
                               : 'bg-white/5 hover:bg-white/10 text-gray-400'
                           }`}
                         >
                           {pageNum}
                         </button>
                       ))}
+
+                    {/* Show last page if not in window */}
+                    {currentPage < totalPages - 3 && (
+                      <>
+                        <span className="text-gray-500 px-1">…</span>
+                        <button
+                          onClick={() => setCurrentPage(totalPages)}
+                          className="w-8 h-8 rounded-lg font-semibold text-xs bg-white/5 hover:bg-white/10 text-gray-400 transition-colors"
+                        >
+                          {totalPages}
+                        </button>
+                      </>
+                    )}
                   </div>
 
                   <button
                     onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                     disabled={currentPage === totalPages}
-                    className="p-2 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-30 transition-colors"
+                    className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-30 transition-colors"
                   >
                     <ChevronRight className="w-4 h-4 text-white" />
                   </button>
+
+                  {/* Last page */}
+                  <button
+                    onClick={() => setCurrentPage(totalPages)}
+                    disabled={currentPage === totalPages}
+                    className="px-2 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-30 transition-colors text-white font-semibold"
+                    title="Last page"
+                  >
+                    »
+                  </button>
+
+                  {/* Jump to page */}
+                  {totalPages > 5 && (
+                    <div className="flex items-center gap-1.5 ml-2 border-l border-white/10 pl-3">
+                      <span className="text-gray-500">Go to</span>
+                      <input
+                        type="number"
+                        min={1}
+                        max={totalPages}
+                        placeholder="#"
+                        className="w-14 bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white text-xs text-center focus:outline-none focus:ring-1 focus:ring-purple-500 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            const val = parseInt((e.target as HTMLInputElement).value)
+                            if (val >= 1 && val <= totalPages) {
+                              setCurrentPage(val)
+                              ;(e.target as HTMLInputElement).value = ''
+                            }
+                          }
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             </>

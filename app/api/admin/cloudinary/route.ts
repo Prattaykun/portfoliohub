@@ -155,6 +155,13 @@ export async function GET(req: NextRequest) {
       }
     })
 
+    // Sort resources by created_at descending so the latest uploads appear at the top
+    enrichedResources.sort((a, b) => {
+      const timeA = a.created_at ? new Date(a.created_at).getTime() : 0
+      const timeB = b.created_at ? new Date(b.created_at).getTime() : 0
+      return timeB - timeA
+    })
+
     const cvsCount = enrichedResources.filter(r => r.folder === 'portfoliohub_cvs' || r.public_id.startsWith('portfoliohub_cvs/')).length
     const resumesCount = enrichedResources.filter(r => r.folder === 'resumes' || r.public_id.startsWith('resumes/')).length
 
