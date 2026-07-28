@@ -1,0 +1,989 @@
+{
+  "communities": {
+    "0": [
+      "app_forms_about_form_page",
+      "app_forms_about_form_page_aboutform",
+      "app_forms_about_form_page_rationale_19",
+      "app_forms_contact_form_page",
+      "app_forms_contact_form_page_contactform",
+      "app_forms_contact_form_page_countrycodes",
+      "app_forms_profile_form_page",
+      "app_forms_profile_form_page_profilechatform",
+      "app_forms_project_form_page",
+      "app_forms_project_form_page_projectform",
+      "app_forms_skill_form_page",
+      "app_forms_skill_form_page_certificate",
+      "app_forms_skill_form_page_certmedia",
+      "app_forms_skill_form_page_certskill",
+      "app_forms_skill_form_page_skillsform",
+      "util_types",
+      "util_types_cloudinaryuploadinfo",
+      "util_types_cloudinaryuploadresult",
+      "util_types_cloudinaryuploadresultinfo",
+      "util_types_companysearchresult",
+      "util_types_contactdata",
+      "util_types_contactformprops",
+      "util_types_contactformstate",
+      "util_types_contactpayload",
+      "util_types_countrycode",
+      "util_types_educationentry",
+      "util_types_experienceentry",
+      "util_types_getsecureurlfromcloudinaryresult",
+      "util_types_iscloudinaryinfoobject",
+      "util_types_otherlink",
+      "util_types_processedsignature",
+      "util_types_profileformstate",
+      "util_types_profilequestion",
+      "util_types_projectexample",
+      "util_types_projectformstate",
+      "util_types_projectitem",
+      "util_types_projectlink",
+      "util_types_projectmedia",
+      "util_types_projectquestion",
+      "util_types_projecttable",
+      "util_types_rawtechnicalskill",
+      "util_types_roleentry",
+      "util_types_schoolsearchresult",
+      "util_types_signatureprocessingprops",
+      "util_types_signaturetransformationoptions",
+      "util_types_signatureuploadprops",
+      "util_types_signatureuploadresponse",
+      "util_types_skillsdata",
+      "util_types_skillsrow",
+      "util_types_softskill",
+      "util_types_supabaseprofileresponse",
+      "util_types_supabaseprojectresponse",
+      "util_types_techitem",
+      "util_types_technicalskill",
+      "util_types_userprofile"
+    ],
+    "1": [
+      "app_auth_callback_page",
+      "app_auth_callback_page_oauthcallback",
+      "app_auth_page",
+      "app_auth_page_authpage",
+      "app_auth_reset_password_page",
+      "app_auth_reset_password_page_resetpasswordpage",
+      "app_dashboard_page",
+      "app_dashboard_page_dashboard",
+      "app_forms_media_form_page",
+      "app_forms_media_form_page_mediaform",
+      "app_forms_media_form_page_mediaitem",
+      "app_forms_media_form_page_section",
+      "components_authtabs",
+      "components_authtabs_authtabs",
+      "components_authtabs_clsx",
+      "components_authtabs_tab",
+      "components_dashboard_aboutsection",
+      "components_dashboard_aboutsection_aboutsection",
+      "components_dashboard_aboutsection_anyobj",
+      "components_dashboard_contactsection",
+      "components_dashboard_contactsection_contactsection",
+      "components_dashboard_contactsection_contactsectionprops",
+      "components_dashboard_contactsection_otherlink",
+      "components_dashboard_contactsection_socialplatform",
+      "components_dashboard_languageinterests",
+      "components_dashboard_languageinterests_languageentry",
+      "components_dashboard_languageinterests_languageinterest",
+      "components_dashboard_languageinterests_languageinterestprops",
+      "components_dashboard_mediasection",
+      "components_dashboard_mediasection_mediaitem",
+      "components_dashboard_mediasection_mediasection",
+      "components_dashboard_mediasection_mediasectionprops",
+      "components_dashboard_mediasection_section",
+      "components_dashboard_projectssection",
+      "components_dashboard_projectssection_projectssection",
+      "components_dashboard_projectssection_projectssectionprops",
+      "components_dashboard_pwasection",
+      "components_dashboard_pwasection_beforeinstallpromptevent",
+      "components_dashboard_pwasection_pwasection",
+      "components_dashboard_pwasection_urlbase64touint8array",
+      "components_dashboard_shareportfolio",
+      "components_dashboard_skillssection",
+      "components_dashboard_skillssection_skillssection",
+      "components_dashboard_userprofilesection",
+      "components_dashboard_userprofilesection_userprofilesection",
+      "components_dashboard_userprofilesection_userprofilesectionprops",
+      "components_navbar",
+      "components_navbar_navbar",
+      "lib_supabaseclient",
+      "lib_supabaseclient_supabase"
+    ],
+    "2": [
+      "app_api_generate_cv_route",
+      "app_api_generate_cv_route_generatepdfwithbrowserless",
+      "app_api_generate_cv_route_post",
+      "app_api_generate_cv_route_requestpayload",
+      "app_api_generate_cv_route_supabaseadmin",
+      "app_api_generate_cv_route_uploadtocloudinary",
+      "app_api_generate_resume_route_requestpayload",
+      "app_api_user_active_document_route",
+      "app_api_user_active_document_route_post",
+      "app_api_user_active_document_route_supabaseadmin",
+      "components_dashboard_cv_cvwizard",
+      "components_dashboard_cv_cvwizard_cvwizard",
+      "components_dashboard_cv_cvwizard_extractach",
+      "components_dashboard_cv_cvwizard_props",
+      "components_dashboard_resume_resumewizard_wizardprops",
+      "components_dashboard_resumesection",
+      "components_dashboard_resumesection_resumerow",
+      "components_dashboard_resumesection_resumesection",
+      "lib_cvtemplates",
+      "lib_cvtemplates_activedocumenttype",
+      "lib_cvtemplates_cv_templates",
+      "lib_cvtemplates_cvsectiontoggles",
+      "lib_cvtemplates_cvtemplateid",
+      "lib_cvtemplates_cvtemplateinfo",
+      "lib_cvtemplates_defaultcvsectiontoggles",
+      "lib_cvtemplates_wizard_cv_sections",
+      "lib_resumetemplates_selecteditems",
+      "lib_server_cvhelpers",
+      "lib_server_cvhelpers_escapehtml",
+      "lib_server_cvhelpers_extractachievements",
+      "lib_server_cvhelpers_formatdate",
+      "lib_server_cvhelpers_renderdeclaration",
+      "lib_server_cvtemplates_academicexecutive",
+      "lib_server_cvtemplates_academicexecutive_generateacademicexecutivecvhtml",
+      "lib_server_cvtemplates_danielgallego",
+      "lib_server_cvtemplates_danielgallego_generatedanielgallegocvhtml",
+      "lib_server_cvtemplates_index",
+      "lib_server_cvtemplates_index_generatecvtemplatehtml",
+      "lib_server_cvtemplates_olivawilson",
+      "lib_server_cvtemplates_olivawilson_generateolivawilsoncvhtml",
+      "lib_server_filterresumedata",
+      "lib_server_filterresumedata_filterresumedata"
+    ],
+    "3": [
+      "components_dashboard_resume_resumewizard",
+      "components_dashboard_resume_resumewizard_extractach",
+      "components_dashboard_resume_resumewizard_resumewizard",
+      "components_dashboard_resume_sectiontoggles",
+      "components_dashboard_resume_sectiontoggles_props",
+      "components_dashboard_resume_sectiontoggles_sectiontogglesstep",
+      "components_dashboard_resume_templateselector",
+      "components_dashboard_resume_templateselector_props",
+      "components_dashboard_resume_templateselector_templateselector",
+      "lib_resumetemplates",
+      "lib_resumetemplates_defaultsectiontoggles",
+      "lib_resumetemplates_sectionkey",
+      "lib_resumetemplates_sectiontoggles",
+      "lib_resumetemplates_templateid",
+      "lib_resumetemplates_templateinfo",
+      "lib_resumetemplates_templates",
+      "lib_resumetemplates_wizard_sections",
+      "lib_server_templatehelpers",
+      "lib_server_templatehelpers_escapehtml",
+      "lib_server_templatehelpers_extractachievements",
+      "lib_server_templatehelpers_formatdate",
+      "lib_server_templatehelpers_getcurrentdate",
+      "lib_server_templatehelpers_getstarcount",
+      "lib_server_templatehelpers_renderdeclaration",
+      "lib_server_templatehelpers_renderstars",
+      "lib_server_templates_index",
+      "lib_server_templates_index_generatetemplatehtml",
+      "lib_server_templates_navyexecutive",
+      "lib_server_templates_navyexecutive_generatenavyexecutivehtml",
+      "lib_server_templates_plumacademic",
+      "lib_server_templates_plumacademic_generateplumacademichtml",
+      "lib_server_templates_slateprofessional",
+      "lib_server_templates_slateprofessional_generateslateprofessionalhtml",
+      "lib_server_templates_tealsidebar",
+      "lib_server_templates_tealsidebar_generatetealsidebarhtml"
+    ],
+    "4": [
+      "app_api_generate_resume1_route",
+      "app_api_generate_resume1_route_about",
+      "app_api_generate_resume1_route_certificate",
+      "app_api_generate_resume1_route_certificateskill",
+      "app_api_generate_resume1_route_contact",
+      "app_api_generate_resume1_route_contactlink",
+      "app_api_generate_resume1_route_education",
+      "app_api_generate_resume1_route_escapehtml",
+      "app_api_generate_resume1_route_experience",
+      "app_api_generate_resume1_route_formatdate",
+      "app_api_generate_resume1_route_generatepdf",
+      "app_api_generate_resume1_route_generateresumehtml",
+      "app_api_generate_resume1_route_langint",
+      "app_api_generate_resume1_route_language",
+      "app_api_generate_resume1_route_post",
+      "app_api_generate_resume1_route_profile",
+      "app_api_generate_resume1_route_project",
+      "app_api_generate_resume1_route_projectmedia",
+      "app_api_generate_resume1_route_projects",
+      "app_api_generate_resume1_route_projecttechstack",
+      "app_api_generate_resume1_route_requestpayload",
+      "app_api_generate_resume1_route_skills",
+      "app_api_generate_resume1_route_technicalskill",
+      "app_api_generate_resume1_route_uploadtocloudinary",
+      "app_api_process_signature_route",
+      "app_api_process_signature_route_post",
+      "app_api_process_signature_route_processsignature",
+      "lib_server_processsignature",
+      "lib_server_processsignature_processsignature"
+    ],
+    "5": [
+      "app_api_preview_route",
+      "app_api_preview_route_get",
+      "app_api_preview_route_supabase",
+      "app_layout",
+      "app_layout_geistmono",
+      "app_layout_geistsans",
+      "app_layout_metadata",
+      "app_layout_rootlayout",
+      "app_layout_siteurl",
+      "app_manifest",
+      "app_manifest_manifest",
+      "app_username_layout",
+      "app_username_layout_generatemetadata",
+      "app_username_layout_layout",
+      "app_username_layout_params",
+      "app_username_project_projectid_page",
+      "app_username_project_projectid_page_generatemetadata",
+      "app_username_project_projectid_page_props",
+      "app_well_known_assetlinks_json_route",
+      "app_well_known_assetlinks_json_route_get",
+      "components_dashboard_shareportfolio_shareportfolio",
+      "components_pwainit",
+      "components_pwainit_pwainit",
+      "lib_site",
+      "lib_site_ensureabsoluteurl",
+      "lib_site_getrequestorigin",
+      "lib_site_getsiteurl",
+      "lib_site_splitfingerprints",
+      "lib_site_toabsoluteurl"
+    ],
+    "6": [
+      "ref_dom",
+      "ref_dom_iterable",
+      "ref_esnext",
+      "ref_next_dev_types_ts",
+      "ref_next_env_d_ts",
+      "ref_next_types_ts",
+      "ref_node_modules",
+      "ref_ts",
+      "ref_tsx",
+      "tsconfig",
+      "tsconfig_compileroptions",
+      "tsconfig_compileroptions_allowjs",
+      "tsconfig_compileroptions_esmoduleinterop",
+      "tsconfig_compileroptions_incremental",
+      "tsconfig_compileroptions_isolatedmodules",
+      "tsconfig_compileroptions_jsx",
+      "tsconfig_compileroptions_lib",
+      "tsconfig_compileroptions_module",
+      "tsconfig_compileroptions_moduleresolution",
+      "tsconfig_compileroptions_noemit",
+      "tsconfig_compileroptions_paths",
+      "tsconfig_compileroptions_plugins",
+      "tsconfig_compileroptions_resolvejsonmodule",
+      "tsconfig_compileroptions_skiplibcheck",
+      "tsconfig_compileroptions_strict",
+      "tsconfig_compileroptions_target",
+      "tsconfig_exclude",
+      "tsconfig_include"
+    ],
+    "7": [
+      "app_username_portfolio",
+      "app_username_portfolio_aboutdata",
+      "app_username_portfolio_certificate",
+      "app_username_portfolio_certificatemedia",
+      "app_username_portfolio_certificateskill",
+      "app_username_portfolio_contactdata",
+      "app_username_portfolio_deploymentmedia",
+      "app_username_portfolio_imagemedia",
+      "app_username_portfolio_langintdata",
+      "app_username_portfolio_language",
+      "app_username_portfolio_linkmedia",
+      "app_username_portfolio_mediabase",
+      "app_username_portfolio_mediaitem",
+      "app_username_portfolio_mediasection",
+      "app_username_portfolio_mediatype",
+      "app_username_portfolio_profiledata",
+      "app_username_portfolio_projectlink",
+      "app_username_portfolio_projectmedia",
+      "app_username_portfolio_projectsdata",
+      "app_username_portfolio_projecttech",
+      "app_username_portfolio_resumedata",
+      "app_username_portfolio_skill",
+      "app_username_portfolio_skillsdata",
+      "app_username_portfolio_supabase",
+      "app_username_portfolio_textmedia",
+      "app_username_portfolio_videomedia"
+    ],
+    "8": [
+      "app_api_generate_resume_route",
+      "app_api_generate_resume_route_about",
+      "app_api_generate_resume_route_certificate",
+      "app_api_generate_resume_route_certificateskill",
+      "app_api_generate_resume_route_companyexperience",
+      "app_api_generate_resume_route_contact",
+      "app_api_generate_resume_route_contactlink",
+      "app_api_generate_resume_route_education",
+      "app_api_generate_resume_route_escapehtml",
+      "app_api_generate_resume_route_formatdate",
+      "app_api_generate_resume_route_generatepdfwithbrowserless",
+      "app_api_generate_resume_route_generateresumehtml",
+      "app_api_generate_resume_route_langint",
+      "app_api_generate_resume_route_language",
+      "app_api_generate_resume_route_post",
+      "app_api_generate_resume_route_profile",
+      "app_api_generate_resume_route_project",
+      "app_api_generate_resume_route_projectmedia",
+      "app_api_generate_resume_route_projects",
+      "app_api_generate_resume_route_projecttechstack",
+      "app_api_generate_resume_route_role",
+      "app_api_generate_resume_route_skills",
+      "app_api_generate_resume_route_supabaseadmin",
+      "app_api_generate_resume_route_technicalskill",
+      "app_api_generate_resume_route_uploadtocloudinary"
+    ],
+    "9": [
+      "app_page",
+      "app_page_home",
+      "app_username_page",
+      "components_animatedname",
+      "components_animatedname_animatedname",
+      "components_particles",
+      "components_particles_particles",
+      "components_particles_particlesprops",
+      "components_typingroles",
+      "components_typingroles_typingroles",
+      "components_typingroles_typingrolesprops",
+      "util_mouse",
+      "util_mouse_mouseposition",
+      "util_mouse_usemouseposition"
+    ],
+    "10": [
+      "scripts_generate_twa_project",
+      "scripts_generate_twa_project_androiddir",
+      "scripts_generate_twa_project_checksum",
+      "scripts_generate_twa_project_dirname",
+      "scripts_generate_twa_project_faviconurl",
+      "scripts_generate_twa_project_filename",
+      "scripts_generate_twa_project_generator",
+      "scripts_generate_twa_project_log",
+      "scripts_generate_twa_project_manifesturl",
+      "scripts_generate_twa_project_reporoot",
+      "scripts_generate_twa_project_splashimageurl",
+      "scripts_generate_twa_project_twamanifest",
+      "scripts_generate_twa_project_validationerror",
+      "scripts_generate_twa_project_versioncode"
+    ],
+    "11": [
+      "app_username_chatbot_page",
+      "app_username_chatbot_page_chatbotpage",
+      "app_username_chatbot_page_chatmessageslist",
+      "app_username_chatbot_page_chatmessageslistprops",
+      "app_username_chatbot_page_createmessage",
+      "app_username_chatbot_page_message",
+      "app_username_chatbot_page_supabase",
+      "app_username_chatbot_page_userprofile",
+      "components_chatmessage",
+      "components_chatmessage_chatmessage",
+      "components_chatmessage_chatmessageprops",
+      "components_chatmessage_markdownlink",
+      "components_chatmessage_message"
+    ],
+    "12": [
+      "bubblewrap_core",
+      "eslint_eslintrc",
+      "package_devdependencies",
+      "package_devdependencies_bubblewrap_core",
+      "package_devdependencies_eslint_eslintrc",
+      "package_devdependencies_postcss_nesting",
+      "package_devdependencies_tailwindcss",
+      "package_devdependencies_types_react_dom",
+      "postcss_nesting",
+      "tailwindcss",
+      "types_react_dom"
+    ],
+    "13": [
+      "app_api_chatbot_route",
+      "app_api_chatbot_route_fetchuserdata",
+      "app_api_chatbot_route_gemini_models",
+      "app_api_chatbot_route_genai",
+      "app_api_chatbot_route_groq",
+      "app_api_chatbot_route_groq_models",
+      "app_api_chatbot_route_post",
+      "app_api_chatbot_route_supabase",
+      "google_generative_ai",
+      "package_dependencies_google_generative_ai"
+    ],
+    "14": [
+      "app_username_mediacard",
+      "app_username_mediacard_isyoutube",
+      "app_username_mediacard_mediacard",
+      "app_username_mediacard_mediaitem",
+      "app_username_mediacard_props",
+      "app_username_mediacard_toyoutubeembed",
+      "app_username_portfoliosections_portfoliosections",
+      "app_username_projectmodal_projectmodal",
+      "package_dependencies_react",
+      "react"
+    ],
+    "15": [
+      "package",
+      "package_name",
+      "package_private",
+      "package_scripts",
+      "package_scripts_build",
+      "package_scripts_dev",
+      "package_scripts_generate_twa",
+      "package_scripts_lint",
+      "package_scripts_start",
+      "package_version"
+    ],
+    "16": [
+      "app_username_opengraph_image",
+      "app_username_opengraph_image_image",
+      "app_username_opengraph_image_size",
+      "app_username_page_portfoliopage",
+      "app_username_portfolio_fetchuserdata",
+      "app_username_project_projectid_opengraph_image",
+      "app_username_project_projectid_opengraph_image_getyoutubethumbnail",
+      "app_username_project_projectid_opengraph_image_image",
+      "app_username_project_projectid_opengraph_image_size"
+    ],
+    "17": [
+      "app_username_portfolio_contactlink",
+      "app_username_portfolio_education",
+      "app_username_portfolio_experience",
+      "app_username_portfolio_userdata",
+      "app_username_portfoliosections",
+      "app_username_portfoliosections_mediaitem",
+      "app_username_portfoliosections_mediasection",
+      "app_username_portfoliosections_portfoliosectionsprops",
+      "app_username_portfoliosections_sectionheading"
+    ],
+    "18": [
+      "app_admin_login_page",
+      "app_admin_login_page_adminloginpage",
+      "app_admin_page",
+      "app_admin_page_adminpage",
+      "app_admin_page_mediaresource",
+      "app_admin_page_mediastats",
+      "app_admin_page_ownerinfo"
+    ],
+    "19": [
+      "cloudinary",
+      "contentlayer",
+      "package_dependencies",
+      "package_dependencies_cloudinary",
+      "package_dependencies_contentlayer",
+      "package_dependencies_react_dom",
+      "react_dom"
+    ],
+    "20": [
+      "scripts_generate_assetlinks",
+      "scripts_generate_assetlinks_assetlinks",
+      "scripts_generate_assetlinks_dirname",
+      "scripts_generate_assetlinks_filename",
+      "scripts_generate_assetlinks_fingerprints",
+      "scripts_generate_assetlinks_reporoot"
+    ],
+    "21": [
+      "app_api_admin_cloudinary_route",
+      "app_api_admin_cloudinary_route_fetchresources",
+      "app_api_admin_cloudinary_route_get",
+      "app_api_admin_cloudinary_route_post",
+      "app_api_admin_cloudinary_route_supabaseadmin"
+    ],
+    "22": [
+      "app_username_portfolio_project",
+      "app_username_projectmodal",
+      "app_username_projectmodal_nextarrow",
+      "app_username_projectmodal_prevarrow",
+      "app_username_projectmodal_projectmodalprops"
+    ],
+    "23": [
+      "eslint_config",
+      "eslint_config_compat",
+      "eslint_config_dirname",
+      "eslint_config_eslintconfig",
+      "eslint_config_filename"
+    ],
+    "24": [
+      "app_api_notifications_test_route",
+      "app_api_notifications_test_route_configurewebpush",
+      "app_api_notifications_test_route_post",
+      "app_api_notifications_test_route_pushsubscriptionpayload"
+    ],
+    "25": [
+      "app_api_user_save_document_route",
+      "app_api_user_save_document_route_get",
+      "app_api_user_save_document_route_post",
+      "app_api_user_save_document_route_supabaseadmin"
+    ],
+    "26": [
+      "components_dashboard_resume_itempicker",
+      "components_dashboard_resume_itempicker_itempicker",
+      "components_dashboard_resume_itempicker_pickeritem",
+      "components_dashboard_resume_itempicker_props"
+    ],
+    "27": [
+      "app_api_admin_login_route",
+      "app_api_admin_login_route_get",
+      "app_api_admin_login_route_post"
+    ],
+    "28": [
+      "app_api_check_username_route",
+      "app_api_check_username_route_post",
+      "app_api_check_username_route_supabaseadmin"
+    ],
+    "29": [
+      "app_api_forgotpassword_route",
+      "app_api_forgotpassword_route_post",
+      "app_api_forgotpassword_route_supabaseadmin"
+    ],
+    "30": [
+      "app_api_login_route",
+      "app_api_login_route_post",
+      "app_api_login_route_supabaseadmin"
+    ],
+    "31": [
+      "app_api_signup_route",
+      "app_api_signup_route_post",
+      "app_api_signup_route_supabaseadmin"
+    ],
+    "32": [
+      "app_apple_icon",
+      "app_apple_icon_appleicon",
+      "app_apple_icon_size"
+    ],
+    "33": [
+      "app_open_page",
+      "app_open_page_openprotocolpage",
+      "app_open_page_props"
+    ],
+    "34": [
+      "app_pwa_icons_slug_route",
+      "app_pwa_icons_slug_route_get",
+      "app_pwa_icons_slug_route_params"
+    ],
+    "35": [
+      "app_share_target_page",
+      "app_share_target_page_props",
+      "app_share_target_page_sharetargetpage"
+    ],
+    "36": [
+      "lib_cloudinary",
+      "lib_cloudinary_generatemetadataimage",
+      "lib_cloudinary_getcloudinaryurl"
+    ],
+    "37": [
+      "lib_supabase",
+      "lib_supabase_getuserbyusername",
+      "lib_supabase_supabase"
+    ],
+    "38": [
+      "package_dependencies_typescript",
+      "package_devdependencies_typescript",
+      "typescript"
+    ],
+    "39": [
+      "app_api_notifications_public_key_route",
+      "app_api_notifications_public_key_route_get"
+    ],
+    "40": [
+      "app_api_share_target_route",
+      "app_api_share_target_route_post"
+    ],
+    "41": [
+      "app_offline_page",
+      "app_offline_page_offlinepage"
+    ],
+    "42": [
+      "package_devdependencies_tailwindcss_postcss",
+      "tailwindcss_postcss"
+    ],
+    "43": [
+      "eslint",
+      "package_devdependencies_eslint"
+    ],
+    "44": [
+      "eslint_config_next",
+      "package_devdependencies_eslint_config_next"
+    ],
+    "45": [
+      "framer_motion",
+      "package_dependencies_framer_motion"
+    ],
+    "46": [
+      "groq_sdk",
+      "package_dependencies_groq_sdk"
+    ],
+    "47": [
+      "lib_supabaseserver",
+      "lib_supabaseserver_createserversupabaseclient"
+    ],
+    "48": [
+      "lodash",
+      "package_dependencies_lodash"
+    ],
+    "49": [
+      "lodash_debounce",
+      "package_dependencies_lodash_debounce"
+    ],
+    "50": [
+      "lucide_react",
+      "package_dependencies_lucide_react"
+    ],
+    "51": [
+      "markdown_wasm",
+      "package_dependencies_markdown_wasm"
+    ],
+    "52": [
+      "next",
+      "package_dependencies_next"
+    ],
+    "53": [
+      "next_cloudinary",
+      "package_dependencies_next_cloudinary"
+    ],
+    "54": [
+      "next_config",
+      "next_config_nextconfig"
+    ],
+    "55": [
+      "next_mdx",
+      "package_dependencies_next_mdx"
+    ],
+    "56": [
+      "opentelemetry_api",
+      "package_devdependencies_opentelemetry_api"
+    ],
+    "57": [
+      "package_dependencies_pdfkit",
+      "pdfkit"
+    ],
+    "58": [
+      "package_dependencies_puppeteer",
+      "puppeteer"
+    ],
+    "59": [
+      "package_dependencies_react_datepicker",
+      "react_datepicker"
+    ],
+    "60": [
+      "package_dependencies_react_markdown",
+      "react_markdown"
+    ],
+    "61": [
+      "package_dependencies_react_slick",
+      "react_slick"
+    ],
+    "62": [
+      "package_dependencies_rehype_slug",
+      "rehype_slug"
+    ],
+    "63": [
+      "package_dependencies_remark_gfm",
+      "remark_gfm"
+    ],
+    "64": [
+      "package_dependencies_slick_carousel",
+      "slick_carousel"
+    ],
+    "65": [
+      "package_dependencies_supabase_auth_helpers_nextjs",
+      "supabase_auth_helpers_nextjs"
+    ],
+    "66": [
+      "package_dependencies_supabase_ssr",
+      "supabase_ssr"
+    ],
+    "67": [
+      "package_dependencies_supabase_supabase_js",
+      "supabase_supabase_js"
+    ],
+    "68": [
+      "package_dependencies_upstash_redis",
+      "upstash_redis"
+    ],
+    "69": [
+      "package_dependencies_web_push",
+      "web_push"
+    ],
+    "70": [
+      "package_devdependencies_postcss",
+      "postcss"
+    ],
+    "71": [
+      "package_devdependencies_postcss_import",
+      "postcss_import"
+    ],
+    "72": [
+      "package_devdependencies_tailwindcss_line_clamp",
+      "tailwindcss_line_clamp"
+    ],
+    "73": [
+      "package_devdependencies_tailwindcss_typography",
+      "tailwindcss_typography"
+    ],
+    "74": [
+      "package_devdependencies_types_lodash",
+      "types_lodash"
+    ],
+    "75": [
+      "package_devdependencies_types_node",
+      "types_node"
+    ],
+    "76": [
+      "package_devdependencies_types_pdfkit",
+      "types_pdfkit"
+    ],
+    "77": [
+      "package_devdependencies_types_react",
+      "types_react"
+    ],
+    "78": [
+      "package_devdependencies_types_react_slick",
+      "types_react_slick"
+    ],
+    "79": [
+      "package_devdependencies_types_web_push",
+      "types_web_push"
+    ],
+    "80": [
+      "postcss_config_config",
+      "postcss_config_mjs_postcss_config"
+    ],
+    "81": [
+      "lib_server_cvhelpers_tan_pamela_font_css"
+    ],
+    "82": [
+      "postcss_config_cjs_postcss_config"
+    ]
+  },
+  "cohesion": {
+    "0": 0.05185185185185185,
+    "1": 0.062040816326530614,
+    "2": 0.13356562137049943,
+    "3": 0.17983193277310924,
+    "4": 0.09359605911330049,
+    "5": 0.10098522167487685,
+    "6": 0.07142857142857142,
+    "7": 0.09230769230769231,
+    "8": 0.09666666666666666,
+    "9": 0.2087912087912088,
+    "10": 0.14285714285714285,
+    "11": 0.16666666666666666,
+    "12": 0.18181818181818182,
+    "13": 0.2222222222222222,
+    "14": 0.28888888888888886,
+    "15": 0.2,
+    "16": 0.3055555555555556,
+    "17": 0.25,
+    "18": 0.2857142857142857,
+    "19": 0.2857142857142857,
+    "20": 0.3333333333333333,
+    "21": 0.5,
+    "22": 0.5,
+    "23": 0.4,
+    "24": 0.6666666666666666,
+    "25": 0.5,
+    "26": 0.5,
+    "27": 0.6666666666666666,
+    "28": 0.6666666666666666,
+    "29": 0.6666666666666666,
+    "30": 0.6666666666666666,
+    "31": 0.6666666666666666,
+    "32": 0.6666666666666666,
+    "33": 0.6666666666666666,
+    "34": 0.6666666666666666,
+    "35": 0.6666666666666666,
+    "36": 0.6666666666666666,
+    "37": 0.6666666666666666,
+    "38": 0.6666666666666666,
+    "39": 1.0,
+    "40": 1.0,
+    "41": 1.0,
+    "42": 1.0,
+    "43": 1.0,
+    "44": 1.0,
+    "45": 1.0,
+    "46": 1.0,
+    "47": 1.0,
+    "48": 1.0,
+    "49": 1.0,
+    "50": 1.0,
+    "51": 1.0,
+    "52": 1.0,
+    "53": 1.0,
+    "54": 1.0,
+    "55": 1.0,
+    "56": 1.0,
+    "57": 1.0,
+    "58": 1.0,
+    "59": 1.0,
+    "60": 1.0,
+    "61": 1.0,
+    "62": 1.0,
+    "63": 1.0,
+    "64": 1.0,
+    "65": 1.0,
+    "66": 1.0,
+    "67": 1.0,
+    "68": 1.0,
+    "69": 1.0,
+    "70": 1.0,
+    "71": 1.0,
+    "72": 1.0,
+    "73": 1.0,
+    "74": 1.0,
+    "75": 1.0,
+    "76": 1.0,
+    "77": 1.0,
+    "78": 1.0,
+    "79": 1.0,
+    "80": 1.0,
+    "81": 1.0,
+    "82": 1.0
+  },
+  "gods": [
+    {
+      "id": "lib_supabaseclient_supabase",
+      "label": "supabase",
+      "degree": 23
+    },
+    {
+      "id": "tsconfig_compileroptions",
+      "label": "compilerOptions",
+      "degree": 16
+    },
+    {
+      "id": "lib_resumetemplates_sectiontoggles",
+      "label": "SectionToggles",
+      "degree": 14
+    },
+    {
+      "id": "lib_resumetemplates_selecteditems",
+      "label": "SelectedItems",
+      "degree": 11
+    },
+    {
+      "id": "lib_server_templatehelpers_renderdeclaration",
+      "label": "renderDeclaration()",
+      "degree": 11
+    },
+    {
+      "id": "lib_cvtemplates_cvsectiontoggles",
+      "label": "CVSectionToggles",
+      "degree": 10
+    },
+    {
+      "id": "lib_server_templatehelpers_escapehtml",
+      "label": "escapeHtml()",
+      "degree": 10
+    },
+    {
+      "id": "app_username_portfolio_fetchuserdata",
+      "label": "fetchUserData()",
+      "degree": 9
+    },
+    {
+      "id": "lib_resumetemplates_templateid",
+      "label": "TemplateId",
+      "degree": 9
+    },
+    {
+      "id": "lib_server_processsignature_processsignature",
+      "label": "processSignature()",
+      "degree": 9
+    }
+  ],
+  "surprises": [
+    {
+      "source": "generateMetadata()",
+      "target": "toAbsoluteUrl()",
+      "source_files": [
+        "app/[username]/layout.tsx",
+        "lib/site.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "connects across different repos/directories; peripheral node `generateMetadata()` unexpectedly reaches hub `toAbsoluteUrl()`"
+    },
+    {
+      "source": "POST()",
+      "target": "processSignature()",
+      "source_files": [
+        "app/api/generate-cv/route.ts",
+        "lib/server/processSignature.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "RequestPayload",
+      "target": "SectionToggles",
+      "source_files": [
+        "app/api/generate-resume/route.ts",
+        "lib/resumeTemplates.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "RequestPayload",
+      "target": "TemplateId",
+      "source_files": [
+        "app/api/generate-resume/route.ts",
+        "lib/resumeTemplates.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "POST()",
+      "target": "defaultSectionToggles()",
+      "source_files": [
+        "app/api/generate-resume/route.ts",
+        "lib/resumeTemplates.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "connects across different repos/directories; bridges separate communities"
+    }
+  ],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `dependencies` connect `dependencies` to `chatbot/route.ts`, `MediaCard.tsx`, `package.json`, `typescript`, `framer-motion`, `groq-sdk`, `lodash`, `lodash.debounce`, `lucide-react`, `markdown-wasm`, `next`, `next-cloudinary`, `@next/mdx`, `pdfkit`, `puppeteer`, `react-datepicker`, `react-markdown`, `react-slick`, `rehype-slug`, `remark-gfm`, `slick-carousel`, `@supabase/auth-helpers-nextjs`, `@supabase/ssr`, `@supabase/supabase-js`, `@upstash/redis`, `web-push`?",
+      "why": "High betweenness centrality (0.251) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `react` connect `MediaCard.tsx` to `dependencies`?",
+      "why": "High betweenness centrality (0.227) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `supabase` connect `supabaseClient.ts` to `types.ts`, `[username]/page.tsx`, `generate-cv/route.ts`?",
+      "why": "High betweenness centrality (0.185) - this node is a cross-community bridge."
+    },
+    {
+      "type": "isolated_nodes",
+      "question": "What connects `countryCodes`, `MediaItem`, `Section` to the rest of the system?",
+      "why": "241 weakly-connected nodes found - possible documentation gaps or missing edges."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `types.ts` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.05185185185185185 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `supabaseClient.ts` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.062040816326530614 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `generate-cv/route.ts` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.13356562137049943 - nodes in this community are weakly interconnected."
+    }
+  ]
+}

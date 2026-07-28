@@ -13,39 +13,54 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 const supabaseAdmin = createClient(supabaseUrl, serviceKey)
 
-// Helper to list resources for a given resource_type and optional prefix
-async function fetchResources(resourceType: 'image' | 'raw' | 'video', prefix?: string) {
+// Helper to list ALL resources for a given resource_type and optional prefix.
+// Uses cursor-based pagination so nothing is silently dropped beyond 500.
+async function fetchAllResources(resourceType: 'image' | 'raw' | 'video', prefix?: string) {
+  const allResources: any[] = []
+  let nextCursor: string | undefined
+
   try {
-    const options: any = {
-      resource_type: resourceType,
-      max_results: 500,
-    }
-    if (prefix) {
-      options.type = 'upload'
-      options.prefix = prefix
-    }
-    const result = await cloudinary.api.resources(options)
-    return result.resources || []
+    do {
+      const options: any = {
+        resource_type: resourceType,
+        max_results: 500,
+      }
+      if (prefix) {
+        options.type = 'upload'
+        options.prefix = prefix
+      }
+      if (nextCursor) {
+        options.next_cursor = nextCursor
+      }
+
+      const result = await cloudinary.api.resources(options)
+      const batch = result.resources || []
+      allResources.push(...batch)
+      nextCursor = result.next_cursor
+    } while (nextCursor)
   } catch (err: any) {
     console.warn(`Fetch Cloudinary resources (${resourceType}, prefix: ${prefix || 'none'}) warning:`, err?.message || err)
-    return []
   }
+
+  return allResources
 }
 
 export async function GET(req: NextRequest) {
   try {
-    // Fetch resources across folders
-    const [rawCVs, rawResumes, allRaw, allImages] = await Promise.all([
-      fetchResources('raw', 'portfoliohub_cvs/'),
-      fetchResources('raw', 'resumes/'),
-      fetchResources('raw'),
-      fetchResources('image'),
+    // Fetch resources across ALL resource types (image, raw, video) and key folders.
+    // Cursor pagination ensures we capture everything, not just the first 500.
+    const [rawCVs, rawResumes, allRaw, allImages, allVideos] = await Promise.all([
+      fetchAllResources('raw', 'portfoliohub_cvs/'),
+      fetchAllResources('raw', 'resumes/'),
+      fetchAllResources('raw'),
+      fetchAllResources('image'),
+      fetchAllResources('video'),
     ])
 
-    // Combine and deduplicate
+    // Combine and deduplicate by resource_type:public_id
     const resourceMap = new Map<string, any>()
 
-    for (const r of [...rawCVs, ...rawResumes, ...allRaw, ...allImages]) {
+    for (const r of [...rawCVs, ...rawResumes, ...allRaw, ...allImages, ...allVideos]) {
       resourceMap.set(`${r.resource_type}:${r.public_id}`, {
         public_id: r.public_id,
         format: r.format,
@@ -201,11 +216,13 @@ export async function POST(req: NextRequest) {
     } else if (action === 'delete_selected' && Array.isArray(publicIds) && publicIds.length > 0) {
       const resultRaw = await cloudinary.api.delete_resources(publicIds, { resource_type: 'raw' }).catch(() => ({}))
       const resultImg = await cloudinary.api.delete_resources(publicIds, { resource_type: 'image' }).catch(() => ({}))
+      const resultVid = await cloudinary.api.delete_resources(publicIds, { resource_type: 'video' }).catch(() => ({}))
 
       deletedCount =
         Object.keys(resultRaw.deleted || {}).length +
-        Object.keys(resultImg.deleted || {}).length
-      deletedDetails.push({ raw: resultRaw.deleted, image: resultImg.deleted })
+        Object.keys(resultImg.deleted || {}).length +
+        Object.keys(resultVid.deleted || {}).length
+      deletedDetails.push({ raw: resultRaw.deleted, image: resultImg.deleted, video: resultVid.deleted })
     } else {
       return NextResponse.json({ error: 'Invalid clear action specified' }, { status: 400 })
     }
