@@ -1,7 +1,7 @@
 // lib/server/contactLinkHelpers.ts
 import { PORTFOLIO_FAVICON_URL, PORTFOLIO_LINK_ID } from './withPortfolioContactLink'
 
-const LINK_STYLE = 'color:inherit;text-decoration:underline;'
+const LINK_STYLE = 'color:inherit;text-decoration:none;'
 
 export function stripUrlDisplay(url: string): string {
   return url.replace(/^https?:\/\//, '').replace(/^www\./, '')

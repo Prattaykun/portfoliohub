@@ -86,6 +86,6 @@ export function renderProjectTitleHtml(
   if (!url || !title) return title
 
   const classAttr = options?.className ? ` class="${escapeFn(options.className)}"` : ''
-  const style = options?.style || 'color:inherit;text-decoration:underline;'
+  const style = options?.style || 'color:inherit;text-decoration:none;'
   return `<a href="${escapeFn(url)}"${classAttr} style="${style}">${title}</a>`
 }
