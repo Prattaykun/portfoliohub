@@ -3,6 +3,7 @@
 // Features: Single-column layout with light gray rounded pill badges for section titles & 3-column skills grid
 
 import { escapeHtml, formatDate, extractAchievements, renderDeclaration, MADE_WITH_BADGE } from '../cvHelpers'
+import { renderProjectTitleHtml } from '../withPortfolioContactLink'
 import type { CVSectionToggles } from '@/lib/cvTemplates'
 
 export function generateDanielGallegoCVHTML(
@@ -146,7 +147,7 @@ body { font-family:'Lato', sans-serif; color:#2d3748; background:#fff; line-heig
     ${projects.projects.map((p: any) => `
     <div class="item-entry">
       <div class="item-title-bar">
-        <span>${escapeHtml(p.title)}</span>
+        <span>${renderProjectTitleHtml(p, escapeHtml)}</span>
         ${p.role ? `<span style="font-weight:normal; font-size:12px; color:#718096;">${escapeHtml(p.role)}</span>` : ''}
       </div>
       <div class="summary-text" style="margin-top:4px;">${escapeHtml(p.overview)}</div>

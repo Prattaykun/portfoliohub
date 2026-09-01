@@ -3,6 +3,7 @@
 // Two-column body: left contact/edu/skills, right about/experience
 
 import { escapeHtml, formatDate, renderStars, extractAchievements, renderDeclaration, MADE_WITH_BADGE } from '../templateHelpers'
+import { renderProjectTitleHtml } from '../withPortfolioContactLink'
 import type { SectionToggles } from '@/lib/resumeTemplates'
 
 export function generateSlateProfessionalHTML(
@@ -177,7 +178,7 @@ body { font-family:'Lato',sans-serif; color:#333; background:#fff; width:210mm; 
         <div class="sec-title">PROJECTS</div>
         ${projects.projects.map((p: any) => `
         <div class="proj-block">
-          <div class="proj-title">${escapeHtml(p.title)}</div>
+          <div class="proj-title">${renderProjectTitleHtml(p, escapeHtml)}</div>
           <div class="proj-desc">${escapeHtml(p.overview)}</div>
           ${p.techStack?.length ? `<div class="proj-tech">Tech: ${p.techStack.map((t: any) => escapeHtml(t.name)).join(', ')}</div>` : ''}
         </div>`).join('')}

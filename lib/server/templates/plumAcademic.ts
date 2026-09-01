@@ -3,6 +3,7 @@
 // Great for students with projects & achievements
 
 import { escapeHtml, formatDate, extractAchievements, renderDeclaration, MADE_WITH_BADGE } from '../templateHelpers'
+import { renderProjectTitleHtml } from '../withPortfolioContactLink'
 import type { SectionToggles } from '@/lib/resumeTemplates'
 
 export function generatePlumAcademicHTML(
@@ -148,7 +149,7 @@ body { font-family:'Montserrat',sans-serif; color:#333; background:#fff; }
         <div class="entry">
           <div class="entry-bullet">■</div>
           <div class="entry-body">
-            <div class="entry-title">${escapeHtml(p.title)}</div>
+            <div class="entry-title">${renderProjectTitleHtml(p, escapeHtml)}</div>
             <div class="entry-desc">${escapeHtml(p.overview)}</div>
             ${p.techStack?.length ? `<div class="tech-used">Technologies Used: ${p.techStack.map((t: any) => escapeHtml(t.name)).join(', ')}</div>` : ''}
           </div>

@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import PortfolioPage from "../../page";
 import { fetchUserData } from "../../portfolio";
 import { toAbsoluteUrl } from "@/lib/site";
+import { buildProjectPortfolioUrl } from "@/lib/server/withPortfolioContactLink";
 
 type Props = {
   params: Promise<{ username: string; projectId: string }>;
@@ -34,7 +35,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = `${project.title} | ${data.profile.full_name} | PortfolioHub`;
   const description = project.overview || `Check out ${project.title} by ${data.profile.full_name}`;
 
-  const url = toAbsoluteUrl(`/${username}/project/${projectId}`);
+  const url =
+    buildProjectPortfolioUrl(username, projectId) ||
+    toAbsoluteUrl(`/${username}/project/${projectId}`);
 
   return {
     title,

@@ -2,6 +2,7 @@
 // CV Template 3: Academic Executive CV — Formal serif styling with double accent line headers
 
 import { escapeHtml, formatDate, extractAchievements, renderDeclaration, MADE_WITH_BADGE } from '../cvHelpers'
+import { renderProjectTitleHtml } from '../withPortfolioContactLink'
 import type { CVSectionToggles } from '@/lib/cvTemplates'
 
 export function generateAcademicExecutiveCVHTML(
@@ -136,7 +137,7 @@ body { font-family:'Open Sans', sans-serif; color:#222; background:#fff; line-he
     ${projects.projects.map((p: any) => `
     <div class="entry">
       <div class="entry-head">
-        <span>${escapeHtml(p.title)}</span>
+        <span>${renderProjectTitleHtml(p, escapeHtml)}</span>
         ${p.role ? `<span style="font-weight:normal; font-size:12px; color:#4a5568;">${escapeHtml(p.role)}</span>` : ''}
       </div>
       <div class="text-block" style="margin-top:2px;">${escapeHtml(p.overview)}</div>

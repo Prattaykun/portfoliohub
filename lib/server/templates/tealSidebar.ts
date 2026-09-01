@@ -3,6 +3,7 @@
 // Font: Raleway
 
 import { escapeHtml, formatDate, renderStars, extractAchievements, renderDeclaration, MADE_WITH_BADGE } from '../templateHelpers'
+import { renderProjectTitleHtml } from '../withPortfolioContactLink'
 import type { SectionToggles } from '@/lib/resumeTemplates'
 
 export function generateTealSidebarHTML(
@@ -144,7 +145,7 @@ body { font-family:'Raleway',sans-serif; color:#333; background:#fff; }
       <div class="section-title"><span class="chevron">»</span> PROJECTS</div>
       ${projects.projects.map((p: any) => `
       <div class="proj-item">
-        <div class="item-name">${escapeHtml(p.title)}</div>
+        <div class="item-name">${renderProjectTitleHtml(p, escapeHtml)}</div>
         <div class="item-sub">Role: ${escapeHtml(p.role)}</div>
         <div class="item-desc">${escapeHtml(p.overview)}</div>
         ${p.techStack?.length ? `<div style="margin-top:4px;">${p.techStack.map((t: any) => `<span class="skill-pill">${escapeHtml(t.name)}</span>`).join('')}</div>` : ''}

@@ -6,6 +6,8 @@ import { processSignature } from '@/lib/server/processSignature'
 import { generateTemplateHTML } from '@/lib/server/templates'
 import { filterResumeData } from '@/lib/server/filterResumeData'
 import { upsertResumeDocument } from '@/lib/server/upsertResumeDocument'
+import { resolveUsername } from '@/lib/server/resolveUsername'
+import { withPortfolioContactLink, withPortfolioProjectLinks, renderProjectTitleHtml } from '@/lib/server/withPortfolioContactLink'
 import { defaultSectionToggles } from '@/lib/resumeTemplates'
 import type { TemplateId, SectionToggles, SelectedItems } from '@/lib/resumeTemplates'
 
@@ -248,6 +250,11 @@ export async function POST(request: NextRequest) {
       filteredContact = filtered.contact
     }
 
+    const targetUserId = explicitUserId || profile?.uid
+    const username = await resolveUsername(supabaseAdmin, targetUserId)
+    filteredContact = withPortfolioContactLink(filteredContact, username)
+    filteredProjects = withPortfolioProjectLinks(filteredProjects, username)
+
     // Generate HTML — dispatch to correct template
     let htmlContent: string
 
@@ -273,7 +280,6 @@ export async function POST(request: NextRequest) {
     const resumeUrl = await uploadToCloudinary(pdfBuffer)
 
     // Persist resumeUrl (preserves cv_url). Client also saves via /api/user/save-document.
-    const targetUserId = explicitUserId || profile?.uid
     if (targetUserId && resumeUrl) {
       const { error: dbError } = await upsertResumeDocument(supabaseAdmin, {
         userId: targetUserId,
@@ -678,7 +684,7 @@ function generateResumeHTML(
                 <div class="item-header">
                     <div class="item-content">
                         <div class="item-title-row">
-                            <div class="item-title">${escapeHtml(project.title)}</div>
+                            <div class="item-title">${renderProjectTitleHtml(project, escapeHtml)}</div>
                         </div>
                         <div class="item-subtitle">Role: ${escapeHtml(project.role)}</div>
                         <div class="item-description">

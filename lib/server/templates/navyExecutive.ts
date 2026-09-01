@@ -2,6 +2,7 @@
 // Template 4: Navy Executive — dark navy header, timeline dots, Playfair Display + Open Sans
 
 import { escapeHtml, formatDate, extractAchievements, renderDeclaration, MADE_WITH_BADGE } from '../templateHelpers'
+import { renderProjectTitleHtml } from '../withPortfolioContactLink'
 import type { SectionToggles } from '@/lib/resumeTemplates'
 
 export function generateNavyExecutiveHTML(
@@ -166,7 +167,7 @@ body { font-family:'Open Sans',sans-serif; color:#333; background:#fff; width:21
         <div class="sec-title">Projects</div>
         ${projects.projects.map((p: any) => `
         <div class="proj-block">
-          <div class="proj-title">${escapeHtml(p.title)}</div>
+          <div class="proj-title">${renderProjectTitleHtml(p, escapeHtml)}</div>
           <div class="proj-desc">${escapeHtml(p.overview)}</div>
           ${p.techStack?.length ? `<div class="proj-tech">Tech: ${p.techStack.map((t: any) => escapeHtml(t.name)).join(', ')}</div>` : ''}
         </div>`).join('')}

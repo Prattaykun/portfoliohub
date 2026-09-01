@@ -6,6 +6,8 @@ import { processSignature } from '@/lib/server/processSignature'
 import { generateCVTemplateHTML } from '@/lib/server/cvTemplates'
 import { filterResumeData } from '@/lib/server/filterResumeData'
 import { upsertResumeDocument } from '@/lib/server/upsertResumeDocument'
+import { resolveUsername } from '@/lib/server/resolveUsername'
+import { withPortfolioContactLink, withPortfolioProjectLinks } from '@/lib/server/withPortfolioContactLink'
 import { defaultCVSectionToggles } from '@/lib/cvTemplates'
 import type { CVTemplateId, CVSectionToggles } from '@/lib/cvTemplates'
 import type { SelectedItems } from '@/lib/resumeTemplates'
@@ -173,6 +175,11 @@ export async function POST(request: NextRequest) {
       filteredContact = filtered.contact
     }
 
+    const targetUserId = explicitUserId || profile?.uid || profile?.auth_user_id
+    const username = await resolveUsername(supabaseAdmin, targetUserId)
+    filteredContact = withPortfolioContactLink(filteredContact, username)
+    filteredProjects = withPortfolioProjectLinks(filteredProjects, username)
+
     // Render CV HTML
     const htmlContent = generateCVTemplateHTML(
       template, processedProfile, filteredAbout, filteredSkills,
@@ -187,7 +194,6 @@ export async function POST(request: NextRequest) {
     const cvUrl = await uploadToCloudinary(pdfBuffer)
 
     // Persist cvUrl (preserves resume_url). Client also saves via /api/user/save-document.
-    const targetUserId = explicitUserId || profile?.uid || profile?.auth_user_id
     if (targetUserId && cvUrl) {
       const { error: dbError } = await upsertResumeDocument(supabaseAdmin, {
         userId: targetUserId,

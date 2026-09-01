@@ -3,6 +3,7 @@
 // Layout matched to reference: stacked name, contact icons right, 2-col edu+skills, 2-col experience
 
 import { escapeHtml, formatDate, extractAchievements, renderDeclaration, MADE_WITH_BADGE, CV_FONTS_LINK, CV_FONT_CSS } from '../cvHelpers'
+import { renderProjectTitleHtml } from '../withPortfolioContactLink'
 import type { CVSectionToggles } from '@/lib/cvTemplates'
 
 export function generateOlivaWilsonCVHTML(
@@ -401,7 +402,7 @@ body {
     <div class="section-heading">Projects</div>
     ${projects.projects.map((p: any) => `
     <div class="project-block">
-      <div class="project-title">${escapeHtml(p.title)}</div>
+      <div class="project-title">${renderProjectTitleHtml(p, escapeHtml)}</div>
       ${p.role ? `<div class="project-role">${escapeHtml(p.role)}</div>` : ''}
       ${p.overview ? `<div class="project-overview">${escapeHtml(p.overview)}</div>` : ''}
       ${p.techStack?.length ? `<div class="project-tech">Tech: ${p.techStack.map((t: any) => escapeHtml(t.name)).join(', ')}</div>` : ''}
