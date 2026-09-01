@@ -4,6 +4,13 @@
 
 import { escapeHtml, formatDate, extractAchievements, renderDeclaration, MADE_WITH_BADGE } from '../cvHelpers'
 import { renderProjectTitleHtml } from '../withPortfolioContactLink'
+import {
+  renderEmailLink,
+  renderGitHubLink,
+  renderLinkedInLink,
+  renderOtherLinkText,
+  renderPhoneLink,
+} from '../contactLinkHelpers'
 import type { CVSectionToggles } from '@/lib/cvTemplates'
 
 export function generateDanielGallegoCVHTML(
@@ -72,14 +79,13 @@ body { font-family:'Lato', sans-serif; color:#2d3748; background:#fff; line-heig
     <div class="header-contact">
       ${[
         contact.address ? `<span>${escapeHtml(contact.address)}</span>` : '',
-        contact.email ? `<span>${escapeHtml(contact.email)}</span>` : '',
-        contact.phone ? `<span>${escapeHtml(contact.phone)}</span>` : '',
-        contact.linkedin ? `<span>${escapeHtml(contact.linkedin.replace(/^https?:\/\//,'').replace(/^www\./,''))}</span>` : '',
-        contact.github ? `<span>${escapeHtml(contact.github.replace(/^https?:\/\//,'').replace(/^www\./,''))}</span>` : '',
+        contact.email ? `<span>${renderEmailLink(contact.email, escapeHtml)}</span>` : '',
+        contact.phone ? `<span>${renderPhoneLink(contact.phone, escapeHtml)}</span>` : '',
+        contact.linkedin ? `<span>${renderLinkedInLink(contact.linkedin, escapeHtml)}</span>` : '',
+        contact.github ? `<span>${renderGitHubLink(contact.github, escapeHtml)}</span>` : '',
         ...(Array.isArray(contact.other_links) ? contact.other_links.map((link: any) => {
           if (!link?.url) return ''
-          const label = link.name ? `${link.name}: ${link.url.replace(/^https?:\/\//,'').replace(/^www\./,'')}` : link.url.replace(/^https?:\/\//,'').replace(/^www\./,'')
-          return `<span>${escapeHtml(label)}</span>`
+          return `<span>${renderOtherLinkText(link, escapeHtml)}</span>`
         }) : [])
       ].filter(Boolean).join(' <span class="sep">|</span> ')}
     </div>` : ''}

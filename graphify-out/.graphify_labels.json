@@ -43,7 +43,6 @@
   "41": "offline/page.tsx",
   "42": "@tailwindcss/postcss",
   "43": "eslint",
-  "44": "renderProjectTitleHtml",
   "45": "eslint-config-next",
   "46": "groq-sdk",
   "47": "supabaseServer.ts",

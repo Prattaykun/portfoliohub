@@ -8,6 +8,14 @@ import { filterResumeData } from '@/lib/server/filterResumeData'
 import { upsertResumeDocument } from '@/lib/server/upsertResumeDocument'
 import { resolveUsername } from '@/lib/server/resolveUsername'
 import { withPortfolioContactLink, withPortfolioProjectLinks, renderProjectTitleHtml } from '@/lib/server/withPortfolioContactLink'
+import {
+  renderEmailLink,
+  renderGitHubLink,
+  renderLinkedInLink,
+  renderOtherLinkIconImg,
+  renderOtherLinkText,
+  renderPhoneLink,
+} from '@/lib/server/contactLinkHelpers'
 import { defaultSectionToggles } from '@/lib/resumeTemplates'
 import type { TemplateId, SectionToggles, SelectedItems } from '@/lib/resumeTemplates'
 
@@ -536,22 +544,22 @@ function generateResumeHTML(
                 ${contact.phone ? `
                 <div class="contact-item">
                     <img src="https://img.icons8.com/?size=100&id=9730&format=png&color=000000" class="contact-icon" />
-                    <span>${escapeHtml(contact.phone)}</span>
+                    <span>${renderPhoneLink(contact.phone, escapeHtml)}</span>
                 </div>` : ''}
                 ${contact.email ? `
                 <div class="contact-item">
                     <img src="https://img.icons8.com/?size=100&id=12623&format=png&color=000000" class="contact-icon" />
-                    <span>${escapeHtml(contact.email)}</span>
+                    <span>${renderEmailLink(contact.email, escapeHtml)}</span>
                 </div>` : ''}
                 ${contact.linkedin ? `
                 <div class="contact-item">
                     <img src="https://www.google.com/s2/favicons?domain=linkedin.com&sz=128" class="contact-icon" />
-                    <span>${escapeHtml(contact.linkedin.replace(/^https?:\/\//, '').replace(/^www\./, ''))}</span>
+                    <span>${renderLinkedInLink(contact.linkedin, escapeHtml)}</span>
                 </div>` : ''}
                 ${contact.github ? `
                 <div class="contact-item">
                     <img src="https://www.google.com/s2/favicons?domain=github.com&sz=128" class="contact-icon" />
-                    <span>${escapeHtml(contact.github.replace(/^https?:\/\//, '').replace(/^www\./, ''))}</span>
+                    <span>${renderGitHubLink(contact.github, escapeHtml)}</span>
                 </div>` : ''}
                 ${contact.address ? `
                 <div class="contact-item">
@@ -560,12 +568,10 @@ function generateResumeHTML(
                 </div>` : ''}
                 ${Array.isArray(contact.other_links) ? contact.other_links.map((link: any) => {
                   if (!link?.url) return ''
-                  const label = link.name ? `${link.name}: ${link.url.replace(/^https?:\/\//, '').replace(/^www\./, '')}` : link.url.replace(/^https?:\/\//, '').replace(/^www\./, '')
-                  const iconUrl = link.logo_url || `https://www.google.com/s2/favicons?domain=${encodeURIComponent(link.url)}&sz=128`
                   return `
                   <div class="contact-item">
-                      <img src="${escapeHtml(iconUrl)}" class="contact-icon" />
-                      <span>${escapeHtml(label)}</span>
+                      ${renderOtherLinkIconImg(link, escapeHtml, 16, 'contact-icon')}
+                      <span>${renderOtherLinkText(link, escapeHtml)}</span>
                   </div>`
                 }).join('') : ''}
             </div>

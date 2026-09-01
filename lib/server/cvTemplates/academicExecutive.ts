@@ -3,6 +3,13 @@
 
 import { escapeHtml, formatDate, extractAchievements, renderDeclaration, MADE_WITH_BADGE } from '../cvHelpers'
 import { renderProjectTitleHtml } from '../withPortfolioContactLink'
+import {
+  renderEmailLink,
+  renderGitHubLink,
+  renderLinkedInLink,
+  renderOtherLinkText,
+  renderPhoneLink,
+} from '../contactLinkHelpers'
 import type { CVSectionToggles } from '@/lib/cvTemplates'
 
 export function generateAcademicExecutiveCVHTML(
@@ -60,16 +67,14 @@ body { font-family:'Open Sans', sans-serif; color:#222; background:#fff; line-he
     <div class="header-role">${about.roles?.length ? escapeHtml(about.roles.join(' • ')) : ''}</div>
     ${sections.contacts !== false ? `
     <div class="header-contact">
-      ${contact.phone ? `<span>Phone: ${escapeHtml(contact.phone)}</span>` : ''}
-      ${contact.email ? `<span>Email: ${escapeHtml(contact.email)}</span>` : ''}
+      ${contact.phone ? `<span>Phone: ${renderPhoneLink(contact.phone, escapeHtml)}</span>` : ''}
+      ${contact.email ? `<span>Email: ${renderEmailLink(contact.email, escapeHtml)}</span>` : ''}
       ${contact.address ? `<span>Address: ${escapeHtml(contact.address)}</span>` : ''}
-      ${contact.linkedin ? `<span>LinkedIn: ${escapeHtml(contact.linkedin.replace(/^https?:\/\//,'').replace(/^www\./,''))}</span>` : ''}
-      ${contact.github ? `<span>GitHub: ${escapeHtml(contact.github.replace(/^https?:\/\//,'').replace(/^www\./,''))}</span>` : ''}
+      ${contact.linkedin ? `<span>LinkedIn: ${renderLinkedInLink(contact.linkedin, escapeHtml)}</span>` : ''}
+      ${contact.github ? `<span>GitHub: ${renderGitHubLink(contact.github, escapeHtml)}</span>` : ''}
       ${Array.isArray(contact.other_links) ? contact.other_links.map((link: any) => {
         if (!link?.url) return ''
-        const name = link.name || 'Link'
-        const displayUrl = link.url.replace(/^https?:\/\//,'').replace(/^www\./,'')
-        return `<span>${escapeHtml(name)}: ${escapeHtml(displayUrl)}</span>`
+        return `<span>${renderOtherLinkText(link, escapeHtml)}</span>`
       }).join('') : ''}
     </div>` : ''}
   </div>

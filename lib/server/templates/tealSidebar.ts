@@ -4,6 +4,14 @@
 
 import { escapeHtml, formatDate, renderStars, extractAchievements, renderDeclaration, MADE_WITH_BADGE } from '../templateHelpers'
 import { renderProjectTitleHtml } from '../withPortfolioContactLink'
+import {
+  renderEmailLink,
+  renderGitHubLink,
+  renderLinkedInLink,
+  renderOtherLinkIconImg,
+  renderOtherLinkText,
+  renderPhoneLink,
+} from '../contactLinkHelpers'
 import type { SectionToggles } from '@/lib/resumeTemplates'
 
 export function generateTealSidebarHTML(
@@ -76,16 +84,14 @@ body { font-family:'Raleway',sans-serif; color:#333; background:#fff; }
       ${sections.contacts !== false ? `
       <div class="sidebar-section">
         <div class="sidebar-title">CONTACT ME</div>
-        ${contact.phone ? `<div class="contact-row"><img src="https://img.icons8.com/?size=100&id=9730&format=png&color=000000" /><span>${escapeHtml(contact.phone)}</span></div>` : ''}
-        ${contact.email ? `<div class="contact-row"><img src="https://img.icons8.com/?size=100&id=12623&format=png&color=000000" /><span>${escapeHtml(contact.email)}</span></div>` : ''}
+        ${contact.phone ? `<div class="contact-row"><img src="https://img.icons8.com/?size=100&id=9730&format=png&color=000000" /><span>${renderPhoneLink(contact.phone, escapeHtml)}</span></div>` : ''}
+        ${contact.email ? `<div class="contact-row"><img src="https://img.icons8.com/?size=100&id=12623&format=png&color=000000" /><span>${renderEmailLink(contact.email, escapeHtml)}</span></div>` : ''}
         ${contact.address ? `<div class="contact-row"><img src="https://img.icons8.com/?size=100&id=7880&format=png&color=000000" /><span>${escapeHtml(contact.address)}</span></div>` : ''}
-        ${contact.linkedin ? `<div class="contact-row"><img src="https://www.google.com/s2/favicons?domain=linkedin.com&sz=128" /><span>${escapeHtml(contact.linkedin.replace(/^https?:\/\//,'').replace(/^www\./,''))}</span></div>` : ''}
-        ${contact.github ? `<div class="contact-row"><img src="https://www.google.com/s2/favicons?domain=github.com&sz=128" /><span>${escapeHtml(contact.github.replace(/^https?:\/\//,'').replace(/^www\./,''))}</span></div>` : ''}
+        ${contact.linkedin ? `<div class="contact-row"><img src="https://www.google.com/s2/favicons?domain=linkedin.com&sz=128" /><span>${renderLinkedInLink(contact.linkedin, escapeHtml)}</span></div>` : ''}
+        ${contact.github ? `<div class="contact-row"><img src="https://www.google.com/s2/favicons?domain=github.com&sz=128" /><span>${renderGitHubLink(contact.github, escapeHtml)}</span></div>` : ''}
         ${Array.isArray(contact.other_links) ? contact.other_links.map((link: any) => {
           if (!link?.url) return ''
-          const label = link.name ? `${link.name}: ${link.url.replace(/^https?:\/\//,'').replace(/^www\./,'')}` : link.url.replace(/^https?:\/\//,'').replace(/^www\./,'')
-          const iconUrl = link.logo_url || `https://www.google.com/s2/favicons?domain=${encodeURIComponent(link.url)}&sz=128`
-          return `<div class="contact-row"><img src="${escapeHtml(iconUrl)}" /><span>${escapeHtml(label)}</span></div>`
+          return `<div class="contact-row">${renderOtherLinkIconImg(link, escapeHtml)}<span>${renderOtherLinkText(link, escapeHtml)}</span></div>`
         }).join('') : ''}
       </div>` : ''}
 

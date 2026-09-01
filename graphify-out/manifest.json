@@ -135,8 +135,8 @@
     "semantic_hash": "dfe44c2b6ae8e900d78c00283dcae2a0"
   },
   "app/api/generate-resume/route.ts": {
-    "mtime": 1788298602.5320232,
-    "ast_hash": "a1015dd24793491d557d493165362d74",
+    "mtime": 1788301488.686595,
+    "ast_hash": "cd1f1b58e852fa03f7025f61360f9774",
     "semantic_hash": ""
   },
   "app/api/login/route.ts": {
@@ -380,13 +380,13 @@
     "semantic_hash": "7a0c95871053b54d42862c097bb6294c"
   },
   "lib/server/cvTemplates/academicExecutive.ts": {
-    "mtime": 1788298601.2184672,
-    "ast_hash": "76b210291c69e841fc09ae06efb6b6af",
+    "mtime": 1788301452.5773475,
+    "ast_hash": "da441941ed7cb79b7f81e85686f742ee",
     "semantic_hash": ""
   },
   "lib/server/cvTemplates/danielGallego.ts": {
-    "mtime": 1788298597.544384,
-    "ast_hash": "e26880d9145f9d6851ecf26455a32dba",
+    "mtime": 1788301489.6948373,
+    "ast_hash": "94dc954308c32adbfb1c78adc381d257",
     "semantic_hash": ""
   },
   "lib/server/cvTemplates/index.ts": {
@@ -395,8 +395,8 @@
     "semantic_hash": "6a8f34d8f980ec483a289ea7141774e1"
   },
   "lib/server/cvTemplates/olivaWilson.ts": {
-    "mtime": 1788298592.8835475,
-    "ast_hash": "22f1bc7e7c4e94e5a6621f7f3a1b18d3",
+    "mtime": 1788301475.8099062,
+    "ast_hash": "1aab94fb2bcf5cbcc51936c209a348d6",
     "semantic_hash": ""
   },
   "lib/server/filterResumeData.ts": {
@@ -420,23 +420,23 @@
     "semantic_hash": "4b8b4dcd0cba6ead92fc3af4cf4fbacb"
   },
   "lib/server/templates/navyExecutive.ts": {
-    "mtime": 1788298584.88473,
-    "ast_hash": "bf58c3a84216fd0b5b8693a925f28a3f",
+    "mtime": 1788301438.4124463,
+    "ast_hash": "8907f0e930573a2e66ea23d72c03cc14",
     "semantic_hash": ""
   },
   "lib/server/templates/plumAcademic.ts": {
-    "mtime": 1788298591.0293427,
-    "ast_hash": "08cc4fad3b641dcbe6e5855c550cb593",
+    "mtime": 1788301427.8540103,
+    "ast_hash": "1c82c67e69a03da88fc7c8f685584be2",
     "semantic_hash": ""
   },
   "lib/server/templates/slateProfessional.ts": {
-    "mtime": 1788298590.0830617,
-    "ast_hash": "cfc537095d7682f9f493ff8427a43e53",
+    "mtime": 1788301491.76149,
+    "ast_hash": "4f3dc9b2e057e7beb68d3d552c7a1175",
     "semantic_hash": ""
   },
   "lib/server/templates/tealSidebar.ts": {
-    "mtime": 1788298580.3439617,
-    "ast_hash": "1d12a624a32bcf424033654114ef1b1c",
+    "mtime": 1788301490.6620448,
+    "ast_hash": "ce610f93fdaba74fdbee237ab0ebcbc1",
     "semantic_hash": ""
   },
   "lib/site.ts": {
@@ -615,8 +615,13 @@
     "semantic_hash": ""
   },
   "lib/server/withPortfolioContactLink.ts": {
-    "mtime": 1788298573.1975317,
-    "ast_hash": "83ee49eb72fdd06a3c89a51a54dc9836",
+    "mtime": 1788301393.1260917,
+    "ast_hash": "e3c2e75d82f866cf9af0c12e00836fd2",
+    "semantic_hash": ""
+  },
+  "lib/server/contactLinkHelpers.ts": {
+    "mtime": 1788301391.5164611,
+    "ast_hash": "3ff343ca4971fab92f894ab727dfee38",
     "semantic_hash": ""
   }
 }

@@ -3,6 +3,8 @@
 export const PORTFOLIO_PUBLIC_ORIGIN =
   (process.env.NEXT_PUBLIC_PORTFOLIO_PUBLIC_URL || 'https://portfoliohub.eu.cc').replace(/\/$/, '')
 
+export const PORTFOLIO_FAVICON_URL = `${PORTFOLIO_PUBLIC_ORIGIN}/favicon.png`
+
 export const PORTFOLIO_LINK_ID = '__portfoliohub_portfolio__'
 
 export function buildPortfolioUrl(username: string): string {
@@ -45,7 +47,7 @@ export function withPortfolioContactLink(contact: any, username: string | null |
     id: PORTFOLIO_LINK_ID,
     name: 'Portfolio',
     url: portfolioUrl,
-    logo_url: 'https://www.google.com/s2/favicons?domain=portfoliohub.eu.cc&sz=128',
+    logo_url: PORTFOLIO_FAVICON_URL,
   }
 
   return {
